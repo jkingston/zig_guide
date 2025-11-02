@@ -8,7 +8,9 @@ This document provides comprehensive instructions for AI agents working on the Z
 
 ## Project Overview
 
-The **Zig Developer Guide** is an in-progress technical book focused on idioms and best practices for Zig programming language versions **0.14.1 through 0.15.2**. The guide targets intermediate-to-advanced developers familiar with systems programming who need practical, authoritative guidance on idiomatic Zig development.
+The **Zig Developer Guide** is an in-progress technical book focused on idioms and best practices for Zig programming language versions **0.14.0, 0.14.1, 0.15.1, and 0.15.2**. The guide targets intermediate-to-advanced developers familiar with systems programming who need practical, authoritative guidance on idiomatic Zig development.
+
+This is a comprehensive guide to Zig development, not a migration guide. Most content applies across all supported versions. When patterns differ between versions, the guide clearly marks version-specific code.
 
 For complete project context, see [README.md](README.md).
 

@@ -6,9 +6,21 @@
 
 ## 1. Supported Zig Versions
 
-**Current Coverage:** Zig 0.14.1 → 0.15.2
+**Current Coverage:** Zig 0.14.0, 0.14.1, 0.15.1, and 0.15.2
 
-This guide targets the most common production versions as of 2025. Version markers throughout the guide indicate version-specific features and idioms.
+This is a comprehensive Zig developer guide supporting multiple patch versions across the 0.14 and 0.15 series. The guide teaches Zig idioms and best practices applicable across these versions. When patterns differ, version markers clearly indicate compatibility requirements.
+
+### Tested Versions
+
+This guide has been validated against:
+- **Zig 0.14.0** (released March 5, 2025)
+- **Zig 0.14.1** (released May 23, 2025)
+- **Zig 0.15.1** (released August 29, 2025)
+- **Zig 0.15.2** (released October 12, 2025)
+
+**Note:** Zig 0.15.0 was retracted and never officially released.
+
+**Future Versions:** Subsequent patch releases (0.14.2+, 0.15.3+) will be evaluated and added to this guide after validation. The guide makes no guarantees about compatibility with untested versions.
 
 ---
 

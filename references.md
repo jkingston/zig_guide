@@ -1,9 +1,9 @@
 # Zig Developer Guide — Reference & Exemplars
 
-> Comprehensive reference list of official documentation, guides, idioms, and exemplar projects  
-> covering **Zig 0.14.1 through 0.15.2**, the most common production versions in 2025.  
-> 
-> Use this document as a “source appendix” when writing best-practice or idiom sections.
+> Comprehensive reference list of official documentation, guides, idioms, and exemplar projects
+> covering **Zig 0.14.0, 0.14.1, 0.15.1, and 0.15.2**, the validated production versions for this guide.
+>
+> Use this document as a "source appendix" when writing best-practice or idiom sections.
 
 ---
 
