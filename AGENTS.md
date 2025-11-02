@@ -62,6 +62,7 @@ Before generating any content, agents **must** review these documents:
 |----------|---------|----------|
 | [style_guide.md](style_guide.md) | Comprehensive writing and formatting standards | **Critical** |
 | [references.md](references.md) | Authoritative sources and exemplar projects | **Critical** |
+| [VERSIONING.md](VERSIONING.md) | Version support policy and update workflow | High |
 | [templates/section_prompt_v3.md](templates/section_prompt_v3.md) | Template structure for understanding prompts | High |
 | [README.md](README.md) | Project overview and requirements | High |
 
