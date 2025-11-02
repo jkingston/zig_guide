@@ -1,20 +1,19 @@
 # Zig Developer Guide — Section Deep Research Prompt (v3)
 
-**Section:** Language Idioms & Core Patterns
-**Objective:** Document idiomatic Zig syntax, naming conventions, and core language patterns.
+**Section:** Build System (build.zig)
+**Objective:** Detail idiomatic use of build.zig, custom steps, and multi-target builds.
 
 ## Context within the Guide
-Establishes a shared idiomatic baseline used by all subsequent chapters.
+Shows how to structure build scripts for libraries, CLIs, and multi-target projects.
 
 ## Scope
-Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build system details.
+Targets, options, custom steps, common build verbs; keep package topics for the next chapter.
 
 ## Key Topics
-- naming conventions and style
-- defer and errdefer basics
-- error unions vs optionals (conceptual)
-- comptime and reflection fundamentals
-- module organization and imports
+- build.zig structure
+- targets and options
+- custom steps and tasks
+- common zig build verbs
 
 ---
 
@@ -29,7 +28,7 @@ Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build sy
 
 ### Required Chapter Structure
 ```markdown
-# Language Idioms & Core Patterns
+# Build System (build.zig)
 
 ## Overview
 Explain the purpose of this chapter and why it matters in Zig development.

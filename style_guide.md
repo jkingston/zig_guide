@@ -4,6 +4,12 @@
 
 ---
 
+## 0. Audience & Scope
+
+This guide is intended for contributors and research agents working on the Zig Developer Guide. It assumes readers have intermediate-to-advanced knowledge of systems programming and familiarity with Zig. The guide focuses on internal consistency, clarity, and technical accuracy rather than introductory explanations.
+
+---
+
 ## 1. Tone & Voice
 
 - Use **neutral, professional technical English**.
@@ -26,6 +32,25 @@
   ```
 - Show concise, runnable examples; avoid ellipses (`...`) except for irrelevant boilerplate.
 - Use inline comments sparingly for emphasis.
+- Runnable means the example should compile and run without modification in the specified Zig version, demonstrating the concept clearly.
+- Include necessary imports, variable declarations, and minimal setup.
+- Avoid dependencies on external files or complex environment setup.
+- When demonstrating output, include expected results immediately after the code block or in a separate output block.
+- If the output is non-trivial, provide a brief explanation.
+
+### Output and Logs
+- Outputs and logs should be shown in fenced code blocks without language specifiers.
+- Prefix command-line inputs or shell prompts with `$` to distinguish user input from program output.
+- Example:
+  ```
+  $ zig run main.zig
+  Hello, world!
+  ```
+
+### Diagrams
+- Use Mermaid syntax for diagrams where appropriate, enclosed in fenced code blocks with `mermaid` language tag.
+- ASCII diagrams are acceptable for simple illustrations.
+- Diagrams should not exceed 80 characters in width for readability.
 
 ### Lists
 - Use ordered lists for sequences, unordered for related items.
@@ -56,8 +81,9 @@ Example:
 
 [^1]: [Zig Language Reference 0.15.2](https://ziglang.org/documentation/0.15.2/)
 
-### Reference Lists
-At the end of each section, include a **References** block listing all URLs cited in that file.
+### Internal Cross-References
+Link between sections within the guide using markdown links with section anchors. Use consistent section titles for clarity and maintainability. For example:
+> See [2. Structure & Formatting](#2-structure--formatting) for formatting rules.
 
 ---
 
@@ -68,6 +94,11 @@ At the end of each section, include a **References** block listing all URLs cite
 - Use “Zig standard library” or **stdlib** (lowercase) consistently.
 - Avoid contractions (`don’t` → `do not`).
 - Always include units (`bytes`, `ms`, `MiB`) for measurements.
+
+### Grammar & Punctuation
+- Use the Oxford comma in lists for clarity.
+- Spell out abbreviations on first use, followed by the abbreviation in parentheses if used repeatedly.
+- Use en dashes (–) for ranges (e.g., “pages 10–15”) and hyphens (-) for compound words.
 
 ---
 
@@ -85,6 +116,16 @@ const allocator = std.heap.ArenaAllocator.init(gpa);
 
 // ✅ 0.15+
 const allocator = std.heap.ArenaAllocator.initDefault();
+```
+
+For differing outputs between versions, label each output with the version marker:
+
+```text
+// 🕐 0.14.x output
+Error: expected type 'u32', found 'i32'
+
+// ✅ 0.15+ output
+error: expected 'u32', got 'i32'
 ```
 
 ---
@@ -113,6 +154,36 @@ Before finalizing a section:
 3. [Ghostty GitHub Repository](https://github.com/ghostty-org/ghostty)
 4. [Zig Build System Guide](https://zig.guide/build-system/)
 ```
+
+---
+
+## 8. Metadata Conventions
+
+All guide sections should begin with a YAML metadata header specifying title, authors, and date. Example:
+
+```yaml
+---
+title: "Section Title"
+authors:
+  - "Contributor Name"
+date: "YYYY-MM-DD"
+---
+```
+
+---
+
+## 9. Accessibility & Readability
+
+- Use short paragraphs and sentences to improve readability.
+- Avoid jargon unless defined or widely understood.
+- Use high-contrast colors for any syntax highlighting or diagrams.
+- Ensure diagrams and code blocks are accessible with screen readers where possible.
+
+---
+
+## 10. Contributor Notes
+
+Contributors may include an optional footer with notes or acknowledgments at the end of a section, separated by a horizontal rule. This is not mandatory and should not contain technical content.
 
 ---
 

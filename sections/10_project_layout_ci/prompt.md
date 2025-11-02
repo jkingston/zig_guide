@@ -1,20 +1,19 @@
 # Zig Developer Guide — Section Deep Research Prompt (v3)
 
-**Section:** Language Idioms & Core Patterns
-**Objective:** Document idiomatic Zig syntax, naming conventions, and core language patterns.
+**Section:** Project Layout, Cross-Compilation & CI
+**Objective:** Describe idiomatic project organization and cross-compilation patterns.
 
 ## Context within the Guide
-Establishes a shared idiomatic baseline used by all subsequent chapters.
+A practical chapter for shipping software across targets with CI.
 
 ## Scope
-Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build system details.
+Folder layout, workspaces, cross compilation matrices, basic CI recipes.
 
 ## Key Topics
-- naming conventions and style
-- defer and errdefer basics
-- error unions vs optionals (conceptual)
-- comptime and reflection fundamentals
-- module organization and imports
+- folder layout and workspaces
+- cross-compilation basics
+- build matrices in CI
+- artifact and release considerations
 
 ---
 
@@ -29,7 +28,7 @@ Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build sy
 
 ### Required Chapter Structure
 ```markdown
-# Language Idioms & Core Patterns
+# Project Layout, Cross-Compilation & CI
 
 ## Overview
 Explain the purpose of this chapter and why it matters in Zig development.

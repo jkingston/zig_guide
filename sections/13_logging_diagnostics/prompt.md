@@ -1,20 +1,18 @@
 # Zig Developer Guide — Section Deep Research Prompt (v3)
 
-**Section:** Language Idioms & Core Patterns
-**Objective:** Document idiomatic Zig syntax, naming conventions, and core language patterns.
+**Section:** Logging, Diagnostics & Observability
+**Objective:** Show how to instrument Zig programs for development and production diagnostics.
 
 ## Context within the Guide
-Establishes a shared idiomatic baseline used by all subsequent chapters.
+Pragmatic patterns for logging and diagnostics with minimal overhead.
 
 ## Scope
-Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build system details.
+std.log usage, diagnostic output in tests/CI, structured logging basics.
 
 ## Key Topics
-- naming conventions and style
-- defer and errdefer basics
-- error unions vs optionals (conceptual)
-- comptime and reflection fundamentals
-- module organization and imports
+- std.log patterns
+- diagnostics in tests/CI
+- structured logging
 
 ---
 
@@ -29,7 +27,7 @@ Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build sy
 
 ### Required Chapter Structure
 ```markdown
-# Language Idioms & Core Patterns
+# Logging, Diagnostics & Observability
 
 ## Overview
 Explain the purpose of this chapter and why it matters in Zig development.

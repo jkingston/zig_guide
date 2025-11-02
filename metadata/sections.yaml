@@ -1,0 +1,172 @@
+sections:
+- id: 01_introduction
+  title: Introduction
+  objective: Introduce the Zig Developer Guide, its purpose, audience assumptions,
+    and how to use the book.
+  overview: Sets expectations for scope and how version markers are used across the
+    guide. Explains how to read code examples and where to find references.
+  scope: High-level orientation only. Do not teach linguistic details here. Point
+    readers to later chapters for specifics.
+  key_topics:
+  - purpose and scope of the guide
+  - how to read version markers
+  - reader-relevant information in references.md and style_guide.md
+  - structure of the guide
+- id: 02_language_idioms
+  title: Language Idioms & Core Patterns
+  objective: Document idiomatic Zig syntax, naming conventions, and core language
+    patterns.
+  overview: Establishes a shared idiomatic baseline used by all subsequent chapters.
+  scope: Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build
+    system details.
+  key_topics:
+  - naming conventions and style
+  - defer and errdefer basics
+  - error unions vs optionals (conceptual)
+  - comptime and reflection fundamentals
+  - module organization and imports
+- id: 03_memory_allocators
+  title: Memory & Allocators
+  objective: Explain Zig's allocator interfaces, ownership models, and deterministic
+    cleanup idioms.
+  overview: Introduces the allocator mental model that underpins containers, I/O,
+    and concurrency.
+  scope: Allocator interfaces and traits; arena/fixed/general patterns; ownership
+    and deinit responsibilities; cleanup idioms.
+  key_topics:
+  - allocator interfaces
+  - arena/fixed/general patterns
+  - allocator propagation
+  - ownership semantics
+  - cleanup with defer/errdefer
+- id: 04_collections_containers
+  title: Collections & Containers
+  objective: Contrast managed and unmanaged container types and their ownership boundaries.
+  overview: Builds on allocators to show how containers manage or borrow memory.
+  scope: Include managed vs unmanaged types, who frees memory, and common migration
+    patterns for container usage.
+  key_topics:
+  - managed vs unmanaged containers
+  - ownership transfer and borrowing
+  - deinit responsibilities
+  - container selection guidance
+- id: 05_io_streams
+  title: I/O, Streams & Formatting
+  objective: Teach modern Zig I/O patterns and formatting APIs.
+  overview: Explains the writer/reader model and formatting usage in day‑to‑day code.
+  scope: Obtaining writers/readers, formatting patterns, stream lifetime and cleanup.
+    Keep build integration minimal here.
+  key_topics:
+  - std.io writers and readers
+  - printing and formatting practices
+  - stdout/stderr patterns
+  - stream lifetime and cleanup
+- id: 06_error_handling
+  title: Error Handling & Resource Cleanup
+  objective: Describe Zig’s error philosophy and its practical pairing with resource
+    cleanup.
+  overview: Connects error sets/unions with deterministic cleanup strategies.
+  scope: Error sets/unions, try/catch, propagation, cleanup with defer/errdefer; practical
+    testing of error paths.
+  key_topics:
+  - error sets and unions
+  - try/catch and propagation
+  - cleanup on error paths
+  - testing error scenarios
+- id: 07_async_concurrency
+  title: Async, Concurrency & Performance
+  objective: Document Zig's async model, concurrency primitives, and performance-oriented
+    idioms.
+  overview: Explains when to use async vs threads and how to reason about scheduling.
+  scope: Async/await usage, event loops, std.Thread basics, profiling/benchmarking
+    entry points.
+  key_topics:
+  - async/await model
+  - event loop patterns
+  - std.Thread usage
+  - profiling and benchmarking basics
+- id: 08_build_system
+  title: Build System (build.zig)
+  objective: Detail idiomatic use of build.zig, custom steps, and multi-target builds.
+  overview: Shows how to structure build scripts for libraries, CLIs, and multi-target
+    projects.
+  scope: Targets, options, custom steps, common build verbs; keep package topics for
+    the next chapter.
+  key_topics:
+  - build.zig structure
+  - targets and options
+  - custom steps and tasks
+  - common zig build verbs
+- id: 09_packages_dependencies
+  title: Packages & Dependencies (build.zig.zon)
+  objective: Explain Zig’s package and dependency management using build.zig.zon.
+  overview: Covers reproducible dependency graphs and the everyday developer workflow.
+  scope: build.zig.zon structure, zig fetch workflow, checksums and locking, local
+    vs remote packages.
+  key_topics:
+  - build.zig.zon anatomy
+  - zig fetch workflow
+  - checksums and locks
+  - integrating deps in build.zig
+- id: 10_project_layout_ci
+  title: Project Layout, Cross-Compilation & CI
+  objective: Describe idiomatic project organization and cross-compilation patterns.
+  overview: A practical chapter for shipping software across targets with CI.
+  scope: Folder layout, workspaces, cross compilation matrices, basic CI recipes.
+  key_topics:
+  - folder layout and workspaces
+  - cross-compilation basics
+  - build matrices in CI
+  - artifact and release considerations
+- id: 11_interoperability
+  title: Interoperability (C/C++/WASI/WASM)
+  objective: Explain maintainable interoperation with C, C++, and WASI/WASM.
+  overview: Focus on safe boundaries and ownership contracts across language interfaces.
+  scope: cImport/cInclude basics, linking notes, calling C from Zig, WASI/WASM pointers
+    and ownership.
+  key_topics:
+  - '@cImport and @cInclude'
+  - linking and build integration
+  - calling C from Zig
+  - WASI/WASM pointers and ownership
+- id: 12_testing_benchmarking
+  title: Testing, Benchmarking & Profiling
+  objective: Present Zig’s testing framework and basic performance workflows.
+  overview: Brings validation and performance together for everyday development.
+  scope: zig test usage, doctests, organizing tests, lightweight benchmarks, basic
+    profiling hooks.
+  key_topics:
+  - zig test and doctests
+  - organizing and running tests
+  - micro-bench scaffolds
+  - profiling entry points
+- id: 13_logging_diagnostics
+  title: Logging, Diagnostics & Observability
+  objective: Show how to instrument Zig programs for development and production diagnostics.
+  overview: Pragmatic patterns for logging and diagnostics with minimal overhead.
+  scope: std.log usage, diagnostic output in tests/CI, structured logging basics.
+  key_topics:
+  - std.log patterns
+  - diagnostics in tests/CI
+  - structured logging
+- id: 14_migration_guide
+  title: Migration Guide (0.14.1 → 0.15.2)
+  objective: Provide before/after examples for notable changes and safe migration
+    patterns.
+  overview: A practical playbook for upgrading existing codebases between the two
+    versions.
+  scope: Summarize impactful changes with code diffs and link to authoritative notes.
+  key_topics:
+  - I/O and formatting changes
+  - container usage changes
+  - build system updates
+  - stdlib deprecations
+- id: 15_appendices
+  title: Appendices & Reference Material
+  objective: Provide glossary, style checklist, and consolidated references.
+  overview: Reference-only material for quick lookup during development.
+  scope: Glossary, style checklist, link index; do not introduce new concepts.
+  key_topics:
+  - glossary
+  - style checklist
+  - reference index

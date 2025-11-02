@@ -1,20 +1,19 @@
 # Zig Developer Guide — Section Deep Research Prompt (v3)
 
-**Section:** Language Idioms & Core Patterns
-**Objective:** Document idiomatic Zig syntax, naming conventions, and core language patterns.
+**Section:** Collections & Containers
+**Objective:** Contrast managed and unmanaged container types and their ownership boundaries.
 
 ## Context within the Guide
-Establishes a shared idiomatic baseline used by all subsequent chapters.
+Builds on allocators to show how containers manage or borrow memory.
 
 ## Scope
-Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build system details.
+Include managed vs unmanaged types, who frees memory, and common migration patterns for container usage.
 
 ## Key Topics
-- naming conventions and style
-- defer and errdefer basics
-- error unions vs optionals (conceptual)
-- comptime and reflection fundamentals
-- module organization and imports
+- managed vs unmanaged containers
+- ownership transfer and borrowing
+- deinit responsibilities
+- container selection guidance
 
 ---
 
@@ -29,7 +28,7 @@ Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build sy
 
 ### Required Chapter Structure
 ```markdown
-# Language Idioms & Core Patterns
+# Collections & Containers
 
 ## Overview
 Explain the purpose of this chapter and why it matters in Zig development.

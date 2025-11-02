@@ -1,20 +1,18 @@
 # Zig Developer Guide — Section Deep Research Prompt (v3)
 
-**Section:** Language Idioms & Core Patterns
-**Objective:** Document idiomatic Zig syntax, naming conventions, and core language patterns.
+**Section:** Appendices & Reference Material
+**Objective:** Provide glossary, style checklist, and consolidated references.
 
 ## Context within the Guide
-Establishes a shared idiomatic baseline used by all subsequent chapters.
+Reference-only material for quick lookup during development.
 
 ## Scope
-Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build system details.
+Glossary, style checklist, link index; do not introduce new concepts.
 
 ## Key Topics
-- naming conventions and style
-- defer and errdefer basics
-- error unions vs optionals (conceptual)
-- comptime and reflection fundamentals
-- module organization and imports
+- glossary
+- style checklist
+- reference index
 
 ---
 
@@ -29,7 +27,7 @@ Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build sy
 
 ### Required Chapter Structure
 ```markdown
-# Language Idioms & Core Patterns
+# Appendices & Reference Material
 
 ## Overview
 Explain the purpose of this chapter and why it matters in Zig development.

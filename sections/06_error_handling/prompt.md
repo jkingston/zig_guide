@@ -1,20 +1,19 @@
 # Zig Developer Guide — Section Deep Research Prompt (v3)
 
-**Section:** Language Idioms & Core Patterns
-**Objective:** Document idiomatic Zig syntax, naming conventions, and core language patterns.
+**Section:** Error Handling & Resource Cleanup
+**Objective:** Describe Zig’s error philosophy and its practical pairing with resource cleanup.
 
 ## Context within the Guide
-Establishes a shared idiomatic baseline used by all subsequent chapters.
+Connects error sets/unions with deterministic cleanup strategies.
 
 ## Scope
-Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build system details.
+Error sets/unions, try/catch, propagation, cleanup with defer/errdefer; practical testing of error paths.
 
 ## Key Topics
-- naming conventions and style
-- defer and errdefer basics
-- error unions vs optionals (conceptual)
-- comptime and reflection fundamentals
-- module organization and imports
+- error sets and unions
+- try/catch and propagation
+- cleanup on error paths
+- testing error scenarios
 
 ---
 
@@ -29,7 +28,7 @@ Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build sy
 
 ### Required Chapter Structure
 ```markdown
-# Language Idioms & Core Patterns
+# Error Handling & Resource Cleanup
 
 ## Overview
 Explain the purpose of this chapter and why it matters in Zig development.

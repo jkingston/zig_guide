@@ -1,20 +1,19 @@
 # Zig Developer Guide — Section Deep Research Prompt (v3)
 
-**Section:** Language Idioms & Core Patterns
-**Objective:** Document idiomatic Zig syntax, naming conventions, and core language patterns.
+**Section:** Packages & Dependencies (build.zig.zon)
+**Objective:** Explain Zig’s package and dependency management using build.zig.zon.
 
 ## Context within the Guide
-Establishes a shared idiomatic baseline used by all subsequent chapters.
+Covers reproducible dependency graphs and the everyday developer workflow.
 
 ## Scope
-Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build system details.
+build.zig.zon structure, zig fetch workflow, checksums and locking, local vs remote packages.
 
 ## Key Topics
-- naming conventions and style
-- defer and errdefer basics
-- error unions vs optionals (conceptual)
-- comptime and reflection fundamentals
-- module organization and imports
+- build.zig.zon anatomy
+- zig fetch workflow
+- checksums and locks
+- integrating deps in build.zig
 
 ---
 
@@ -29,7 +28,7 @@ Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build sy
 
 ### Required Chapter Structure
 ```markdown
-# Language Idioms & Core Patterns
+# Packages & Dependencies (build.zig.zon)
 
 ## Overview
 Explain the purpose of this chapter and why it matters in Zig development.

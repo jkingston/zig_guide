@@ -1,20 +1,19 @@
 # Zig Developer Guide — Section Deep Research Prompt (v3)
 
-**Section:** Language Idioms & Core Patterns
-**Objective:** Document idiomatic Zig syntax, naming conventions, and core language patterns.
+**Section:** Testing, Benchmarking & Profiling
+**Objective:** Present Zig’s testing framework and basic performance workflows.
 
 ## Context within the Guide
-Establishes a shared idiomatic baseline used by all subsequent chapters.
+Brings validation and performance together for everyday development.
 
 ## Scope
-Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build system details.
+zig test usage, doctests, organizing tests, lightweight benchmarks, basic profiling hooks.
 
 ## Key Topics
-- naming conventions and style
-- defer and errdefer basics
-- error unions vs optionals (conceptual)
-- comptime and reflection fundamentals
-- module organization and imports
+- zig test and doctests
+- organizing and running tests
+- micro-bench scaffolds
+- profiling entry points
 
 ---
 
@@ -29,7 +28,7 @@ Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build sy
 
 ### Required Chapter Structure
 ```markdown
-# Language Idioms & Core Patterns
+# Testing, Benchmarking & Profiling
 
 ## Overview
 Explain the purpose of this chapter and why it matters in Zig development.

@@ -1,20 +1,19 @@
 # Zig Developer Guide — Section Deep Research Prompt (v3)
 
-**Section:** Language Idioms & Core Patterns
-**Objective:** Document idiomatic Zig syntax, naming conventions, and core language patterns.
+**Section:** I/O, Streams & Formatting
+**Objective:** Teach modern Zig I/O patterns and formatting APIs.
 
 ## Context within the Guide
-Establishes a shared idiomatic baseline used by all subsequent chapters.
+Explains the writer/reader model and formatting usage in day‑to‑day code.
 
 ## Scope
-Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build system details.
+Obtaining writers/readers, formatting patterns, stream lifetime and cleanup. Keep build integration minimal here.
 
 ## Key Topics
-- naming conventions and style
-- defer and errdefer basics
-- error unions vs optionals (conceptual)
-- comptime and reflection fundamentals
-- module organization and imports
+- std.io writers and readers
+- printing and formatting practices
+- stdout/stderr patterns
+- stream lifetime and cleanup
 
 ---
 
@@ -29,7 +28,7 @@ Focus on idioms and patterns; avoid deep dives into allocators, I/O, or build sy
 
 ### Required Chapter Structure
 ```markdown
-# Language Idioms & Core Patterns
+# I/O, Streams & Formatting
 
 ## Overview
 Explain the purpose of this chapter and why it matters in Zig development.
