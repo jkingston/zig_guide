@@ -73,13 +73,13 @@
 
 > For cross-version best-practice commentary, refer to these release notes when identifying behavioral or standard-library changes between 0.14 and 0.15.
 
-| Version                                                              | Date | Notes                                                                                      |
-| -------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------ |
-| **[0.15.2](https://ziggit.dev/t/zig-0-15-2-released/12466/6)**       | 2025 | Most recent stable at time of writing — minor fixes and stability improvements.            |
-| **[0.15.1](https://ziglang.org/download/0.15.1/release-notes.html)** | 2025 | Introduced incremental build enhancements and diagnostic improvements.                     |
-| **[0.15.0](https://ziglang.org/download/0.15.0/release-notes.html)** | 2025 | Major compiler & stdlib changes; introduced new container and I/O APIs.                    |
-| **[0.14.1](https://ziglang.org/download/0.14.1/release-notes.html)** | 2024 | Bug-fix release for 0.14; widely used baseline for many production projects.               |
-| **[0.14.0](https://ziglang.org/download/0.14.0/release-notes.html)** | 2024 | Major feature update: improved build system, incremental compilation, x86 backend rewrite. |
+| Version                                                              | Date       | Notes                                                                                      |
+| -------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------ |
+| **[0.15.2](https://ziggit.dev/t/zig-0-15-2-released/12466/6)**       | 2025-10-11 | Most recent stable at time of writing — minor fixes and stability improvements.            |
+| **[0.15.1](https://ziglang.org/download/0.15.1/release-notes.html)** | 2025-08-19 | Introduced incremental build enhancements and diagnostic improvements.                     |
+| **[0.15.0](https://ziglang.org/download/0.15.0/release-notes.html)** | (retracted) | **Retracted** — never officially released. Use 0.15.1 instead.                            |
+| **[0.14.1](https://ziglang.org/download/0.14.1/release-notes.html)** | 2025-05-21 | Bug-fix release for 0.14; widely used baseline for many production projects.               |
+| **[0.14.0](https://ziglang.org/download/0.14.0/release-notes.html)** | 2025-03-05 | Major feature update: improved build system, incremental compilation, x86 backend rewrite. |
 
 ---
 

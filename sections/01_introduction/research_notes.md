@@ -35,10 +35,10 @@
 **Decision:** Support explicit list of multiple patch versions, not just latest patches.
 
 **Supported Versions:**
-- Zig 0.14.0 (released March 5, 2025)
-- Zig 0.14.1 (released May 23, 2025)
-- Zig 0.15.1 (released August 29, 2025)
-- Zig 0.15.2 (released October 12, 2025)
+- Zig 0.14.0 (released 2025-03-05)
+- Zig 0.14.1 (released 2025-05-21)
+- Zig 0.15.1 (released 2025-08-19)
+- Zig 0.15.2 (released 2025-10-11)
 
 **Note:** Zig 0.15.0 was retracted and never officially released.
 
