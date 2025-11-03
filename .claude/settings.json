@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch",
+      "Bash(grep:*)",
+      "Read(//Users/jack/workspace/bun/**)",
+      "Read(//Users/jack/workspace/ghostty/**)",
+      "Read(//Users/jack/workspace/mach/**)",
+      "Read(//Users/jack/workspace/tigerbeetle/**)",
+      "Read(//Users/jack/workspace/zls/**)",
+      "Bash(cat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
