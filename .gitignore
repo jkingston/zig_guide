@@ -2,3 +2,6 @@
 
 # Reference repositories for research (cloned by scripts/update_reference_repos.sh)
 /reference_repos/
+
+# Multiple Zig versions for testing (downloaded by scripts/download_zig_versions.sh)
+/zig_versions/

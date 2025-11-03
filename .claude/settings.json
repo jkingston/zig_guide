@@ -3,8 +3,11 @@
     "allow": [
       "WebSearch",
       "WebFetch",
-      "Bash(grep:*)",
       "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(zig:*)",
+      "Bash(./scripts/download_zig_versions.sh)",
       "Bash(./scripts/update_reference_repos.sh)"
     ],
     "deny": [],
