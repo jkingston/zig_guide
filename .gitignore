@@ -1,1 +1,4 @@
 .DS_Store
+
+# Reference repositories for research (cloned by scripts/update_reference_repos.sh)
+/reference_repos/

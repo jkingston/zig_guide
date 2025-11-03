@@ -194,6 +194,16 @@ After generating content:
 
 ## Common Workflows
 
+### Setting Up Reference Repositories
+
+Before starting work on a section, ensure reference repositories are available:
+
+```bash
+./scripts/update_reference_repos.sh
+```
+
+This clones exemplar projects (zig, bun, tigerbeetle, ghostty, mach, zls, ziglings, zigmod, awesome-zig) to `reference_repos/` for pattern research. Run this once per session or when researching specific patterns.
+
 ### Generating a New Section
 
 1. Ensure `sections/XX_name/prompt.md` exists (run `generate_prompts_v3.py` if needed)
@@ -236,7 +246,9 @@ zig_guide/
 ├── templates/
 │   └── section_prompt_v3.md     # Reusable template with placeholders
 ├── scripts/
-│   └── generate_prompts_v3.py   # Generates prompt.md from sections.yaml
+│   ├── generate_prompts_v3.py           # Generates prompt.md from sections.yaml
+│   └── update_reference_repos.sh        # Clones/updates exemplar projects
+├── reference_repos/             # Cloned exemplar projects (git-ignored)
 ├── sections/                    # 15 chapter directories
 │   ├── 01_introduction/
 │   │   ├── prompt.md            # Generated section prompt

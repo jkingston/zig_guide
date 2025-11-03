@@ -11,3 +11,18 @@ Each section is isolated for deep-research agent work. Agents must:
 - Use `✅ 0.15` and `🕐 0.14` to indicate version-specific content.
 
 The `/sections` directory contains structured folders per chapter.
+
+## Reference Repositories
+
+This guide references several major Zig projects as exemplars of idiomatic code. Use the included script to clone/update them locally:
+
+```bash
+./scripts/update_reference_repos.sh
+```
+
+This will clone the following repositories to `./reference_repos/`:
+- **zig** - Zig compiler with documentation source for all versions
+- **bun**, **tigerbeetle**, **ghostty**, **mach**, **zls** - Major production projects
+- **ziglings**, **zigmod**, **awesome-zig** - Learning resources and curated lists
+
+The reference repositories are git-ignored and used for research purposes only.
