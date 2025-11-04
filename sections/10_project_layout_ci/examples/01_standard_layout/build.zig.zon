@@ -1,0 +1,14 @@
+.{
+    .name = .myproject,
+    .version = "1.0.0",
+    .minimum_zig_version = "0.15.0",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "README.md",
+        "LICENSE",
+    },
+    .dependencies = .{},
+    .fingerprint = 0x4ae5f776026022c7,
+}

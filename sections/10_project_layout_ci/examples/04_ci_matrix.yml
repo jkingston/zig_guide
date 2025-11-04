@@ -1,0 +1,86 @@
+name: Multi-Platform CI Matrix
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux builds
+          - os: ubuntu-latest
+            target: x86_64-linux
+            optimize: Debug
+          - os: ubuntu-latest
+            target: x86_64-linux
+            optimize: ReleaseSafe
+          - os: ubuntu-latest
+            target: aarch64-linux
+            optimize: ReleaseSafe
+
+          # macOS builds
+          - os: macos-latest
+            target: x86_64-macos
+            optimize: ReleaseSafe
+          - os: macos-latest
+            target: aarch64-macos
+            optimize: ReleaseSafe
+
+          # Windows builds
+          - os: windows-latest
+            target: x86_64-windows
+            optimize: Debug
+          - os: windows-latest
+            target: x86_64-windows
+            optimize: ReleaseSafe
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.15.2
+
+      - name: Cache Zig artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/zig
+            zig-cache
+          key: ${{ runner.os }}-${{ matrix.target }}-zig-${{ hashFiles('build.zig.zon') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.target }}-zig-
+
+      - name: Build for target
+        run: zig build -Dtarget=${{ matrix.target }} -Doptimize=${{ matrix.optimize }} --summary all
+
+      - name: Run tests (native only)
+        if: matrix.target == 'x86_64-linux' && matrix.os == 'ubuntu-latest'
+        run: zig build test -Doptimize=${{ matrix.optimize }} --summary all
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: binary-${{ matrix.target }}-${{ matrix.optimize }}
+          path: zig-out/bin/*
+          retention-days: 7
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.15.2
+      - name: Check formatting
+        run: zig fmt --check .

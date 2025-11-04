@@ -1,0 +1,42 @@
+name: Basic CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.15.2
+
+      - name: Cache Zig artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/zig
+            zig-cache
+          key: ${{ runner.os }}-zig-${{ hashFiles('build.zig.zon') }}
+          restore-keys: |
+            ${{ runner.os }}-zig-
+
+      - name: Check formatting
+        run: zig fmt --check .
+
+      - name: Build project
+        run: zig build --summary all
+
+      - name: Run tests
+        run: zig build test --summary all
+
+      - name: Build release
+        run: zig build -Doptimize=ReleaseSafe --summary all
