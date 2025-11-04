@@ -5,3 +5,6 @@
 
 # Multiple Zig versions for testing (downloaded by scripts/download_zig_versions.sh)
 /zig_versions/
+
+.zig-cache/
+zig-out/

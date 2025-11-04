@@ -1,0 +1,21 @@
+.{
+    .name = .app_with_features,
+    .version = "0.1.0",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+    .dependencies = .{
+        // Optional feature - only fetched if enabled
+        .advanced_math = .{
+            .path = "./features/advanced_math",
+            .lazy = true,
+        },
+        // Always available
+        .basic_math = .{
+            .path = "./features/basic_math",
+        },
+    },
+    .fingerprint = 0x1cb7bf439c5b61ae,
+}

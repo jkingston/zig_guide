@@ -1,0 +1,28 @@
+// Example: Platform-specific binary dependencies
+.{
+    .name = .platform_tool,
+    .version = "0.1.0",
+    .paths = .{""},
+    .dependencies = .{
+        .tool_linux_x64 = .{
+            .url = "https://example.com/tool-linux-x64.tar.gz",
+            .hash = "tool-1.0.0-HASH",
+            .lazy = true,
+        },
+        .tool_linux_arm64 = .{
+            .url = "https://example.com/tool-linux-arm64.tar.gz",
+            .hash = "tool-1.0.0-HASH",
+            .lazy = true,
+        },
+        .tool_macos_arm64 = .{
+            .url = "https://example.com/tool-macos-arm64.tar.gz",
+            .hash = "tool-1.0.0-HASH",
+            .lazy = true,
+        },
+        .tool_windows_x64 = .{
+            .url = "https://example.com/tool-windows-x64.zip",
+            .hash = "tool-1.0.0-HASH",
+            .lazy = true,
+        },
+    },
+}
