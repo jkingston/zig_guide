@@ -295,7 +295,7 @@ pub fn formatMetric(value: u64) ![512]u8 {
 }
 ```
 
-This pattern appears in TigerBeetle's StatsD metrics formatting, where allocation-free formatting is critical for performance.
+This pattern appears in TigerBeetle's StatsD metrics formatting, where allocation-free formatting is critical for performance.[^1]
 
 ### Buffered vs Unbuffered Performance
 
@@ -526,19 +526,16 @@ var writer = stdout.writer(&.{});  // Unbuffered
 TigerBeetle, a distributed financial database, demonstrates I/O patterns prioritizing correctness and observability.
 
 **Fixed Buffer Streams for Metrics**
-- Uses `std.io.fixedBufferStream()` for zero-allocation StatsD metrics formatting
-- Source: [`src/trace/statsd.zig:59-85`](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/trace/statsd.zig#L59-L85)
+- Uses `std.io.fixedBufferStream()` for zero-allocation StatsD metrics formatting[^1]
 - Pattern: Compile-time buffer sizing for worst-case metric strings
 
 **Direct I/O with Sector Alignment**
-- Opens journal files with `O_DIRECT` flag to bypass page cache
-- Source: [`src/io/linux.zig:1433-1570`](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/io/linux.zig#L1433-L1570)
+- Opens journal files with `O_DIRECT` flag to bypass page cache[^2]
 - Graceful fallback when Direct I/O unavailable
 - Block device vs regular file handling
 
 **Latent Sector Error (LSE) Recovery**
-- Binary search subdivision to isolate failed sectors on read errors
-- Source: [`src/storage.zig:279-384`](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/storage.zig#L279-L384)
+- Binary search subdivision to isolate failed sectors on read errors[^3]
 - Zeros unreadable sectors for graceful degradation
 - AIMD-based recovery throttling
 
@@ -547,18 +544,15 @@ TigerBeetle, a distributed financial database, demonstrates I/O patterns priorit
 Ghostty, a terminal emulator, shows modern async I/O patterns with the xev library.
 
 **PTY Stream Management**
-- Uses `xev.Stream.initFd()` for async pseudo-terminal I/O
-- Source: [`src/termio/Exec.zig:128-129`](https://github.com/ghostty-org/ghostty/blob/main/src/termio/Exec.zig#L128-L129), [`src/termio/Exec.zig:502-516`](https://github.com/ghostty-org/ghostty/blob/main/src/termio/Exec.zig#L502-L516)
+- Uses `xev.Stream.initFd()` for async pseudo-terminal I/O[^4]
 - Write queue with buffer pooling to reduce allocation overhead
 
 **Config File Reading**
-- XDG-compliant path resolution with fallbacks
-- Source: [`src/config/file_load.zig:136-166`](https://github.com/ghostty-org/ghostty/blob/main/src/config/file_load.zig#L136-L166)
+- XDG-compliant path resolution with fallbacks[^5]
 - Comprehensive validation: file type, size checks before reading
 
 **Fixed Buffer Writers for String Conversion**
 - Stack-allocated buffers for config value serialization
-- Source: [`src/config/io.zig:99`](https://github.com/ghostty-org/ghostty/blob/main/src/config/io.zig#L99)
 - Pattern: `var writer: std.Io.Writer = .fixed(&buf);`
 
 ### Bun: High-Performance Buffered I/O
@@ -566,8 +560,7 @@ Ghostty, a terminal emulator, shows modern async I/O patterns with the xev libra
 Bun, a JavaScript runtime, demonstrates performance-optimized I/O for module loading.
 
 **Reference-Counted I/O Readers**
-- Buffered readers with async deinit queues
-- Source: [`src/shell/IOReader.zig:1-150`](https://github.com/oven-sh/bun/blob/main/src/shell/IOReader.zig#L1-L150)
+- Buffered readers with async deinit queues[^6]
 - Pattern: Ref-counting prevents premature resource cleanup in async contexts
 
 **Dynamic Buffers with ArrayListUnmanaged**
@@ -579,14 +572,12 @@ Bun, a JavaScript runtime, demonstrates performance-optimized I/O for module loa
 The Zig Language Server demonstrates I/O patterns for protocol communication.
 
 **Fixed Buffer Logging**
-- 4KB stack buffer for log message formatting with overflow handling
-- Source: [`src/main.zig:50-100`](https://github.com/zigtools/zls/blob/master/src/main.zig#L50-L100)
+- 4KB stack buffer for log message formatting with overflow handling[^7]
 - Gracefully handles buffer overflow with "..." suffix
 - Pattern: `var writer: std.Io.Writer = .fixed(&buffer);`
 
 **Unbuffered stderr for Critical Messages**
-- Uses `std.fs.File.stderr().writer(&.{})` for immediate error output
-- Source: [`src/main.zig:98`](https://github.com/zigtools/zls/blob/master/src/main.zig#L98)
+- Uses `std.fs.File.stderr().writer(&.{})` for immediate error output[^7]
 
 ## Summary
 
@@ -613,6 +604,16 @@ Zig's I/O abstraction provides explicit control over buffering, resource lifetim
 - Use `writeAll` for static strings; reserve `print` for actual formatting
 
 The explicit nature of 0.15+ buffering may seem verbose initially, but it provides clarity about when and how much buffering occurs—essential for systems programming where I/O behavior must be predictable.
+
+---
+
+[^1]: [TigerBeetle - Fixed buffer metrics formatting](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/trace/statsd.zig#L59-L85)
+[^2]: [TigerBeetle - Direct I/O implementation](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/io/linux.zig#L1433-L1570)
+[^3]: [TigerBeetle - LSE error recovery](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/storage.zig#L279-L384)
+[^4]: [Ghostty - Event loop stream management](https://github.com/ghostty-org/ghostty/blob/main/src/termio/Exec.zig)
+[^5]: [Ghostty - Config file patterns](https://github.com/ghostty-org/ghostty/blob/main/src/config/file_load.zig#L136-L166)
+[^6]: [Bun - Buffered I/O with reference counting](https://github.com/oven-sh/bun/blob/main/src/shell/IOReader.zig)
+[^7]: [ZLS - Fixed buffer logging](https://github.com/zigtools/zls/blob/master/src/main.zig#L50-L100)
 
 ## References
 
