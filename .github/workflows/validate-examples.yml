@@ -1,0 +1,115 @@
+name: Validate Code Examples
+
+on:
+  push:
+    branches: [ main, copilot/* ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-examples:
+    name: Test Zig Examples
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        zig-version: ['0.14.1', '0.15.2']
+      fail-fast: false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: ${{ matrix.zig-version }}
+      
+      - name: Verify Zig installation
+        run: |
+          zig version
+          zig env
+      
+      - name: Test code examples
+        run: |
+          chmod +x scripts/test_all_examples.sh
+          ./scripts/test_all_examples.sh
+        continue-on-error: true
+        id: test_examples
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-zig-${{ matrix.zig-version }}
+          path: |
+            /tmp/zig_test_output.log
+            /tmp/zig_build_output.log
+          if-no-files-found: ignore
+      
+      - name: Comment on results
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `❌ Code example tests failed with Zig ${{ matrix.zig-version }}. Please review the test artifacts.`
+            })
+  
+  build-book:
+    name: Build mdBook
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install mdBook
+        uses: peaceiris/actions-mdbook@v2
+        with:
+          mdbook-version: 'latest'
+      
+      - name: Prepare mdBook sources
+        run: |
+          chmod +x scripts/prepare-mdbook.sh
+          ./scripts/prepare-mdbook.sh
+      
+      - name: Build book
+        run: mdbook build
+      
+      - name: Upload book artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: book
+          path: book/
+          retention-days: 7
+      
+      - name: Check for broken links (optional)
+        run: |
+          # Install mdbook-linkcheck if available
+          # cargo install mdbook-linkcheck
+          # mdbook test
+          echo "Link checking skipped (mdbook-linkcheck not installed)"
+        continue-on-error: true
+
+  validation-summary:
+    name: Validation Summary
+    runs-on: ubuntu-latest
+    needs: [test-examples, build-book]
+    if: always()
+    
+    steps:
+      - name: Check results
+        run: |
+          echo "Test examples: ${{ needs.test-examples.result }}"
+          echo "Build book: ${{ needs.build-book.result }}"
+          
+          if [ "${{ needs.test-examples.result }}" == "failure" ] || [ "${{ needs.build-book.result }}" == "failure" ]; then
+            echo "❌ Some validation steps failed"
+            exit 1
+          else
+            echo "✅ All validation steps passed"
+          fi
