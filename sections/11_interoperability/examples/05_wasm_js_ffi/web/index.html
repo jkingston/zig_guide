@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zig WASM JavaScript FFI Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #output {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #4CAF50;
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #666;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Zig WebAssembly JavaScript FFI Demo</h1>
+
+    <div class="section">
+        <h2>1. Simple Arithmetic</h2>
+        <button onclick="testArithmetic()">Test add(5, 7)</button>
+        <button onclick="testMultiply()">Test multiply(6, 8)</button>
+    </div>
+
+    <div class="section">
+        <h2>2. Fibonacci Calculation</h2>
+        <input type="number" id="fibInput" value="10" min="0" max="30">
+        <button onclick="testFibonacci()">Calculate Fibonacci</button>
+    </div>
+
+    <div class="section">
+        <h2>3. String Operations</h2>
+        <input type="text" id="nameInput" value="World" placeholder="Enter name">
+        <button onclick="testGreet()">Call greet()</button>
+        <br>
+        <input type="text" id="vowelInput" value="Hello World" placeholder="Enter text">
+        <button onclick="testVowelCount()">Count Vowels</button>
+    </div>
+
+    <div class="section">
+        <h2>4. Memory Operations</h2>
+        <button onclick="testMemoryAllocation()">Test Memory Allocation</button>
+        <button onclick="testCallback()">Test Callback</button>
+        <button onclick="testMemoryInfo()">Get Memory Info</button>
+    </div>
+
+    <div id="output">Output will appear here...</div>
+
+    <script src="loader.js"></script>
+</body>
+</html>
