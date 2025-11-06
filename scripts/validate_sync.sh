@@ -49,15 +49,18 @@ for chapter_dir in examples/ch*/; do
 
     echo "Validating $chapter_name..."
 
-    # Try to build
-    if (cd "$chapter_dir" && zig build 2>&1 | grep -q "Build Summary"); then
+    # Try to build - capture output and check exit code
+    BUILD_OUTPUT=$(cd "$chapter_dir" && zig build 2>&1)
+    BUILD_EXIT_CODE=$?
+
+    if [ $BUILD_EXIT_CODE -eq 0 ]; then
         echo "  ✓ Build successful"
         SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
     else
         echo "  ❌ Build failed"
         FAIL_COUNT=$((FAIL_COUNT + 1))
-        # Show the error
-        (cd "$chapter_dir" && zig build 2>&1 | tail -20)
+        # Show the error (last 20 lines)
+        echo "$BUILD_OUTPUT" | tail -20
     fi
 done
 
