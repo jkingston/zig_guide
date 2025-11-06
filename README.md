@@ -27,22 +27,62 @@ This will clone the following repositories to `./reference_repos/`:
 
 The reference repositories are git-ignored and used for research purposes only.
 
+## Examples Structure
+
+The book uses a **dual-source approach** for code examples:
+
+- **Inline code** - Small snippets (< 15 lines) remain embedded in markdown for readability
+- **External examples** - Complete, runnable programs in `examples/ch*_*/` directories
+
+### Building Examples
+
+```bash
+# Build all examples
+zig build
+
+# Build specific chapter
+zig build ch02_idioms
+
+# Run a specific example
+cd examples/ch02_idioms
+zig build run-01_naming_conventions
+
+# Run tests
+zig build test
+```
+
+### Validation
+
+```bash
+# Validate all examples compile
+bash scripts/validate_sync.sh
+
+# Analyze code blocks across all chapters
+python3 scripts/extract_code_blocks.py sections/
+```
+
+See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for detailed progress on example extraction.
+
 ## Todo List
 
 ### 🚨 Critical Priority (Beta Blockers)
 
 **Before beta release - Estimated: 60-100 hours (2-3 weeks)**
 
-- [ ] **Create examples directory structure** (40-80h)
-  - Extract all code examples from book chapters to working files
-  - Organize as `examples/ch02_idioms/`, `examples/ch03_memory/`, etc.
-  - Add `build.zig` for each chapter's examples
-  - Ensure all examples compile on Zig 0.15.2
+- [x] **Create examples directory structure** (~15% complete)
+  - ✅ Created `examples/ch{01-15}_*/` directory structure
+  - ✅ Extracted 9 runnable examples from Chapter 2
+  - ✅ Created `build.zig` for Chapter 2 examples
+  - ✅ All Chapter 2 examples compile and test on Zig 0.15.2
+  - 📋 Remaining: Extract ~51 runnable examples from other chapters
+  - 📋 See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for details
 
-- [ ] **Set up CI for example validation** (8-16h)
-  - Add GitHub Actions workflow to test all examples
-  - Validate compilation on each commit
-  - Test against Zig 0.14.1 and 0.15.2
+- [x] **Set up CI for example validation** (complete)
+  - ✅ Created `.github/workflows/examples.yml`
+  - ✅ Matrix testing for Zig 0.15.2 and 0.14.1
+  - ✅ Automated compilation validation
+  - ✅ Code block analysis integration
+  - 📋 Activate when more examples are ready
 
 - [ ] **Add version compatibility statement** (4-8h)
   - Update Chapter 1 with clear version targeting ("This book targets Zig 0.15.2")

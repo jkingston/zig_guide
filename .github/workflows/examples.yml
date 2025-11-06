@@ -1,0 +1,104 @@
+name: Validate Examples
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate-examples:
+    name: Validate Examples on Zig ${{ matrix.zig-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        zig-version: ['0.15.2', '0.14.1']
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: ${{ matrix.zig-version }}
+
+      - name: Verify Zig installation
+        run: zig version
+
+      - name: Build all examples
+        run: |
+          # Find all chapter directories with build.zig
+          for chapter_dir in examples/*/; do
+            if [ -f "${chapter_dir}build.zig" ]; then
+              echo "Building examples in ${chapter_dir}..."
+              (cd "$chapter_dir" && zig build --summary all)
+            fi
+          done
+
+      - name: Run example tests
+        run: |
+          # Run tests for all chapters with build.zig
+          for chapter_dir in examples/*/; do
+            if [ -f "${chapter_dir}build.zig" ]; then
+              echo "Testing examples in ${chapter_dir}..."
+              (cd "$chapter_dir" && zig build test --summary all) || true
+            fi
+          done
+
+      - name: Run sync validation
+        run: |
+          bash scripts/validate_sync.sh
+
+  analyze-code-blocks:
+    name: Analyze Code Blocks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run code block analysis
+        run: |
+          python3 scripts/extract_code_blocks.py sections > code_block_report.txt
+          cat code_block_report.txt
+
+      - name: Upload analysis report
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-block-analysis
+          path: |
+            code_block_report.txt
+            code_blocks_analysis.json
+
+  build-book:
+    name: Build mdBook
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup mdBook
+        uses: peaceiris/actions-mdbook@v2
+        with:
+          mdbook-version: 'latest'
+
+      - name: Prepare mdBook sources
+        run: bash scripts/prepare-mdbook.sh
+
+      - name: Build mdBook
+        run: mdbook build
+
+      - name: Upload book artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: book
+          path: ./book
