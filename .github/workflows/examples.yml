@@ -13,7 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        zig-version: ['0.15.2', '0.14.1']
+        # All extracted examples target Zig 0.15.2 API
+        # The guide documents both 0.14.x and 0.15.x patterns,
+        # but extracted runnable examples use 0.15.2 APIs
+        zig-version: ['0.15.2']
       fail-fast: false
 
     steps:

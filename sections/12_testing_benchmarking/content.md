@@ -1254,7 +1254,7 @@ This section demonstrates practical testing, benchmarking, and profiling pattern
 
 This example demonstrates fundamental test blocks, assertions, and error handling. It shows colocated tests alongside implementation, basic and advanced assertions, and testing both success and error paths.
 
-**Location:** `/home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/01_testing_fundamentals/`
+**Location:** `/home/user/zig_guide/sections/12_testing_benchmarking/examples/01_testing_fundamentals/`
 
 **Key Code Snippet (math.zig):**
 
@@ -1325,7 +1325,7 @@ The complete example includes string utilities testing, prime number checking, a
 
 This example demonstrates project organization for tests, including test utilities, fixtures, and the `builtin.is_test` flag for conditional compilation.
 
-**Location:** `/home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/02_test_organization/`
+**Location:** `/home/user/zig_guide/sections/12_testing_benchmarking/examples/02_test_organization/`
 
 **Project Structure:**
 
@@ -1412,7 +1412,7 @@ The complete example shows importing and using test helpers across multiple test
 
 This example demonstrates table-driven tests, comptime test generation, and testing across multiple types using inline loops.
 
-**Location:** `/home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/03_parameterized_tests/`
+**Location:** `/home/user/zig_guide/sections/12_testing_benchmarking/examples/03_parameterized_tests/`
 
 **Key Code Snippet:**
 
@@ -1500,7 +1500,7 @@ The inline for loop unrolls at compile time, generating separate assertions for 
 
 This example demonstrates memory leak detection, using `FailingAllocator` to test error paths, and comprehensive allocator testing patterns.
 
-**Location:** `/home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/04_allocator_testing/`
+**Location:** `/home/user/zig_guide/sections/12_testing_benchmarking/examples/04_allocator_testing/`
 
 **Key Code Snippet:**
 
@@ -1619,7 +1619,7 @@ The complete example shows complex data structure testing with multiple allocati
 
 This example demonstrates comprehensive benchmarking with warm-up iterations, statistical measurement, `doNotOptimizeAway`, and comparison utilities.
 
-**Location:** `/home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/05_benchmarking/`
+**Location:** `/home/user/zig_guide/sections/12_testing_benchmarking/examples/05_benchmarking/`
 
 **Key Code Snippet (benchmark.zig excerpt):**
 
@@ -1771,7 +1771,7 @@ The complete example includes sorting algorithm benchmarks and slice operation t
 
 This example demonstrates build configuration for profiling, integration with Callgrind, perf, Massif, and flame graph generation.
 
-**Location:** `/home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/06_profiling/`
+**Location:** `/home/user/zig_guide/sections/12_testing_benchmarking/examples/06_profiling/`
 
 **Build Configuration (build.zig):**
 
@@ -2635,7 +2635,7 @@ The testing, benchmarking, and profiling capabilities in Zig enable building rob
 9. [TigerBeetle time.zig](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/testing/time.zig#L12-L98)
 10. [Zig stdlib: std.time.Timer](https://github.com/ziglang/zig/blob/master/lib/std/time.zig#L216-L268)
 11. [Zig stdlib: std.mem.doNotOptimizeAway](https://github.com/ziglang/zig/blob/master/lib/std/mem.zig)
-12. [Example 06: Profiling](file:///home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/06_profiling)
+12. [Example 06: Profiling](file:///home/user/zig_guide/sections/12_testing_benchmarking/examples/06_profiling)
 13. [Valgrind Callgrind Documentation](https://valgrind.org/docs/manual/cl-manual.html)
 14. [Linux perf Tutorial](https://perf.wiki.kernel.org/index.php/Tutorial)
 15. [Valgrind Massif Documentation](https://valgrind.org/docs/manual/ms-manual.html)
@@ -2645,17 +2645,17 @@ The testing, benchmarking, and profiling capabilities in Zig enable building rob
 19. [TigerBeetle packet_simulator.zig](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/testing/packet_simulator.zig#L11-L42)
 20. [TigerBeetle snaptest.zig](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/stdx/testing/snaptest.zig)
 21. [TigerBeetle fixtures.zig](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/testing/fixtures.zig)
-22. [Ghostty fontconfig test.zig](https://github.com/mitchellh/ghostty/blob/main/pkg/fontconfig/test.zig)
+22. [Ghostty fontconfig test.zig](https://github.com/ghostty-org/ghostty/blob/main/pkg/fontconfig/test.zig)
 23. [ZLS testing.zig](https://github.com/zigtools/zls/blob/master/src/testing.zig#L9-L26)
 24. [ZLS FailingAllocator](https://github.com/zigtools/zls/blob/master/src/testing.zig#L67-L141)
 25. [Zig Standard Library array_list.zig](https://github.com/ziglang/zig/blob/master/lib/std/array_list.zig)
 26. [Zig Standard Library hash_map.zig](https://github.com/ziglang/zig/blob/master/lib/std/hash_map.zig)
 27. [FlameGraph GitHub Repository](https://github.com/brendangregg/FlameGraph)
-28. [Example 01: Testing Fundamentals](file:///home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/01_testing_fundamentals)
-29. [Example 02: Test Organization](file:///home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/02_test_organization)
-30. [Example 03: Parameterized Tests](file:///home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/03_parameterized_tests)
-31. [Example 04: Allocator Testing](file:///home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/04_allocator_testing)
-32. [Example 05: Benchmarking](file:///home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/05_benchmarking)
+28. [Example 01: Testing Fundamentals](file:///home/user/zig_guide/sections/12_testing_benchmarking/examples/01_testing_fundamentals)
+29. [Example 02: Test Organization](file:///home/user/zig_guide/sections/12_testing_benchmarking/examples/02_test_organization)
+30. [Example 03: Parameterized Tests](file:///home/user/zig_guide/sections/12_testing_benchmarking/examples/03_parameterized_tests)
+31. [Example 04: Allocator Testing](file:///home/user/zig_guide/sections/12_testing_benchmarking/examples/04_allocator_testing)
+32. [Example 05: Benchmarking](file:///home/user/zig_guide/sections/12_testing_benchmarking/examples/05_benchmarking)
 33. [TigerBeetle fuzz.zig](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/testing/fuzz.zig)
 34. [TigerBeetle storage.zig](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/testing/storage.zig)
 35. [Zig 0.15 Release Notes](https://ziglang.org/download/0.15.0/release-notes.html)
@@ -2668,7 +2668,7 @@ The testing, benchmarking, and profiling capabilities in Zig enable building rob
 42. [Zig Standard Library Documentation](https://ziglang.org/documentation/master/std/)
 43. [Zig Community: Testing Best Practices](https://github.com/ziglang/zig/wiki/Testing-Best-Practices)
 44. [TigerBeetle state_machine_tests.zig](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/state_machine_tests.zig)
-45. [Ghostty freetype test.zig](https://github.com/mitchellh/ghostty/blob/main/pkg/freetype/test.zig)
+45. [Ghostty freetype test.zig](https://github.com/ghostty-org/ghostty/blob/main/pkg/freetype/test.zig)
 
 [^1]: https://ziglang.org/documentation/master/#Testing
 [^2]: https://github.com/tigerbeetle/tigerbeetle/blob/main/src/stdx/testing/snaptest.zig#L74-L76
@@ -2681,7 +2681,7 @@ The testing, benchmarking, and profiling capabilities in Zig enable building rob
 [^9]: https://github.com/tigerbeetle/tigerbeetle/blob/main/src/testing/time.zig#L12-L98
 [^10]: https://github.com/ziglang/zig/blob/master/lib/std/time.zig#L216-L268
 [^11]: https://github.com/ziglang/zig/blob/master/lib/std/mem.zig
-[^12]: file:///home/jack/workspace/zig_guide/sections/12_testing_benchmarking/examples/06_profiling
+[^12]: file:///home/user/zig_guide/sections/12_testing_benchmarking/examples/06_profiling
 [^13]: https://valgrind.org/docs/manual/cl-manual.html
 [^14]: https://perf.wiki.kernel.org/index.php/Tutorial
 [^15]: https://valgrind.org/docs/manual/ms-manual.html
@@ -2691,6 +2691,6 @@ The testing, benchmarking, and profiling capabilities in Zig enable building rob
 [^19]: https://github.com/tigerbeetle/tigerbeetle/blob/main/src/testing/packet_simulator.zig#L11-L42
 [^20]: https://github.com/tigerbeetle/tigerbeetle/blob/main/src/stdx/testing/snaptest.zig
 [^21]: https://github.com/tigerbeetle/tigerbeetle/blob/main/src/testing/fixtures.zig
-[^22]: https://github.com/mitchellh/ghostty/blob/main/pkg/fontconfig/test.zig
+[^22]: https://github.com/ghostty-org/ghostty/blob/main/pkg/fontconfig/test.zig
 [^23]: https://github.com/zigtools/zls/blob/master/src/testing.zig#L9-L26
 [^24]: https://github.com/zigtools/zls/blob/master/src/testing.zig#L67-L141
