@@ -15,4 +15,4 @@ zig-out/
 /src/style_guide.md
 
 # mdBook build output
-/book/
+/book/code_blocks_analysis.json
