@@ -37,7 +37,7 @@ For example, ArrayList initialization changed between versions:
 var list = std.ArrayList(u8).init(allocator);
 defer list.deinit();
 
-// ✅ 0.15+
+// ✅ 0.15.1+
 var list: std.ArrayList(u8) = .empty;
 defer list.deinit(allocator);
 ```
@@ -143,7 +143,7 @@ pub fn main() !void {
 }
 ```
 
-**✅ 0.15+ — Buffered stdout**
+**✅ 0.15.1+ — Buffered stdout**
 ```zig
 const std = @import("std");
 

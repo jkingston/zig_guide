@@ -243,7 +243,7 @@ Zig compiles to any target from any host without cross-compilation toolchains. T
 - `x86_64-windows-gnu` — 64-bit Windows with MinGW
 - `wasm32-wasi-musl` — WebAssembly with WASI
 
-### Target Query API ✅ 0.15+
+### Target Query API ✅ 0.15.1+
 
 The `std.Target.Query` API specifies compilation targets:
 
