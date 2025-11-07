@@ -218,7 +218,669 @@ We'll expand this structure in the next sections by adding:
 
 ---
 
-## 0.2 Editor Setup & Developer Tools
+## 0.2 How Real Zig Projects Are Structured
+
+Before building our own project, let's study how major Zig projects organize their code. Understanding these patterns will help you make better structural decisions and recognize idiomatic Zig project organization.
+
+> **📝 NOTE:** Learning from production codebases is one of the fastest ways to internalize best practices. The patterns you see here weren't invented arbitrarily - they evolved to solve real organizational challenges at scale. Don't feel obligated to adopt all patterns immediately; understand the problems they solve first.
+
+We'll analyze six projects representing different archetypes:
+1. **Zig Compiler** - Large compiler project
+2. **TigerBeetle** - High-performance database
+3. **ZLS** - Developer tool with multi-version support
+4. **Bun** - Mixed-language codebase (Zig + C++ + JS)
+5. **Ghostty** - Cross-platform GUI application
+6. **Mach Engine** - Modular game engine
+
+### Project 1: Zig Compiler - Complex Multi-Stage Build
+
+**Repository:** https://github.com/ziglang/zig
+**Type:** Compiler / Language Implementation
+**Size:** 300K+ lines of code
+
+#### Structure
+
+```
+zig/
+├── build.zig
+├── build.zig.zon
+├── src/
+│   ├── main.zig
+│   ├── Compilation.zig      # Single struct per file
+│   ├── Sema.zig             # Semantic analysis
+│   ├── AstGen.zig           # AST generation
+│   ├── Zir.zig              # Zig IR
+│   ├── Air.zig              # Analyzed IR
+│   ├── codegen/             # Subsystem directory
+│   │   ├── llvm.zig
+│   │   ├── c.zig
+│   │   └── spirv/
+│   ├── link/                # Linker backends
+│   │   ├── Elf.zig
+│   │   ├── MachO.zig
+│   │   ├── Coff.zig
+│   │   └── Wasm.zig
+│   ├── arch/                # Architecture-specific
+│   │   ├── x86_64/
+│   │   ├── aarch64/
+│   │   └── wasm32/
+│   └── std/                 # Standard library source
+├── lib/                     # Bundled C libraries
+├── test/
+│   ├── behavior/            # Language semantics tests
+│   ├── cases/               # Compilation scenarios
+│   └── standalone/          # Complete project tests
+└── tools/
+    └── process_headers.zig  # Build-time codegen
+```
+
+#### Key Patterns
+
+**1. Single-file types with PascalCase naming**
+
+Files like `Compilation.zig`, `Sema.zig`, and `Module.zig` each export a single primary struct:
+
+```zig
+// src/Compilation.zig
+const Compilation = @This();
+
+const std = @import("std");
+const Module = @import("Module.zig");
+
+// Struct fields
+gpa: std.mem.Allocator,
+module: *Module,
+...
+
+pub fn create(gpa: std.mem.Allocator) !*Compilation {
+    // Implementation
+}
+```
+
+This pattern makes it trivial to find where a type is defined. If you see `Compilation` in code, you know it's in `Compilation.zig`.
+
+**2. Subsystem directories**
+
+Related functionality is grouped into directories:
+- `codegen/` - All code generation backends
+- `link/` - All linker implementations
+- `arch/` - Architecture-specific code
+
+Each subsystem can be developed and tested independently.
+
+**3. Test organization by purpose**
+
+Tests are organized by what they test, not where code lives:
+- `behavior/` - Tests language semantics and features
+- `cases/` - Tests specific compilation scenarios
+- `standalone/` - Tests complete project builds
+
+**4. Minimal dependencies**
+
+The Zig compiler only depends on LLVM/Clang for code generation. Everything else - the parser, semantic analyzer, linker - is self-hosted in Zig. This gives maximum control and makes the compiler self-sufficient.
+
+**Why this works:**
+- Clear pipeline: source → AST → ZIR → AIR → machine code
+- Each stage is isolated and testable
+- Multiple backends can coexist
+- 300K+ LOC remains navigable
+
+> **💡 TIP:** Use single-file structs (like `Compilation.zig`) when a type is substantial (300+ lines) and self-contained. For smaller types or closely related types, group them in a module (like `types.zig`). The pattern makes large codebases navigable: seeing `@import("Parser.zig")` immediately tells you what the file contains.
+
+### Project 2: TigerBeetle - Database with Zero Dependencies
+
+**Repository:** https://github.com/tigerbeetle/tigerbeetle
+**Type:** Distributed Database
+**Size:** 100K+ lines of code
+**Dependencies:** **None!**
+
+#### Structure
+
+```
+tigerbeetle/
+├── build.zig
+├── build.zig.zon            # Empty .dependencies = .{}
+├── src/
+│   ├── tigerbeetle/
+│   │   ├── main.zig
+│   │   └── client.zig
+│   ├── vsr.zig              # Viewstamped Replication
+│   ├── lsm/                 # Log-Structured Merge tree
+│   │   ├── tree.zig
+│   │   ├── manifest.zig
+│   │   └── compaction.zig
+│   ├── storage.zig
+│   ├── io.zig               # Async I/O abstraction
+│   ├── clients/             # Language bindings
+│   │   ├── c/
+│   │   ├── java/
+│   │   ├── node/
+│   │   └── dotnet/
+│   ├── simulator.zig        # Deterministic testing
+│   └── shell.zig
+├── docs/
+│   ├── DESIGN.md
+│   ├── PROTOCOL.md
+│   └── INTERNALS.md
+└── scripts/
+```
+
+#### Key Patterns
+
+**1. Zero external dependencies**
+
+TigerBeetle implements everything from scratch:
+- Networking stack
+- Cryptography
+- Data structures
+- I/O system
+
+This is unusual but critical for a financial database where correctness is paramount. Every line of code is auditable.
+
+**2. Simulator-first development**
+
+```zig
+// src/simulator.zig
+pub const Simulator = struct {
+    // Deterministic testing of distributed scenarios
+    // Can replay exact failure conditions
+};
+```
+
+The simulator enables exhaustive testing of distributed consensus scenarios that would be impossible to test reliably with traditional methods.
+
+**3. Language bindings co-located**
+
+Client libraries for other languages live in the same repository. This ensures:
+- All clients stay in sync with server changes
+- Single source of truth for protocol
+- Consistent testing across languages
+
+**4. Extensive design documentation**
+
+The `docs/` directory contains detailed explanations of design decisions, not just API references. This helps contributors understand the "why" behind implementation choices.
+
+**Why this works:**
+- Zero dependencies = predictable behavior
+- Simulator finds bugs traditional testing misses
+- Co-located clients prevent version skew
+- Full control enables optimization at every layer
+
+> **⚠️ WARNING:** Zero dependencies is NOT a universal best practice. TigerBeetle's requirements (financial correctness, auditability, deterministic behavior) justify implementing everything from scratch. Most projects should use well-tested dependencies - reimplementing cryptography, networking, or compression introduces risk and maintenance burden. Only go dependency-free if you have TigerBeetle-level requirements.
+
+### Project 3: ZLS - Multi-Version Developer Tool
+
+**Repository:** https://github.com/zigtools/zls
+**Type:** Language Server
+**Size:** 50K+ lines of code
+**Dependencies:** known-folders, diffz, tracy
+
+#### Structure
+
+```
+zls/
+├── build.zig
+├── build.zig.zon
+├── src/
+│   ├── main.zig
+│   ├── Server.zig
+│   ├── DocumentStore.zig
+│   ├── analysis.zig
+│   ├── completions.zig      # Feature-specific files
+│   ├── goto.zig
+│   ├── references.zig
+│   ├── hover.zig
+│   ├── signature_help.zig
+│   ├── inlay_hints.zig
+│   ├── semantic_tokens.zig
+│   ├── Config.zig
+│   └── types.zig
+├── tests/
+│   ├── utility/
+│   ├── lsp_features/
+│   └── toolchains/          # Multi-version testing
+├── schema.json              # Config schema
+└── .github/
+    └── workflows/
+        ├── ci.yml
+        ├── release.yml
+        └── zig_nightly.yml  # Test against nightlies
+```
+
+#### Key Patterns
+
+**1. Feature-per-file organization**
+
+Each LSP feature maps to a file:
+- `completions.zig` - All autocomplete logic
+- `goto.zig` - All go-to-definition logic
+- `hover.zig` - All hover documentation
+- `references.zig` - All find-references logic
+
+This makes features easy to locate and maintain.
+
+**2. Core types extracted**
+
+Major types get their own files:
+- `Server.zig` - LSP server struct and message handling
+- `DocumentStore.zig` - Document lifecycle management
+- `Config.zig` - Configuration parsing and validation
+
+**3. Schema-driven configuration**
+
+```json
+// schema.json
+{
+  "type": "object",
+  "properties": {
+    "enable_autofix": {
+      "type": "boolean",
+      "description": "Automatically apply fixes",
+      "default": true
+    },
+    ...
+  }
+}
+```
+
+Editors can validate `.zls.json` files against this schema, preventing configuration errors.
+
+**4. Multi-version compatibility**
+
+ZLS must support multiple Zig versions simultaneously (0.11, 0.12, 0.13, 0.14, 0.15). The CI workflow tests against all supported versions:
+
+```yaml
+# .github/workflows/zig_nightly.yml
+strategy:
+  matrix:
+    zig-version: ['0.13.0', '0.14.1', '0.15.2', 'master']
+```
+
+**Why this works:**
+- LSP features map cleanly to files
+- Schema prevents invalid configuration
+- Multi-version testing catches regressions early
+- Clear boundary between analysis and protocol
+
+> **💡 TIP:** Feature-per-file organization (like ZLS) works excellently for projects with distinct, independent features. If you're building a CLI tool with subcommands, an LSP with features, or a web framework with middleware, this pattern keeps code discoverable and prevents files from becoming dumping grounds.
+
+### Project 4: Bun - Mixed-Language Codebase
+
+**Repository:** https://github.com/oven-sh/bun
+**Type:** JavaScript Runtime
+**Size:** 500K+ lines (Zig + C++ + JavaScript)
+
+#### Structure
+
+```
+bun/
+├── build.zig                # Zig components
+├── CMakeLists.txt           # C++ components
+├── package.json             # JS bundler
+├── src/
+│   ├── main.zig
+│   ├── bun.js/              # JS runtime (C++)
+│   │   ├── bindings/        # Zig ↔ C++ FFI layer
+│   │   ├── modules/
+│   │   └── webcore/
+│   ├── deps/
+│   │   ├── picohttp.zig     # HTTP parser (Zig)
+│   │   ├── mimalloc/        # Allocator (C)
+│   │   └── zstd/            # Compression (C)
+│   ├── cli/                 # CLI (Zig)
+│   ├── install/             # Package manager (Zig)
+│   └── bundler/             # Bundler (Zig + C++)
+└── test/
+```
+
+#### Key Patterns
+
+**1. Hybrid build system**
+
+Two build systems coordinate:
+- `build.zig` for Zig code
+- `CMakeLists.txt` for C++ code
+
+Each language has its own compilation process, coordinated at the top level.
+
+**2. Clear language boundaries**
+
+Languages are chosen for their strengths:
+- **Zig:** CLI, package manager, HTTP parsing, file I/O
+- **C++:** JavaScript engine (JavaScriptCore)
+- **JavaScript:** Bundler logic
+
+**3. Isolated FFI layer**
+
+```zig
+// src/bun.js/bindings/exports.zig
+pub export fn Bun__fetch(
+    ctx: *JSContext,
+    url: [*:0]const u8,
+    options: *FetchOptions,
+) JSValue {
+    // Clean boundary between Zig and C++
+}
+```
+
+All cross-language calls go through the `bindings/` directory. This prevents FFI code from spreading throughout the codebase.
+
+**4. Vendored C dependencies**
+
+The `deps/` directory contains all C libraries:
+- Exact version control
+- No system dependencies
+- Reproducible builds
+
+**Why this works:**
+- Reuses mature JavaScriptCore for JS execution
+- Leverages Zig for performance-critical paths
+- Clear boundaries prevent integration complexity
+- Each language does what it's best at
+
+### Project 5: Ghostty - Cross-Platform GUI Application
+
+**Repository:** https://github.com/ghostty-org/ghostty
+**Type:** Terminal Emulator
+**Size:** 80K+ lines of code
+
+#### Structure
+
+```
+ghostty/
+├── build.zig
+├── src/
+│   ├── main.zig
+│   ├── App.zig
+│   ├── terminal/            # Platform-agnostic core
+│   │   ├── Terminal.zig
+│   │   ├── Screen.zig
+│   │   ├── parser.zig
+│   │   └── color.zig
+│   ├── renderer/            # Platform-specific rendering
+│   │   ├── metal.zig        # macOS Metal
+│   │   ├── opengl.zig       # Linux/Windows
+│   │   └── software.zig     # Fallback
+│   ├── font/
+│   │   ├── face.zig
+│   │   ├── shaper.zig       # HarfBuzz integration
+│   │   └── rasterizer.zig   # FreeType integration
+│   ├── gui/                 # Platform-specific UI
+│   │   ├── gtk/             # Linux
+│   │   ├── cocoa/           # macOS
+│   │   └── windows/         # Windows
+│   ├── config/
+│   │   ├── Config.zig
+│   │   └── parser.zig
+│   └── pty/                 # Platform-specific terminal
+│       ├── unix.zig
+│       └── windows.zig
+└── test/
+```
+
+#### Key Patterns
+
+**1. Platform abstraction layers**
+
+Core terminal emulation logic is platform-agnostic and lives in `terminal/`. Platform-specific code is isolated in subdirectories:
+- `renderer/` - Different GPU APIs per platform
+- `gui/` - Native UI frameworks
+- `pty/` - OS-specific pseudo-terminal APIs
+
+**2. Core is portable**
+
+The terminal parser, screen buffer, and color handling work identically on all platforms. This code can be tested independently of any specific OS.
+
+**3. Multiple renderer backends**
+
+```zig
+// Selected at compile time based on target
+const renderer = switch (target.os.tag) {
+    .macos => @import("renderer/metal.zig"),
+    .linux => @import("renderer/opengl.zig"),
+    .windows => @import("renderer/opengl.zig"),
+    else => @import("renderer/software.zig"),
+};
+```
+
+Each platform gets the fastest available renderer, with a software fallback.
+
+**4. C library integration**
+
+Ghostty uses established C libraries for complex tasks:
+- **HarfBuzz** - Text shaping (complex scripts, ligatures)
+- **FreeType** - Font rasterization
+- **GTK/Cocoa** - Native UI appearance
+
+Integration via `@cImport` and build system linking.
+
+**Why this works:**
+- Terminal core is testable without GUI
+- Each platform gets native performance
+- Clear boundaries for cross-platform code
+- Easy to add new platforms/renderers
+
+### Project 6: Mach Engine - Modular Architecture
+
+**Repository:** https://github.com/hexops/mach
+**Type:** Game Engine
+**Size:** 40K+ lines (modular)
+
+#### Structure
+
+```
+mach/
+├── build.zig
+├── build.zig.zon
+├── src/
+│   ├── core/                # Minimal core
+│   │   ├── Core.zig
+│   │   └── module.zig
+│   ├── gfx/                 # Graphics module
+│   │   ├── gfx.zig
+│   │   └── sprite.zig
+│   ├── audio/               # Audio module
+│   ├── ecs/                 # Entity-component system
+│   │   ├── entities.zig
+│   │   ├── components.zig
+│   │   └── systems.zig
+│   └── sysaudio/            # Platform audio backends
+│       ├── wasapi.zig       # Windows
+│       ├── coreaudio.zig    # macOS
+│       └── pulseaudio.zig   # Linux
+├── examples/                # Example per feature
+│   ├── core/
+│   │   ├── triangle/
+│   │   ├── textured-cube/
+│   │   └── fractal/
+│   ├── gfx/
+│   └── audio/
+└── libs/                    # Git submodules
+    ├── glfw/
+    ├── freetype/
+    └── opus/
+```
+
+#### Key Patterns
+
+**1. Modular architecture**
+
+Users can depend on only what they need:
+
+```zig
+// build.zig.zon - Use just core
+.dependencies = .{
+    .mach_core = .{ .url = "https://..." },
+}
+
+// Or use everything
+.dependencies = .{
+    .mach = .{ .url = "https://..." },
+}
+```
+
+Modules are independently versioned and maintained.
+
+**2. Example-driven development**
+
+Every feature has a corresponding example:
+- `examples/core/triangle/` - Basic rendering
+- `examples/gfx/sprite/` - 2D sprite system
+- `examples/audio/playback/` - Audio playback
+
+Examples serve as:
+- Documentation (show real usage)
+- Integration tests (verified in CI)
+- Starting points for users
+
+**3. Composable dependencies**
+
+```zig
+// build.zig.zon
+.{
+    .name = "mach",
+    .version = "0.3.0",
+    .dependencies = .{
+        .mach_core = .{ .path = "src/core" },
+        .mach_gfx = .{ .path = "src/gfx" },
+        .mach_audio = .{ .path = "src/audio" },
+    },
+}
+```
+
+Each module can be used independently or composed together.
+
+**4. Cross-platform by default**
+
+Mach uses WebGPU as the rendering abstraction, which works on:
+- Desktop (via Dawn or wgpu)
+- Web (via WebAssembly and WebGPU)
+- Mobile (via native implementations)
+
+Single codebase runs everywhere.
+
+**Why this works:**
+- Game engines need modularity (not everyone needs every feature)
+- Examples are living documentation
+- WebGPU abstraction = true cross-platform
+- Git submodules = reproducible C dependencies
+
+### Common Patterns Across All Projects
+
+Let's summarize the patterns we see consistently:
+
+| Pattern | Zig | TigerBeetle | ZLS | Bun | Ghostty | Mach |
+|---------|:---:|:-----------:|:---:|:---:|:-------:|:----:|
+| PascalCase.zig for single-struct files | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Feature/subsystem directories | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Tests mirror src/ structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Platform-specific code isolated | ✅ | ⚫ | ⚫ | ✅ | ✅ | ✅ |
+| Minimal dependencies | ✅ | ✅ | ⚫ | ⚫ | ⚫ | ⚫ |
+| C interop via dedicated layer | ✅ | ⚫ | ⚫ | ✅ | ✅ | ✅ |
+| Comprehensive CI testing | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Examples in repository | ✅ | ✅ | ⚫ | ✅ | ⚫ | ✅ |
+
+**Legend:** ✅ Present | ⚫ Not applicable
+
+### Decision Matrix: Which Pattern for Your Project?
+
+**If building a compiler or interpreter:**
+→ Follow **Zig compiler** pattern
+- Stage-based directories (parser, sema, codegen, link)
+- One file per major component (PascalCase.zig)
+- Test by compilation scenario
+- Minimal dependencies
+
+**If building a database or storage system:**
+→ Follow **TigerBeetle** pattern
+- Zero dependencies for predictability
+- Simulator for deterministic testing
+- Performance-critical paths isolated
+- Extensive design documentation
+
+**If building a CLI tool or developer tool:**
+→ Follow **ZLS** pattern
+- Feature per file
+- Schema-driven configuration
+- Version compatibility testing if needed
+- External deps OK if stable
+
+**If doing C/C++ interop:**
+→ Follow **Bun** or **Ghostty** pattern
+- Dedicated FFI/bindings layer
+- Clear language boundaries
+- Each language handles its strength
+- Vendor C deps for reproducibility
+
+**If building a library or framework:**
+→ Follow **Mach** pattern
+- Modular architecture
+- Example-driven development
+- Composable dependencies
+- Cross-platform from day one
+
+### Anti-Patterns to Avoid
+
+These patterns were **not** observed in successful projects:
+
+❌ **Deep nesting** - `src/lib/core/internal/impl/helpers/util.zig`
+✅ **Instead:** Flatten structure, use descriptive names
+
+❌ **Mixed naming conventions** - `myModule.zig` + `OtherMod.zig` + `another_one.zig`
+✅ **Instead:** PascalCase for types, snake_case for modules, consistently
+
+❌ **God files** - `utils.zig` with 5000 lines
+✅ **Instead:** `string_utils.zig`, `math_utils.zig`, split by domain
+
+❌ **Circular dependencies** - Module A imports B imports A
+✅ **Instead:** Extract shared types to `types.zig`
+
+❌ **Platform code everywhere** - Windows-specific code mixed in
+✅ **Instead:** `platform/windows/`, `platform/linux/`, `platform/darwin/`
+
+❌ **Disconnected tests** - `test/` with different structure than `src/`
+✅ **Instead:** Mirror structure - `src/foo.zig` → `test/foo.zig`
+
+### Key Takeaways
+
+Apply these principles to your own projects:
+
+1. **File naming matters**
+   - `PascalCase.zig` exports a single primary struct
+   - `snake_case.zig` is a module with multiple exports
+   - Directories use lowercase with underscores
+
+2. **Organization principles**
+   - Directories represent subsystems or features
+   - Platform-specific code goes in subdirectories
+   - Tests mirror source structure exactly
+
+3. **Dependency management**
+   - Minimize external dependencies when possible
+   - Use git submodules for C libraries (reproducibility)
+   - Document all dependencies in `build.zig.zon`
+
+4. **Build system**
+   - Keep complexity in `build.zig`, not shell scripts
+   - Support cross-compilation from the start
+   - Provide separate steps for different test types
+
+5. **Testing strategy**
+   - Co-locate unit tests with source code
+   - Integration tests in separate `tests/` directory
+   - Test against multiple platforms in CI
+
+6. **Documentation**
+   - README for quick start
+   - ARCHITECTURE for detailed design
+   - CONTRIBUTING for development process
+   - Examples show real usage patterns
+
+Now that we understand how professional projects are structured, let's apply these patterns to build `zighttp`.
+
+---
+
+## 0.3 Editor Setup & Developer Tools
 
 Professional development requires professional tooling. This section covers setting up Zig Language Server (ZLS), code formatting, and editor integration.
 
@@ -500,7 +1162,7 @@ With these tools configured, you have a professional Zig development environment
 
 *[Content continues with remaining sections 0.4-0.9...]*
 
-## 0.3 Building zighttp: Project Structure & Code Organization
+## 0.4 Building zighttp: Project Structure & Code Organization
 
 Now that we have our tools configured, let's build the `zighttp` CLI tool. We'll apply the patterns we learned from analyzing real projects.
 
@@ -875,7 +1537,7 @@ This modular structure follows the patterns we saw in ZLS, where each feature ge
 
 ---
 
-## 0.4 Testing Strategy
+## 0.5 Testing Strategy
 
 Professional projects need professional testing. We'll implement both unit tests and integration tests.
 
@@ -1024,7 +1686,7 @@ From our analysis of real projects, we follow these patterns:
 
 ---
 
-## 0.5 Build System Configuration
+## 0.6 Build System Configuration
 
 Our `build.zig` needs to handle both library and executable builds, plus multiple test types.
 
@@ -1182,281 +1844,6 @@ pub fn main() !void {
 
 ---
 
-## 0.6 Learning from Real Zig Projects
-
-Before building complex projects, study how professional Zig codebases are organized. We'll analyze six projects representing different archetypes: compiler, database, developer tool, runtime, GUI app, and game engine.
-
-> **📝 NOTE:** Learning from production codebases is one of the fastest ways to internalize best practices. The patterns you see here weren't invented arbitrarily - they evolved to solve real organizational challenges at scale. Don't feel obligated to adopt all patterns immediately; understand the problems they solve first.
-
-### Zig Compiler - Pipeline Architecture
-
-**Repository:** github.com/ziglang/zig | **Size:** 300K+ LOC
-
-**Structure:**
-```
-zig/
-├── src/
-│   ├── Compilation.zig    # Single struct per file
-│   ├── Sema.zig           # Semantic analysis
-│   ├── AstGen.zig         # AST generation
-│   ├── codegen/           # Subsystem directory
-│   │   ├── llvm.zig
-│   │   └── c.zig
-│   ├── link/              # Linker backends
-│   │   ├── Elf.zig
-│   │   └── MachO.zig
-│   └── arch/              # Platform-specific
-│       ├── x86_64/
-│       └── aarch64/
-└── test/
-    ├── behavior/          # Language semantics tests
-    ├── cases/             # Compilation scenarios
-    └── standalone/        # Complete project tests
-```
-
-**Key patterns:**
-
-1. **Single-file structs:** Files like `Compilation.zig` export one primary type using `const Compilation = @This();`. This makes navigation trivial - see `Compilation` in code, know it's in `Compilation.zig`.
-
-2. **Stage directories:** The compiler pipeline (source → AST → ZIR → AIR → machine code) maps to directory structure. Each stage is isolated and testable.
-
-3. **Test by purpose:** Tests organize by what they test, not code location. This enables testing language features end-to-end.
-
-4. **Minimal dependencies:** Only LLVM/Clang for backends. Parser, semantic analyzer, linker all self-hosted in Zig.
-
-> **💡 TIP:** Use single-file structs (like `Compilation.zig`) when a type is substantial (300+ lines) and self-contained. For smaller types or closely related types, group them in a module (like `types.zig`). The pattern makes large codebases navigable: seeing `@import("Parser.zig")` immediately tells you what the file contains.
-
-**When to use:** Building compilers, interpreters, or any pipeline-based processing system where stages are clearly defined.
-
-### TigerBeetle - Zero-Dependency Database
-
-**Repository:** github.com/tigerbeetle/tigerbeetle | **Size:** 100K+ LOC | **Dependencies:** None
-
-**Structure:**
-```
-tigerbeetle/
-├── src/
-│   ├── vsr.zig            # Viewstamped Replication
-│   ├── lsm/               # Log-Structured Merge tree
-│   ├── storage.zig
-│   ├── io.zig             # Async I/O
-│   ├── clients/           # Language bindings
-│   │   ├── c/
-│   │   ├── java/
-│   │   └── node/
-│   └── simulator.zig      # Deterministic testing
-├── docs/
-│   ├── DESIGN.md
-│   ├── PROTOCOL.md
-│   └── INTERNALS.md
-```
-
-**Key patterns:**
-
-1. **Zero dependencies:** Everything implemented from scratch - networking, crypto, data structures, I/O. Every line is auditable. This is rare and only justified for systems where correctness is more important than development speed.
-
-2. **Simulator-first development:** `simulator.zig` enables deterministic testing of distributed consensus. Can replay exact failure conditions. Finds bugs traditional testing misses.
-
-3. **Co-located clients:** Language bindings live in same repo, ensuring all clients stay synchronized with protocol changes. Single source of truth.
-
-4. **Design documentation:** `docs/` explains the "why" behind decisions, not just "how". Critical for contributors understanding trade-offs.
-
-> **⚠️ WARNING:** Zero dependencies is NOT a universal best practice. TigerBeetle's requirements (financial correctness, auditability, deterministic behavior) justify implementing everything from scratch. Most projects should use well-tested dependencies - reimplementing cryptography, networking, or compression introduces risk and maintenance burden. Only go dependency-free if you have TigerBeetle-level requirements.
-
-**When to use:** Financial systems, databases, or systems where every line must be auditable and deterministic behavior is critical.
-
-### ZLS - Feature-Per-File Organization
-
-**Repository:** github.com/zigtools/zls | **Size:** 50K+ LOC
-
-**Structure:**
-```
-zls/
-├── src/
-│   ├── Server.zig          # Core type
-│   ├── DocumentStore.zig   # Core type
-│   ├── completions.zig     # Feature file
-│   ├── goto.zig            # Feature file
-│   ├── hover.zig           # Feature file
-│   ├── references.zig      # Feature file
-│   ├── signature_help.zig  # Feature file
-│   └── Config.zig          # Core type
-├── tests/
-│   ├── lsp_features/
-│   └── toolchains/         # Multi-version testing
-└── schema.json             # Config validation
-```
-
-**Key patterns:**
-
-1. **Feature-per-file:** Each LSP feature gets its own file. Want to fix autocomplete? Look in `completions.zig`. Need hover docs? Check `hover.zig`. Makes features easy to find and prevents "god files".
-
-2. **Core types separated:** Major types like `Server`, `DocumentStore`, and `Config` get dedicated files using PascalCase naming.
-
-3. **Schema-driven configuration:** `schema.json` enables editors to validate `.zls.json` files, preventing configuration errors before runtime.
-
-4. **Multi-version compatibility:** CI tests against Zig 0.13, 0.14, 0.15, and master. Critical for tools that must support multiple language versions.
-
-> **💡 TIP:** Feature-per-file organization (like ZLS) works excellently for projects with distinct, independent features. If you're building a CLI tool with subcommands, an LSP with features, or a web framework with middleware, this pattern keeps code discoverable and prevents files from becoming dumping grounds.
-
-**When to use:** Developer tools, CLI tools with subcommands, plugin systems, or any tool with independent features.
-
-### Bun - Multi-Language Integration
-
-**Repository:** github.com/oven-sh/bun | **Size:** 500K+ LOC (Zig + C++ + JS)
-
-**Structure:**
-```
-bun/
-├── build.zig             # Zig build
-├── CMakeLists.txt        # C++ build
-├── src/
-│   ├── cli/              # CLI (Zig)
-│   ├── install/          # Package manager (Zig)
-│   ├── bun.js/           # JS runtime (C++)
-│   │   └── bindings/     # FFI layer
-│   └── deps/             # Vendored C deps
-│       ├── mimalloc/
-│       └── zstd/
-```
-
-**Key patterns:**
-
-1. **Language boundaries:** Each language chosen for its strengths - Zig for CLI/networking (performance + simplicity), C++ for JS engine (reusing JavaScriptCore), JS for bundler logic.
-
-2. **Isolated FFI layer:** All Zig ↔ C++ interop goes through `bindings/` directory. Prevents FFI code from spreading throughout codebase. Makes integration points explicit and testable.
-
-3. **Dual build systems:** `build.zig` handles Zig, `CMakeLists.txt` handles C++, coordinated at top level. Each language uses its native tooling.
-
-4. **Vendored dependencies:** `deps/` contains exact versions of C libraries. Ensures reproducible builds, no system dependency surprises.
-
-**When to use:** Projects requiring C/C++ interop or reusing existing libraries written in other languages.
-
-### Ghostty - Platform Abstraction
-
-**Repository:** github.com/ghostty-org/ghostty | **Size:** 80K+ LOC
-
-**Structure:**
-```
-ghostty/
-├── src/
-│   ├── terminal/         # Platform-agnostic core
-│   │   ├── Terminal.zig
-│   │   ├── Screen.zig
-│   │   └── parser.zig
-│   ├── renderer/         # Platform-specific
-│   │   ├── metal.zig     # macOS
-│   │   ├── opengl.zig    # Linux/Windows
-│   │   └── software.zig  # Fallback
-│   ├── gui/              # Platform UI
-│   │   ├── gtk/          # Linux
-│   │   ├── cocoa/        # macOS
-│   │   └── windows/      # Windows
-│   └── pty/              # Platform PTY
-│       ├── unix.zig
-│       └── windows.zig
-```
-
-**Key patterns:**
-
-1. **Core is portable:** Terminal emulation logic in `terminal/` works identically on all platforms. Can be tested without any OS-specific code.
-
-2. **Platform subdirectories:** Platform-specific code isolated in subdirectories. Each platform gets optimal implementation (Metal on macOS, OpenGL on Linux).
-
-3. **Compile-time selection:** `switch (target.os.tag)` at compile time selects appropriate implementation. Zero runtime overhead.
-
-4. **C library integration:** Uses established C libraries (HarfBuzz for text shaping, FreeType for fonts) via `@cImport`. Don't rewrite complex algorithms.
-
-**When to use:** Cross-platform GUI applications or any tool with platform-specific APIs (graphics, audio, file watching).
-
-### Mach - Modular Architecture
-
-**Repository:** github.com/hexops/mach | **Size:** 40K+ LOC
-
-**Structure:**
-```
-mach/
-├── src/
-│   ├── core/             # Minimal core module
-│   ├── gfx/              # Graphics module
-│   ├── audio/            # Audio module
-│   └── ecs/              # Entity-component system
-├── examples/             # Example per feature
-│   ├── core/triangle/
-│   ├── gfx/sprite/
-│   └── audio/playback/
-└── libs/                 # Git submodules
-    ├── glfw/
-    └── freetype/
-```
-
-**Key patterns:**
-
-1. **Composable modules:** Users depend only on needed modules. Building a simple 2D game? Use `mach_core` + `mach_gfx`. Need audio? Add `mach_audio`. Each module independently versioned.
-
-2. **Example-driven development:** Every feature has a working example. Examples serve triple duty: documentation (show real usage), integration tests (verified in CI), starting points for users.
-
-3. **Independent versioning:** Modules released separately. Core can be at v0.3, graphics at v0.5. Users not forced to upgrade everything.
-
-4. **WebGPU abstraction:** Single rendering API (WebGPU) works on desktop, web (WebAssembly), and mobile. Write once, run everywhere.
-
-**When to use:** Libraries, frameworks, or any system where users need subsets of features (not a monolithic "all or nothing").
-
-### Pattern Summary
-
-| Pattern | Use When |
-|---------|----------|
-| Single-file structs (`Parser.zig`) | Type is substantial (300+ lines) and self-contained |
-| Feature-per-file (`completions.zig`) | Building CLI with subcommands or tool with distinct features |
-| Platform subdirectories (`renderer/metal.zig`) | Need platform-specific implementations |
-| Zero dependencies | Auditability/correctness is paramount (rare!) |
-| Example directory | Building library/framework users will integrate |
-| FFI isolation (`bindings/`) | Integrating with C/C++ libraries |
-
-### Anti-Patterns to Avoid
-
-❌ **Deep nesting:** `src/lib/core/internal/impl/util.zig` - hard to navigate
-✅ **Instead:** Flatten structure, use descriptive names
-
-❌ **God files:** `utils.zig` with 5000 lines of unrelated functions
-✅ **Instead:** Split by domain: `string_utils.zig`, `math_utils.zig`
-
-❌ **Mixed naming:** `myModule.zig` + `OtherMod.zig` + `another_one.zig`
-✅ **Instead:** PascalCase for types, snake_case for modules, consistently
-
-❌ **Circular dependencies:** Module A imports B imports A
-✅ **Instead:** Extract shared types to `types.zig`
-
-❌ **Platform code scattered:** Windows-specific code mixed throughout
-✅ **Instead:** Isolate in `platform/windows/`, `platform/linux/`
-
-### Key Principles
-
-Apply these to your own projects:
-
-**File naming:**
-- `PascalCase.zig` exports a single primary struct (`const Foo = @This();`)
-- `snake_case.zig` is a module with multiple exports
-- Directories use lowercase with underscores
-
-**Organization:**
-- Directories represent subsystems (features, platforms, stages)
-- Tests mirror source structure (`src/foo.zig` → `test/foo.zig`)
-- Platform-specific code in subdirectories, not mixed with portable code
-
-**Dependencies:**
-- Prefer standard library over external dependencies
-- If using C libraries, vendor them (git submodules) for reproducibility
-- Document all dependencies in `build.zig.zon`
-
-**Build system:**
-- Keep complexity in `build.zig`, not shell scripts
-- Support cross-compilation from the start with `-Dtarget`
-- Provide separate test targets (`test-unit`, `test-integration`)
-
-Now that we understand professional patterns, let's apply them building zighttp.
-
----
 ## 0.7 CI/CD with GitHub Actions
 
 Automate testing and releases with GitHub Actions.
