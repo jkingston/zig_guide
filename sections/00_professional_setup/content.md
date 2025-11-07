@@ -1955,7 +1955,90 @@ Before releasing, verify:
 
 ## 0.9 Release Checklist & Next Steps
 
-You've built a complete professional project with code, tests, CI/CD, and documentation. Now it's time to share it with the world. This section covers the final checklist before release and where to go next.
+You've built a complete professional project with code, tests, CI/CD, and documentation. Now it's time to share it with the world. This section covers security considerations, the final checklist before release, and where to go next.
+
+### Security Considerations
+
+Before releasing any software, review security implications:
+
+**1. Dependency Security**
+
+- **Audit dependencies:** Review all external dependencies in `build.zig.zon`
+- **Pin versions:** Always specify exact versions, not ranges (e.g., `0.1.0`, not `>=0.1.0`)
+- **Verify hashes:** Zig package manager verifies hashes automatically - never bypass this
+- **Minimize attack surface:** Fewer dependencies = smaller attack surface (TigerBeetle's zero-dependency approach is extreme but instructive)
+
+**2. Secrets Management**
+
+- **Never commit secrets:** No API keys, passwords, tokens in source code or git history
+- **Use environment variables:** `std.process.getEnvVarOwned()` for runtime secrets
+- **Check `.gitignore`:** Ensure `.env`, `credentials.json`, `secrets/` are ignored
+- **Scan history:** Use tools like `git-secrets` to find accidentally committed secrets
+- **Rotate leaked secrets:** If you accidentally commit a secret, revoke and rotate immediately
+
+**3. Input Validation**
+
+- **Validate all external input:** URLs, file paths, user data, network responses
+- **Use Zig's type system:** Leverage enums, comptime validation, and explicit error types
+- **Bounds checking:** Zig's safety features (bounds checking, integer overflow detection) catch many issues in Debug and ReleaseSafe modes
+- **Sanitize for display:** Escape output when rendering user input (prevent injection attacks)
+
+**4. Memory Safety**
+
+- **Use SafetyRelease for production:** Keeps bounds checking, overflow detection while optimizing
+- **Test with allocators:** `std.testing.allocator` detects leaks, `GeneralPurposeAllocator` with `.safety = true` catches use-after-free
+- **Review unsafe code:** Search for `@ptrCast`, `@intCast`, `@bitCast` - these bypass safety checks
+- **Avoid undefined behavior:** Never access freed memory, never dereference null pointers
+
+**5. Network Security (for HTTP clients like zighttp)**
+
+- **Validate TLS certificates:** Don't disable certificate validation in production
+- **Use HTTPS:** Warn users if they're making unencrypted requests to sensitive APIs
+- **Timeout configuration:** Set reasonable timeouts to prevent DoS via slowloris attacks
+- **Rate limiting:** Implement client-side rate limiting for API requests
+- **URL parsing:** Use `std.Uri.parse()` - manual parsing invites injection vulnerabilities
+
+**6. CI/CD Security**
+
+- **Protect workflow files:** `.github/workflows/` should have review requirements
+- **Use `GITHUB_TOKEN` sparingly:** Limit permissions to minimum required
+- **Never store secrets in workflows:** Use GitHub encrypted secrets (Settings → Secrets)
+- **Pin action versions:** Use commit SHAs for actions, not `@latest` (e.g., `actions/checkout@v4.1.1` or `actions/checkout@abc123`)
+- **Review PR changes carefully:** Malicious PRs can modify workflows to exfiltrate secrets
+
+**7. Binary Distribution**
+
+- **Sign releases:** Use GPG or code signing for download integrity verification
+- **Provide checksums:** SHA256 checksums for all release artifacts (we do this in release workflow)
+- **Reproducible builds:** Document build environment (Zig version, OS, dependencies)
+- **Security policy:** Add `SECURITY.md` explaining how to report vulnerabilities responsibly
+
+**8. Common Zig-Specific Issues**
+
+- **Allocator mismatches:** Using wrong allocator for `deinit()` causes undefined behavior
+- **Undefined behavior in ReleaseFast:** Safety checks removed - only use after thorough testing
+- **Comptime evaluation pitfalls:** Comptime code can still have bugs, test it separately
+- **Cross-compilation trust:** Test on actual hardware, not just QEMU
+
+**Security Checklist:**
+
+- [ ] All dependencies audited and pinned to specific versions
+- [ ] No secrets in source code or `.git` history
+- [ ] Input validation on all external data
+- [ ] Using ReleaseSafe (not ReleaseFast) for initial releases
+- [ ] HTTPS enforced for network requests
+- [ ] CI/CD workflows use minimal permissions
+- [ ] Release artifacts include SHA256 checksums
+- [ ] `SECURITY.md` file documents vulnerability reporting
+- [ ] Reviewed all `@ptrCast`, `@bitCast` usage for correctness
+- [ ] Tested with `GeneralPurposeAllocator` for memory issues
+
+**Resources:**
+- OWASP Top 10: Industry-standard security risks
+- Zig Security: Track security issues at github.com/ziglang/zig/labels/security
+- CWE Database: Common Weakness Enumeration for vulnerability patterns
+
+Security is a continuous process, not a one-time checklist. Stay informed about vulnerabilities in dependencies and update regularly.
 
 ### Pre-Release Checklist
 
