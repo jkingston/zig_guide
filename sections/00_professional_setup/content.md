@@ -64,7 +64,7 @@ zighttp/
 
 Let's examine each file:
 
-#### `build.zig` - Build Configuration
+**`build.zig` - Build Configuration**
 
 ```zig
 const std = @import("std");
@@ -103,7 +103,7 @@ pub fn build(b: *std.Build) void {
 
 > **📝 NOTE:** Cross-compilation is first-class in Zig. Build for any platform from any platform: `zig build -Dtarget=x86_64-windows`, `zig build -Dtarget=aarch64-macos`, etc. No cross-compiler toolchain needed!
 
-#### `build.zig.zon` - Package Manifest
+**`build.zig.zon` - Package Manifest**
 
 ```zig
 .{
@@ -126,7 +126,7 @@ pub fn build(b: *std.Build) void {
 - Lists files to include when published as a package
 - Can declare dependencies (we'll add these later if needed)
 
-#### `src/main.zig` - Executable Entry Point
+**`src/main.zig` - Executable Entry Point**
 
 ```zig
 const std = @import("std");
@@ -138,7 +138,7 @@ pub fn main() void {
 
 The `main()` function is the entry point for executables. It can return `void`, `!void` (for errors), or `u8` (for exit codes).
 
-#### `src/root.zig` - Library Module Root
+**`src/root.zig` - Library Module Root**
 
 ```zig
 const std = @import("std");
@@ -228,9 +228,9 @@ The Zig Language Server (ZLS) provides IDE features like autocomplete, go-to-def
 
 > **📝 NOTE:** ZLS versions must match your Zig version closely. Using ZLS 0.13.0 with Zig 0.15.2 will cause errors. Always download the ZLS version that matches your Zig installation. Check compatibility at the ZLS version support matrix.[^5]
 
-#### Installation
+**Installation**
 
-**Option 1: From releases (recommended)**
+Option 1: From releases (recommended)
 
 ```bash
 # Download latest release for your platform
@@ -245,7 +245,7 @@ sudo mv zls /usr/local/bin/
 zls --version
 ```
 
-**Option 2: Build from source**
+Option 2: Build from source
 
 ```bash
 git clone https://github.com/zigtools/zls.git
@@ -254,7 +254,7 @@ zig build -Doptimize=ReleaseSafe
 sudo cp zig-out/bin/zls /usr/local/bin/
 ```
 
-#### Configuring ZLS
+**Configuration**
 
 Create `.zls.json` in your project root:
 
@@ -288,7 +288,7 @@ This configuration enables aggressive IDE assistance while coding.
 
 ### Editor Integration
 
-#### VS Code
+**VS Code**
 
 1. Install the official Zig extension:
    - Open VS Code
@@ -311,7 +311,7 @@ This configuration enables aggressive IDE assistance while coding.
 }
 ```
 
-#### Neovim
+**Neovim**
 
 Using `nvim-lspconfig`:
 
@@ -333,7 +333,7 @@ lspconfig.zls.setup{
 }
 ```
 
-#### Emacs
+**Emacs**
 
 Using `lsp-mode`:
 
@@ -350,7 +350,7 @@ Using `lsp-mode`:
 
 Zig has a built-in code formatter that enforces consistent style.[^4]
 
-#### Usage
+**Usage:**
 
 Format all files:
 ```bash
@@ -367,9 +367,7 @@ Format specific file:
 zig fmt src/main.zig
 ```
 
-#### What `zig fmt` Does
-
-The formatter enforces:
+**What it enforces:**
 - 4-space indentation
 - Consistent spacing around operators
 - Proper line breaks
@@ -390,9 +388,7 @@ const y = 20;
 const z = x + y;
 ```
 
-#### Integration with Editors
-
-Most editors can run `zig fmt` on save. This prevents formatting drift and makes code reviews focus on logic, not style.
+Most editors can run `zig fmt` on save (configure via settings above). This prevents formatting drift and makes code reviews focus on logic, not style.
 
 ### EditorConfig for Consistency
 
