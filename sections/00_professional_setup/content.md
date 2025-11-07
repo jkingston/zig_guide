@@ -2133,6 +2133,359 @@ You now have both theoretical knowledge (how major projects are structured) and 
 
 ---
 
+## 0.10 Troubleshooting Common Issues
+
+Professional setup sometimes hits snags. Here are solutions to the most common problems.
+
+### Build Errors
+
+**Problem: "zig: command not found"**
+
+```bash
+$ zig build
+bash: zig: command not found
+```
+
+**Solution:**
+- Verify Zig is installed: Download from https://ziglang.org/download/
+- Add to PATH: `export PATH=$PATH:/path/to/zig`
+- Check version: `zig version` should show 0.15.2
+
+**Problem: "error: FileNotFound - build.zig"**
+
+```bash
+$ zig build
+error: FileNotFound
+```
+
+**Solution:**
+- You're not in the project directory
+- `cd` into the directory containing `build.zig`
+- Check: `ls build.zig` should find the file
+
+**Problem: "unable to find std.Build"**
+
+```zig
+error: unable to find 'std.Build'
+```
+
+**Solution:**
+- Your Zig version is too old (< 0.11)
+- Upgrade to Zig 0.15.2
+- The build system API changed significantly in 0.11+
+
+### ZLS (Language Server) Issues
+
+**Problem: ZLS not providing completions**
+
+**Symptoms:**
+- No autocomplete in editor
+- No go-to-definition
+- No hover documentation
+
+**Solution:**
+1. **Verify ZLS is running:**
+   ```bash
+   ps aux | grep zls
+   # Should show zls process
+   ```
+
+2. **Check ZLS version matches Zig:**
+   ```bash
+   zls --version  # Should match Zig version closely
+   zig version    # e.g., 0.15.2
+   ```
+
+3. **Restart language server:**
+   - VS Code: `Ctrl+Shift+P` → "Reload Window"
+   - Neovim: `:LspRestart`
+
+4. **Check `.zls.json` is in project root:**
+   ```bash
+   ls .zls.json  # Should exist
+   ```
+
+**Problem: "ZLS crashed" or constant errors**
+
+**Solution:**
+- Version mismatch between ZLS and Zig
+- Download matching ZLS from https://github.com/zigtools/zls/releases
+- Check ZLS version support matrix
+
+### Cross-Compilation Issues
+
+**Problem: "unable to find libc installation"**
+
+```bash
+$ zig build -Dtarget=x86_64-windows
+error: unable to find libc installation
+```
+
+**Solution:**
+- This usually means you're trying to link with system libc
+- For Windows, use `-Dtarget=x86_64-windows-gnu` (MinGW)
+- Or avoid libc by using only Zig stdlib
+
+**Problem: Binary works locally but fails on target platform**
+
+**Symptoms:**
+- "Illegal instruction" error
+- "Cannot execute binary file"
+- Segfault on different platform
+
+**Solution:**
+1. **Check target triple:**
+   ```bash
+   # Wrong - missing OS
+   zig build -Dtarget=x86_64
+
+   # Correct - full triple
+   zig build -Dtarget=x86_64-linux
+   ```
+
+2. **Verify optimization mode:**
+   - Debug builds include assertions that might fail
+   - Use ReleaseSafe for safety checks on all platforms
+   - ReleaseFast removes safety (use cautiously)
+
+3. **Test on actual hardware:**
+   - Emulators (QEMU, Docker) can hide issues
+   - CI on real platforms catches these (see Section 0.7)
+
+### Test Failures
+
+**Problem: "Tests pass locally, fail in CI"**
+
+**Solution:**
+1. **Platform-specific behavior:**
+   ```zig
+   test "path separator" {
+       // Fails on Windows if you assume '/'
+       const sep = if (builtin.os.tag == .windows) '\\' else '/';
+   }
+   ```
+
+2. **Time-dependent tests:**
+   ```zig
+   test "cache expires" {
+       // Flaky - depends on timing
+       std.time.sleep(100 * std.time.ns_per_ms);
+       try std.testing.expect(cache.isExpired());
+   }
+   ```
+   Make tests deterministic or use longer timeouts.
+
+3. **File system differences:**
+   - Case sensitivity (Linux yes, macOS/Windows no)
+   - Path separators (`/` vs `\`)
+   - Line endings (LF vs CRLF)
+
+**Problem: "Memory leak detected"**
+
+```bash
+$ zig build test
+error: memory leak detected
+```
+
+**Solution:**
+1. **Check defer statements:**
+   ```zig
+   test "no leak" {
+       const data = try allocator.alloc(u8, 100);
+       defer allocator.free(data);  // Don't forget!
+       // ... test code
+   }
+   ```
+
+2. **Verify all deinit() calls:**
+   ```zig
+   var list = std.ArrayList(u8).init(allocator);
+   defer list.deinit();  // Required!
+   ```
+
+3. **Use testing.allocator:**
+   ```zig
+   const allocator = std.testing.allocator;
+   // Automatically detects leaks
+   ```
+
+### CI/CD Issues
+
+**Problem: "CI fails but local build works"**
+
+**Common causes:**
+1. **Cached artifacts:**
+   - CI starts fresh, you have local cache
+   - Solution: `rm -rf zig-cache/ zig-out/` and rebuild
+
+2. **Missing files in git:**
+   ```bash
+   git status  # Check for untracked files
+   git add <missing-file>
+   ```
+
+3. **Wrong Zig version:**
+   - Check `.github/workflows/ci.yml` version
+   - Match it locally: `zig version`
+
+**Problem: "Release workflow not triggering"**
+
+**Solution:**
+1. **Check tag format:**
+   ```bash
+   # Wrong
+   git tag 0.1.0
+
+   # Correct - must start with 'v'
+   git tag v0.1.0
+   ```
+
+2. **Push tags:**
+   ```bash
+   git push origin v0.1.0  # Don't forget to push the tag!
+   ```
+
+3. **Check workflow file:**
+   - Ensure `on: push: tags: - 'v*'` in `.github/workflows/release.yml`
+
+### Installation Issues
+
+**Problem: "Permission denied" when copying binary**
+
+```bash
+$ sudo cp zig-out/bin/zighttp /usr/local/bin/
+cp: cannot create regular file: Permission denied
+```
+
+**Solution:**
+1. **Use sudo:**
+   ```bash
+   sudo cp zig-out/bin/zighttp /usr/local/bin/
+   ```
+
+2. **Or install to user directory:**
+   ```bash
+   mkdir -p ~/.local/bin
+   cp zig-out/bin/zighttp ~/.local/bin/
+   export PATH=$PATH:~/.local/bin
+   ```
+
+**Problem: "Library not found" when running binary**
+
+```bash
+$ ./zighttp
+error while loading shared libraries: libfoo.so.1
+```
+
+**Solution:**
+- You linked with dynamic libraries
+- For portable binaries, prefer static linking
+- Or bundle libraries with binary
+
+### Performance Issues
+
+**Problem: "Build is very slow"**
+
+**Solution:**
+1. **Use caching:**
+   - Zig caches by default in `zig-cache/`
+   - Don't delete cache between builds
+
+2. **Check optimization mode:**
+   ```bash
+   # Slow - full debug info
+   zig build
+
+   # Faster - less debug info
+   zig build -Doptimize=ReleaseFast
+   ```
+
+3. **Incremental builds:**
+   - Only `zig build` (not `zig build clean`)
+   - Zig's caching is very good
+
+**Problem: "Tests take forever"**
+
+**Solution:**
+- Run subset: `zig build test-unit` (skip integration tests)
+- Parallelize in CI (matrix strategy)
+- Profile slow tests: Add timing prints
+
+### Getting Help
+
+When troubleshooting doesn't work:
+
+1. **Check Zig version compatibility:**
+   - This guide targets Zig 0.15.2
+   - APIs change between versions
+
+2. **Search GitHub issues:**
+   - https://github.com/ziglang/zig/issues
+   - Often someone hit the same problem
+
+3. **Ask in Zig community:**
+   - Discord: https://discord.gg/zig
+   - Ziggit forum: https://ziggit.dev
+   - Reddit: r/Zig
+
+4. **Provide complete error context:**
+   - Full error message
+   - Zig version (`zig version`)
+   - OS and architecture
+   - Minimal reproduction
+
+**Remember:** Most issues come from version mismatches (Zig vs ZLS) or platform differences. Check these first.
+
+---
+
+## Summary
+
+This chapter took you from an empty directory to a complete, production-ready CLI tool. Along the way, you learned:
+
+**Project Initialization:**
+- Using `zig init` for standard structure
+- Understanding generated files
+- Basic build system setup
+
+**Real Project Analysis:**
+- Studied 6 major Zig projects
+- Identified common patterns
+- Learned when to use each pattern
+
+**Development Environment:**
+- Configured ZLS for IDE support
+- Set up formatting automation
+- Established Git workflow
+
+**Code Organization:**
+- Modular architecture
+- Clear responsibilities per file
+- Dependency management
+
+**Testing:**
+- Co-located unit tests
+- Separate integration tests
+- Multiple test targets
+
+**Build System:**
+- Library and executable artifacts
+- Cross-compilation support
+- Multiple build targets
+
+**CI/CD:**
+- Automated testing on multiple platforms
+- Release automation
+- Artifact generation
+
+**Documentation:**
+- User documentation (README)
+- Developer documentation (ARCHITECTURE, CONTRIBUTING)
+- Code documentation (comments)
+
+You now have both theoretical knowledge (how major projects are structured) and practical experience (building zighttp). Use this foundation for all your Zig projects!
+
+---
+
 ## References
 
 [^1]: Zig Standard Library - Build System, https://ziglang.org/documentation/0.15.2/#Build-System
