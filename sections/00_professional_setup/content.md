@@ -1666,56 +1666,292 @@ jobs:
 
 ## 0.8 Documentation & Polish
 
-Professional projects need professional documentation.
+Professional projects need professional documentation. Good docs are as important as good code - they're how users discover, understand, and contribute to your project.
 
-### README.md
+### README.md - Your Project's Front Door
 
-We already created a comprehensive README with:
-- Project description
-- Installation instructions
-- Usage examples (CLI and library)
-- Development setup
-- Testing instructions
-- Project structure overview
-- Links to other documentation
+The README is the first thing users see. A good README answers three questions immediately:
 
-### ARCHITECTURE.md
+1. **What is this?** - One-sentence description + longer explanation
+2. **How do I use it?** - Installation and quick start
+3. **Why should I care?** - Key features, benefits, use cases
 
-Documents the internal design:
-- Module responsibilities
-- Key design decisions
-- Memory management patterns
-- Error handling strategy
-- Performance considerations
-- Future enhancements
+**Essential README sections:**
 
-### CONTRIBUTING.md
+```markdown
+# zighttp
 
-Guides contributors:
-- Development workflow
-- Code style guidelines
-- Testing requirements
-- Commit message format
-- Pull request process
-- Common tasks (adding features, fixing bugs)
+Simple HTTP client for Zig. CLI tool and reusable library.
 
-### LICENSE
+[![CI](https://github.com/user/zighttp/workflows/CI/badge.svg)](...)
+[![Zig](https://img.shields.io/badge/zig-0.15.2-orange.svg)](...)
 
-We used MIT License - permissive and widely used. Choose the license that fits your project's goals.
+## Features
 
-### Additional Polish
+- ✅ GET, POST, PUT, DELETE requests
+- ✅ JSON auto-formatting
+- ✅ Cross-platform (Linux, macOS, Windows)
+- ✅ Usable as CLI or library
 
-**1. Configuration Files**
-- `.zls.json` - ZLS settings
-- `.editorconfig` - Cross-editor consistency
-- `.gitignore` - Exclude build artifacts
+## Installation
 
-**2. CI/CD**
-- `.github/workflows/ci.yml` - Continuous integration
-- `.github/workflows/release.yml` - Release automation
+### As CLI tool
+```bash
+# From releases
+wget https://github.com/user/zighttp/releases/download/v0.1.0/zighttp-linux.tar.gz
+tar xf zighttp-linux.tar.gz
+sudo mv zighttp /usr/local/bin/
 
-**3. Package Manifest**
-- `build.zig.zon` - Version, metadata, dependencies
+# From source
+git clone https://github.com/user/zighttp
+cd zighttp
+zig build -Doptimize=ReleaseFast
+sudo cp zig-out/bin/zighttp /usr/local/bin/
+```
+
+### As library
+```zig
+// build.zig.zon
+.dependencies = .{
+    .zighttp = .{
+        .url = "https://github.com/user/zighttp/archive/v0.1.0.tar.gz",
+        .hash = "1220...",
+    },
+}
+```
+
+## Usage
+
+### CLI
+```bash
+zighttp https://api.github.com/users/ziglang
+zighttp -X POST https://httpbin.org/post -d '{"key":"value"}'
+```
+
+### Library
+```zig
+const zighttp = @import("zighttp");
+
+const response = try zighttp.request(allocator, .{
+    .url = "https://api.github.com",
+    .method = .GET,
+});
+defer response.deinit();
+```
+
+## Documentation
+
+- [Architecture](ARCHITECTURE.md) - Design decisions
+- [Contributing](CONTRIBUTING.md) - Development guide
+- [Examples](examples/) - Usage examples
+
+## License
+
+MIT License - see [LICENSE](LICENSE)
+```
+
+**README best practices:**
+- Add CI badges (build status, Zig version)
+- Include GIFs/screenshots for visual tools
+- Keep quick start < 5 minutes
+- Link to detailed docs for advanced usage
+
+### ARCHITECTURE.md - Design Rationale
+
+Documents **why** decisions were made, not just what code does:
+
+```markdown
+# Architecture
+
+## Overview
+
+zighttp is designed as both CLI and library...
+
+## Module Structure
+
+### src/main.zig - CLI Entry Point
+
+**Responsibility:** Coordinate CLI workflow
+
+**Key decisions:**
+- Uses GeneralPurposeAllocator for leak detection
+- Prints help on error for better UX
+- Separates concerns: parsing, requesting, formatting
+
+**Why this approach:**
+Keeping CLI thin makes the library testable independently...
+
+### src/http_client.zig - HTTP Logic
+
+**Responsibility:** Wrap std.http.Client with simpler API
+
+**Key decisions:**
+- Allocates response body on heap (caller owns)
+- Reads in chunks (handles large responses)
+- Custom User-Agent header
+
+**Trade-offs:**
+- Pro: Simple API, handles large responses
+- Con: Buffers entire response in memory
+- Alternative: Streaming API (future enhancement)
+```
+
+**What to document:**
+- **Design decisions:** Why this structure over alternatives?
+- **Trade-offs:** What did you optimize for? What did you sacrifice?
+- **Patterns:** Single-file structs, error handling, memory ownership
+- **Performance:** Where are the hot paths? Known bottlenecks?
+- **Future work:** What would you change if starting over?
+
+### CONTRIBUTING.md - Onboarding Contributors
+
+Make it easy for others to contribute:
+
+**Essential sections:**
+1. **Development setup** - How to get started (dependencies, build, test)
+2. **Code style** - Naming conventions, formatting, documentation standards
+3. **Testing guidelines** - What tests to write, how to run them
+4. **Commit message format** - Conventional commits, examples
+5. **Pull request process** - Steps from fork to merge
+
+**Example snippet:**
+```markdown
+## Making Changes
+
+1. Fork and create feature branch: `git checkout -b feature/your-feature`
+2. Make changes following code style (see below)
+3. Add tests: `zig build test`
+4. Format code: `zig fmt .`
+5. Commit with clear message: `feat(client): add timeout support`
+6. Push and create PR
+
+## Code Style
+
+**Naming:**
+- `camelCase` for functions and variables
+- `PascalCase` for types (structs, enums)
+- `SCREAMING_SNAKE_CASE` for constants
+
+**Documentation:**
+Use `///` doc comments for public APIs:
+
+```zig
+/// Makes an HTTP request with the given arguments.
+///
+/// Caller owns returned memory and must call response.deinit().
+///
+/// Example:
+/// ```zig
+/// const response = try request(allocator, args);
+/// defer response.deinit();
+/// ```
+pub fn request(allocator: Allocator, args: Args) !Response
+```
+
+### Code Documentation - Doc Comments
+
+Zig supports doc comments with `///`:
+
+**What to document:**
+- **Purpose:** What does this function/type do?
+- **Parameters:** What do they mean? Valid ranges?
+- **Return value:** What does it return? Error conditions?
+- **Memory ownership:** Who allocates? Who frees?
+- **Examples:** Show real usage
+
+**Bad doc comment:**
+```zig
+/// Parse arguments
+pub fn parse(allocator: Allocator) !Args
+```
+
+**Good doc comment:**
+```zig
+/// Parses command-line arguments into structured Args.
+///
+/// Accepts flags: -X/--method, -d/--data, -h/--help
+/// First non-flag argument is treated as URL.
+///
+/// Returns error.MissingUrl if no URL provided.
+/// Returns error.ShowHelp if -h/--help specified.
+///
+/// Caller owns returned Args and must call deinit(allocator).
+///
+/// Example:
+/// ```zig
+/// const args = try Args.parse(allocator);
+/// defer args.deinit(allocator);
+/// ```
+pub fn parse(allocator: Allocator) !Args
+```
+
+### CHANGELOG.md - Track Changes
+
+Document changes between versions:
+
+```markdown
+# Changelog
+
+All notable changes to zighttp will be documented here.
+
+Format based on [Keep a Changelog](https://keepachangelog.com/)
+
+## [Unreleased]
+
+### Added
+- Custom header support (#12)
+
+### Fixed
+- Handle empty response bodies (#15)
+
+## [0.1.0] - 2024-01-15
+
+### Added
+- Initial release
+- GET, POST, PUT, DELETE support
+- JSON auto-formatting
+- CLI and library API
+- CI/CD workflows
+
+[Unreleased]: https://github.com/user/zighttp/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/user/zighttp/releases/tag/v0.1.0
+```
+
+**Categories:**
+- `Added` - New features
+- `Changed` - Changes to existing features
+- `Deprecated` - Soon-to-be-removed features
+- `Removed` - Removed features
+- `Fixed` - Bug fixes
+- `Security` - Security fixes
+
+### LICENSE - Legal Foundation
+
+Choose appropriate license:
+
+- **MIT** - Permissive, most popular for Zig projects
+- **Apache 2.0** - Permissive with patent grant
+- **GPL** - Copyleft, requires derivatives to be open-source
+- **Unlicense / Public Domain** - No restrictions
+
+Most Zig projects use MIT for simplicity and compatibility.
+
+### Polish Checklist
+
+Before releasing, verify:
+
+- [ ] README complete with badges, examples, installation
+- [ ] ARCHITECTURE.md documents design decisions
+- [ ] CONTRIBUTING.md guides new contributors
+- [ ] LICENSE file present
+- [ ] CHANGELOG.md tracks versions
+- [ ] All public APIs have doc comments
+- [ ] Code formatted (`zig fmt .`)
+- [ ] No TODO/FIXME/HACK comments in committed code
+- [ ] Version updated in `build.zig.zon`
+- [ ] CI passes on all platforms
+
+**Documentation generates trust.** Users evaluate projects by documentation quality. Invest time here - it pays dividends in adoption and contributions.
 
 ---
 
