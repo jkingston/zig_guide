@@ -226,7 +226,7 @@ Professional development requires professional tooling. This section covers sett
 
 The Zig Language Server (ZLS) provides IDE features like autocomplete, go-to-definition, hover documentation, and inline diagnostics.[^3]
 
-> **📝 NOTE:** ZLS versions must match your Zig version closely. Using ZLS 0.13.0 with Zig 0.15.2 will cause errors. Always download the ZLS version that matches your Zig installation. Check compatibility at https://github.com/zigtools/zls#version-support-matrix
+> **📝 NOTE:** ZLS versions must match your Zig version closely. Using ZLS 0.13.0 with Zig 0.15.2 will cause errors. Always download the ZLS version that matches your Zig installation. Check compatibility at the ZLS version support matrix.[^5]
 
 #### Installation
 
@@ -1190,7 +1190,7 @@ Before building complex projects, study how professional Zig codebases are organ
 
 ### Zig Compiler - Pipeline Architecture
 
-**Repository:** github.com/ziglang/zig | **Size:** 300K+ LOC
+**Repository:** ziglang/zig[^6] | **Size:** 300K+ LOC
 
 **Structure:**
 ```
@@ -1230,7 +1230,7 @@ zig/
 
 ### TigerBeetle - Zero-Dependency Database
 
-**Repository:** github.com/tigerbeetle/tigerbeetle | **Size:** 100K+ LOC | **Dependencies:** None
+**Repository:** tigerbeetle/tigerbeetle[^7] | **Size:** 100K+ LOC | **Dependencies:** None
 
 **Structure:**
 ```
@@ -1267,7 +1267,7 @@ tigerbeetle/
 
 ### ZLS - Feature-Per-File Organization
 
-**Repository:** github.com/zigtools/zls | **Size:** 50K+ LOC
+**Repository:** zigtools/zls[^3] | **Size:** 50K+ LOC
 
 **Structure:**
 ```
@@ -1303,7 +1303,7 @@ zls/
 
 ### Bun - Multi-Language Integration
 
-**Repository:** github.com/oven-sh/bun | **Size:** 500K+ LOC (Zig + C++ + JS)
+**Repository:** oven-sh/bun[^8] | **Size:** 500K+ LOC (Zig + C++ + JS)
 
 **Structure:**
 ```
@@ -1334,7 +1334,7 @@ bun/
 
 ### Ghostty - Platform Abstraction
 
-**Repository:** github.com/ghostty-org/ghostty | **Size:** 80K+ LOC
+**Repository:** ghostty-org/ghostty[^9] | **Size:** 80K+ LOC
 
 **Structure:**
 ```
@@ -1371,7 +1371,7 @@ ghostty/
 
 ### Mach - Modular Architecture
 
-**Repository:** github.com/hexops/mach | **Size:** 40K+ LOC
+**Repository:** hexops/mach[^10] | **Size:** 40K+ LOC
 
 **Structure:**
 ```
@@ -1894,7 +1894,7 @@ Document changes between versions:
 
 All notable changes to zighttp will be documented here.
 
-Format based on [Keep a Changelog](https://keepachangelog.com/)
+Format based on Keep a Changelog.[^11]
 
 ## [Unreleased]
 
@@ -2147,7 +2147,7 @@ bash: zig: command not found
 ```
 
 **Solution:**
-- Verify Zig is installed: Download from https://ziglang.org/download/
+- Verify Zig is installed: Download from official releases[^12]
 - Add to PATH: `export PATH=$PATH:/path/to/zig`
 - Check version: `zig version` should show 0.15.2
 
@@ -2209,8 +2209,8 @@ error: unable to find 'std.Build'
 
 **Solution:**
 - Version mismatch between ZLS and Zig
-- Download matching ZLS from https://github.com/zigtools/zls/releases
-- Check ZLS version support matrix
+- Download matching ZLS from official releases[^13]
+- Check ZLS version support matrix[^5]
 
 ### Cross-Compilation Issues
 
@@ -2420,12 +2420,12 @@ When troubleshooting doesn't work:
    - APIs change between versions
 
 2. **Search GitHub issues:**
-   - https://github.com/ziglang/zig/issues
+   - Zig issue tracker[^14]
    - Often someone hit the same problem
 
 3. **Ask in Zig community:**
-   - Discord: https://discord.gg/zig
-   - Ziggit forum: https://ziggit.dev
+   - Discord[^15]
+   - Ziggit forum[^16]
    - Reddit: r/Zig
 
 4. **Provide complete error context:**
@@ -2492,4 +2492,16 @@ You now have both theoretical knowledge (how major projects are structured) and 
 [^2]: Zig Community - Project Structure Conventions, https://github.com/ziglang/zig/wiki/FAQ
 [^3]: ZLS (Zig Language Server), https://github.com/zigtools/zls
 [^4]: Zig Documentation - zig fmt, https://ziglang.org/documentation/0.15.2/#zig-fmt
+[^5]: ZLS Version Support Matrix, https://github.com/zigtools/zls#version-support-matrix
+[^6]: Zig Compiler Repository, https://github.com/ziglang/zig
+[^7]: TigerBeetle Repository, https://github.com/tigerbeetle/tigerbeetle
+[^8]: Bun Repository, https://github.com/oven-sh/bun
+[^9]: Ghostty Repository, https://github.com/ghostty-org/ghostty
+[^10]: Mach Engine Repository, https://github.com/hexops/mach
+[^11]: Keep a Changelog, https://keepachangelog.com/
+[^12]: Zig Downloads, https://ziglang.org/download/
+[^13]: ZLS Releases, https://github.com/zigtools/zls/releases
+[^14]: Zig Issue Tracker, https://github.com/ziglang/zig/issues
+[^15]: Zig Discord Community, https://discord.gg/zig
+[^16]: Ziggit Forum, https://ziggit.dev
 
