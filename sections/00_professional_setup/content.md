@@ -1,4 +1,4 @@
-# Professional Project Setup: From Zero to Production-Ready
+# Zero to Hero: Professional Zig Projects
 
 ## Overview
 
