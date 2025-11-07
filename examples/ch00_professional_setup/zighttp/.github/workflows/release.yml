@@ -1,0 +1,123 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+  build:
+    name: Build Release Artifacts
+    needs: create-release
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-linux
+            archive: tar.gz
+          - os: ubuntu-latest
+            target: aarch64-linux
+            archive: tar.gz
+          - os: macos-latest
+            target: x86_64-macos
+            archive: tar.gz
+          - os: macos-latest
+            target: aarch64-macos
+            archive: tar.gz
+          - os: windows-latest
+            target: x86_64-windows
+            archive: zip
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.15.2
+
+      - name: Build for ${{ matrix.target }}
+        run: zig build -Dtarget=${{ matrix.target }} -Doptimize=ReleaseFast
+
+      - name: Package artifact (Unix)
+        if: matrix.archive == 'tar.gz'
+        run: |
+          cd zig-out/bin
+          tar czf ../../zighttp-${{ matrix.target }}.tar.gz zighttp
+          cd ../..
+          sha256sum zighttp-${{ matrix.target }}.tar.gz > zighttp-${{ matrix.target }}.tar.gz.sha256
+
+      - name: Package artifact (Windows)
+        if: matrix.archive == 'zip'
+        shell: bash
+        run: |
+          cd zig-out/bin
+          7z a ../../zighttp-${{ matrix.target }}.zip zighttp.exe
+          cd ../..
+          sha256sum zighttp-${{ matrix.target }}.zip > zighttp-${{ matrix.target }}.zip.sha256
+
+      - name: Upload Release Asset (tar.gz)
+        if: matrix.archive == 'tar.gz'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./zighttp-${{ matrix.target }}.tar.gz
+          asset_name: zighttp-${{ matrix.target }}.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Release Asset Checksum (tar.gz)
+        if: matrix.archive == 'tar.gz'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./zighttp-${{ matrix.target }}.tar.gz.sha256
+          asset_name: zighttp-${{ matrix.target }}.tar.gz.sha256
+          asset_content_type: text/plain
+
+      - name: Upload Release Asset (zip)
+        if: matrix.archive == 'zip'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./zighttp-${{ matrix.target }}.zip
+          asset_name: zighttp-${{ matrix.target }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset Checksum (zip)
+        if: matrix.archive == 'zip'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./zighttp-${{ matrix.target }}.zip.sha256
+          asset_name: zighttp-${{ matrix.target }}.zip.sha256
+          asset_content_type: text/plain
