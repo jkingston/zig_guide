@@ -110,6 +110,12 @@ pub fn build(b: *std.Build) void {
     .name = "zighttp",
     .version = "0.1.0",
     .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .clap = .{
+            .url = "https://github.com/Hejsil/zig-clap/archive/0.9.1.tar.gz",
+            .hash = "122062d301a203d003547b414237229b09a7980095061697349f8bef41be9c30266b",
+        },
+    },
     .paths = .{
         "build.zig",
         "build.zig.zon",
@@ -123,8 +129,11 @@ pub fn build(b: *std.Build) void {
 **Purpose:**
 - Declares package metadata (name, version)
 - Specifies minimum Zig version compatibility
+- **Declares dependencies** - Here we add zig-clap for CLI parsing
 - Lists files to include when published as a package
-- Can declare dependencies (we'll add these later if needed)
+
+**How to get the hash:**
+When you first add a dependency URL, Zig will tell you the expected hash. Run `zig build` and it will output the correct hash to use.
 
 **`src/main.zig` - Executable Entry Point**
 
@@ -529,12 +538,13 @@ Each module has a single, clear responsibility - a pattern we saw in ZLS.
 
 ### Module 1: args.zig - Argument Parsing
 
-This module parses command-line arguments into a structured format.
+Professional CLI applications use battle-tested parsing libraries. We'll use **zig-clap**, the de facto standard in the Zig ecosystem.
 
-> **📝 NOTE:** For production CLI applications, consider using established parsing libraries like **zig-clap**, **yazap**, or **simargs** instead of manual parsing. We're parsing manually here for educational purposes - to demonstrate allocators, error handling, and string operations. Real-world projects benefit from battle-tested libraries that handle edge cases, generate help messages, and provide better error reporting. See the "Next Steps" section (0.9) for library recommendations.
+> **📝 NOTE:** zig-clap is the most widely adopted CLI parsing library for Zig. It provides type-safe argument parsing, automatic help generation, and handles edge cases that manual parsing misses. Most production Zig CLI tools (including tools from the Zig community) use zig-clap or similar libraries. This teaches both argument parsing AND dependency management.
 
 ```zig
 const std = @import("std");
+const clap = @import("clap");
 
 /// HTTP methods supported
 pub const Method = enum {
@@ -560,42 +570,57 @@ pub const Args = struct {
     pretty: bool = true,
 
     pub fn parse(allocator: std.mem.Allocator) !Args {
-        var args_iter = try std.process.argsWithAllocator(allocator);
-        defer args_iter.deinit();
+        // Define CLI parameters
+        const params = comptime clap.parseParamsComptime(
+            \\-h, --help             Display this help and exit.
+            \\-X, --method <STR>     HTTP method (GET, POST, PUT, DELETE)
+            \\-d, --data <STR>       Request body data
+            \\    --no-pretty        Disable JSON pretty-printing
+            \\<STR>                  URL to request
+            \\
+        );
 
-        // Skip program name
-        _ = args_iter.skip();
+        // Parse arguments
+        var diag = clap.Diagnostic{};
+        var res = clap.parse(clap.Help, &params, clap.parsers.default, .{
+            .diagnostic = &diag,
+            .allocator = allocator,
+        }) catch |err| {
+            diag.report(std.io.getStdErr().writer(), err) catch {};
+            return error.InvalidArguments;
+        };
+        defer res.deinit();
 
-        var result = Args{ .url = "" };
-        var next_is_method = false;
-        var next_is_body = false;
-
-        while (args_iter.next()) |arg| {
-            if (next_is_method) {
-                result.method = try Method.fromString(arg);
-                next_is_method = false;
-            } else if (next_is_body) {
-                result.body = try allocator.dupe(u8, arg);
-                next_is_body = false;
-            } else if (std.mem.eql(u8, arg, "-X") or std.mem.eql(u8, arg, "--method")) {
-                next_is_method = true;
-            } else if (std.mem.eql(u8, arg, "-d") or std.mem.eql(u8, arg, "--data")) {
-                next_is_body = true;
-            } else if (std.mem.eql(u8, arg, "--no-pretty")) {
-                result.pretty = false;
-            } else if (std.mem.eql(u8, arg, "-h") or std.mem.eql(u8, arg, "--help")) {
-                return error.ShowHelp;
-            } else if (result.url.len == 0) {
-                result.url = try allocator.dupe(u8, arg);
-            }
+        // Show help if requested
+        if (res.args.help != 0) {
+            return error.ShowHelp;
         }
 
-        if (result.url.len == 0) return error.MissingUrl;
+        // Extract URL (required positional argument)
+        if (res.positionals.len == 0) {
+            return error.MissingUrl;
+        }
+
+        var result = Args{
+            .url = try allocator.dupe(u8, res.positionals[0]),
+            .pretty = res.args.@"no-pretty" == 0,
+        };
+
+        // Parse method if provided
+        if (res.args.method) |method_str| {
+            result.method = try Method.fromString(method_str);
+        }
+
+        // Copy body if provided
+        if (res.args.data) |data| {
+            result.body = try allocator.dupe(u8, data);
+        }
+
         return result;
     }
 
     pub fn deinit(self: Args, allocator: std.mem.Allocator) void {
-        if (self.url.len > 0) allocator.free(self.url);
+        allocator.free(self.url);
         if (self.body) |body| allocator.free(body);
     }
 };
@@ -608,10 +633,19 @@ test "method from string" {
 ```
 
 **Key design decisions:**
-- Enum for HTTP methods (type-safe)
-- Allocator passed explicitly (Zig 0.15 style)
-- `deinit()` for cleanup (RAII pattern)
-- Unit tests co-located with code
+- **zig-clap for parsing** - Industry standard, handles edge cases
+- **Comptime parameter definition** - Type-safe, validated at compile time
+- **Automatic diagnostics** - Better error messages than manual parsing
+- **Enum for HTTP methods** - Type-safe method handling
+- **Allocator passed explicitly** - Zig 0.15 style, clear ownership
+- **`deinit()` for cleanup** - RAII pattern
+
+**Benefits over manual parsing:**
+- Help message generated automatically from parameter definitions
+- Better error messages (invalid options, missing arguments)
+- Handles quoted arguments, escaping, edge cases
+- Type-safe parsing (can specify int, bool, string types)
+- Less code, more maintainable
 
 ### Module 2: http_client.zig - HTTP Requests
 
@@ -1035,6 +1069,12 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    // ===== Dependencies =====
+    const clap = b.dependency("clap", .{
+        .target = target,
+        .optimize = optimize,
+    });
+
     // ===== Library =====
     const lib = b.addStaticLibrary(.{
         .name = "zighttp",
@@ -1044,6 +1084,7 @@ pub fn build(b: *std.Build) void {
             .optimize = optimize,
         }),
     });
+    lib.root_module.addImport("clap", clap.module("clap"));
     b.installArtifact(lib);
 
     // ===== Executable =====
@@ -1055,6 +1096,7 @@ pub fn build(b: *std.Build) void {
             .optimize = optimize,
         }),
     });
+    exe.root_module.addImport("clap", clap.module("clap"));
     b.installArtifact(exe);
 
     // ===== Run Step =====
@@ -1127,19 +1169,24 @@ pub fn build(b: *std.Build) void {
 
 ### Key Features
 
-**1. Multiple artifacts:**
+**1. Dependency management:**
+- Fetch zig-clap from GitHub automatically
+- Pass dependencies to library and executable
+- Zig handles downloads, caching, and verification
+
+**2. Multiple artifacts:**
 - Static library (`libzighttp.a`)
 - Executable (`zighttp`)
 - Test executables (multiple)
 
-**2. Custom build steps:**
+**3. Custom build steps:**
 - `zig build` - Build library and executable
 - `zig build run` - Run the CLI
 - `zig build test` - Run all tests
 - `zig build test-unit` - Unit tests only
 - `zig build test-integration` - Integration tests only
 
-**3. Cross-compilation support:**
+**4. Cross-compilation support:**
 ```bash
 # Build for Linux
 zig build -Dtarget=x86_64-linux -Doptimize=ReleaseFast
@@ -2142,13 +2189,13 @@ Now that you have a professional project structure:
 - Chapter 12: Testing & Benchmarking - Comprehensive testing strategies
 
 **Enhance zighttp:**
-- **Migrate to a CLI parsing library** (zig-clap, yazap, or simargs for robust argument handling)
 - Add custom headers support
-- Implement retry logic
-- Add configuration file support
-- Implement response streaming
-- Add progress indicators
+- Implement retry logic with exponential backoff
+- Add configuration file support (load defaults from `.zighttprc`)
+- Implement response streaming for large downloads
+- Add progress indicators for uploads/downloads
 - Support HTTP/2 when std.http adds it
+- Add cookie jar for session management
 
 **Build Your Own:**
 - Use zighttp as a template
