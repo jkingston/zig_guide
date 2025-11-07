@@ -531,6 +531,8 @@ Each module has a single, clear responsibility - a pattern we saw in ZLS.
 
 This module parses command-line arguments into a structured format.
 
+> **📝 NOTE:** For production CLI applications, consider using established parsing libraries like **zig-clap**, **yazap**, or **simargs** instead of manual parsing. We're parsing manually here for educational purposes - to demonstrate allocators, error handling, and string operations. Real-world projects benefit from battle-tested libraries that handle edge cases, generate help messages, and provide better error reporting. See the "Next Steps" section (0.9) for library recommendations.
+
 ```zig
 const std = @import("std");
 
@@ -2140,6 +2142,7 @@ Now that you have a professional project structure:
 - Chapter 12: Testing & Benchmarking - Comprehensive testing strategies
 
 **Enhance zighttp:**
+- **Migrate to a CLI parsing library** (zig-clap, yazap, or simargs for robust argument handling)
 - Add custom headers support
 - Implement retry logic
 - Add configuration file support
