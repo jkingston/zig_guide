@@ -1,133 +1,168 @@
 #!/usr/bin/env python3
 """
-Extract and analyze code blocks from Zig Developer Guide markdown files.
-Used by CI to track code block statistics and potential issues.
+Extract Zig code blocks from markdown files for the Zig Developer Guide.
+
+This script parses markdown files and extracts code blocks marked with ```zig,
+creating a mapping that can be used for validation or extraction.
 """
 
 import re
 import sys
-import json
 from pathlib import Path
-from collections import defaultdict
+from typing import List, Tuple, Dict
+import json
 
-def extract_code_blocks(md_content):
-    """Extract all code blocks from markdown content."""
-    # Match code blocks: ```lang\n...\n```
-    pattern = r'```(\w+)?\n(.*?)```'
-    matches = re.findall(pattern, md_content, re.DOTALL)
+def extract_code_blocks(markdown_content: str, file_path: str) -> List[Dict]:
+    """Extract all ```zig code blocks from markdown content."""
+    code_blocks = []
+    lines = markdown_content.split('\n')
 
-    blocks = []
-    for lang, code in matches:
-        blocks.append({
-            'language': lang if lang else 'none',
-            'code': code,
-            'lines': len(code.split('\n'))
-        })
+    in_code_block = False
+    code_lines = []
+    start_line = 0
+    block_index = 0
 
-    return blocks
+    for i, line in enumerate(lines, 1):
+        if line.strip().startswith('```zig'):
+            in_code_block = True
+            code_lines = []
+            start_line = i
+        elif line.strip() == '```' and in_code_block:
+            in_code_block = False
+            code = '\n'.join(code_lines)
 
-def analyze_chapter(chapter_path):
-    """Analyze code blocks in a chapter."""
+            # Skip empty blocks
+            if code.strip():
+                block_index += 1
+                code_blocks.append({
+                    'index': block_index,
+                    'start_line': start_line,
+                    'end_line': i,
+                    'code': code,
+                    'file': file_path,
+                    'lines': len(code_lines),
+                    'chars': len(code)
+                })
+        elif in_code_block:
+            code_lines.append(line)
+
+    return code_blocks
+
+def is_runnable_example(code: str) -> bool:
+    """Determine if a code block is a complete, runnable example."""
+    # Check for main function or test
+    has_main = 'pub fn main()' in code
+    has_test = 'test ' in code
+
+    # Check for complete program elements
+    has_imports = '@import' in code
+
+    # Likely a snippet if it's just a few lines without structure
+    is_snippet = len(code.split('\n')) < 10 and not (has_main or has_test)
+
+    return (has_main or has_test) and has_imports and not is_snippet
+
+def categorize_blocks(blocks: List[Dict]) -> Tuple[List[Dict], List[Dict]]:
+    """Categorize blocks as runnable examples or inline snippets."""
+    runnable = []
+    snippets = []
+
+    for block in blocks:
+        if is_runnable_example(block['code']):
+            runnable.append(block)
+        else:
+            snippets.append(block)
+
+    return runnable, snippets
+
+def analyze_chapter(chapter_path: Path) -> Dict:
+    """Analyze a chapter's markdown file and extract code block info."""
     content_file = chapter_path / 'content.md'
 
     if not content_file.exists():
         return None
 
-    with open(content_file, 'r', encoding='utf-8') as f:
-        content = f.read()
-
-    blocks = extract_code_blocks(content)
-
-    # Count by language
-    lang_counts = defaultdict(int)
-    total_lines = 0
-
-    for block in blocks:
-        lang_counts[block['language']] += 1
-        total_lines += block['lines']
+    content = content_file.read_text()
+    blocks = extract_code_blocks(content, str(content_file))
+    runnable, snippets = categorize_blocks(blocks)
 
     return {
         'chapter': chapter_path.name,
+        'content_file': str(content_file),
         'total_blocks': len(blocks),
-        'total_lines': total_lines,
-        'by_language': dict(lang_counts),
-        'blocks': blocks
+        'runnable_blocks': len(runnable),
+        'snippet_blocks': len(snippets),
+        'runnable': runnable,
+        'snippets': snippets
     }
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: extract_code_blocks.py <sections_dir>")
+        print("Usage: extract_code_blocks.py <sections_directory>")
+        print("   or: extract_code_blocks.py <markdown_file>")
         sys.exit(1)
 
-    sections_dir = Path(sys.argv[1])
+    path = Path(sys.argv[1])
 
-    if not sections_dir.exists():
-        print(f"Error: Directory {sections_dir} does not exist")
+    if path.is_file():
+        # Analyze single file
+        content = path.read_text()
+        blocks = extract_code_blocks(content, str(path))
+        runnable, snippets = categorize_blocks(blocks)
+
+        print(f"\n=== {path.name} ===")
+        print(f"Total blocks: {len(blocks)}")
+        print(f"Runnable examples: {len(runnable)}")
+        print(f"Inline snippets: {len(snippets)}")
+
+        if runnable:
+            print(f"\n--- Runnable Examples ({len(runnable)}) ---")
+            for block in runnable:
+                print(f"  Block #{block['index']} (lines {block['start_line']}-{block['end_line']}, {block['lines']} lines)")
+                # Show first line of code
+                first_line = block['code'].split('\n')[0][:60]
+                print(f"    {first_line}...")
+
+    elif path.is_dir():
+        # Analyze all chapters in sections directory
+        chapters = sorted([d for d in path.iterdir() if d.is_dir()])
+
+        total_stats = {
+            'total_blocks': 0,
+            'runnable': 0,
+            'snippets': 0
+        }
+
+        results = []
+
+        for chapter in chapters:
+            result = analyze_chapter(chapter)
+            if result:
+                results.append(result)
+                total_stats['total_blocks'] += result['total_blocks']
+                total_stats['runnable'] += result['runnable_blocks']
+                total_stats['snippets'] += result['snippet_blocks']
+
+        # Print summary
+        print("\n=== Code Block Analysis ===\n")
+        print(f"{'Chapter':<30} {'Total':<8} {'Runnable':<10} {'Snippets':<10}")
+        print("-" * 60)
+
+        for result in results:
+            print(f"{result['chapter']:<30} {result['total_blocks']:<8} {result['runnable_blocks']:<10} {result['snippet_blocks']:<10}")
+
+        print("-" * 60)
+        print(f"{'TOTAL':<30} {total_stats['total_blocks']:<8} {total_stats['runnable']:<10} {total_stats['snippets']:<10}")
+
+        # Save detailed results to JSON
+        output_file = Path('code_blocks_analysis.json')
+        with open(output_file, 'w') as f:
+            json.dump(results, f, indent=2)
+        print(f"\nDetailed results saved to: {output_file}")
+
+    else:
+        print(f"Error: {path} is neither a file nor a directory")
         sys.exit(1)
 
-    print("# Code Block Analysis - Zig Developer Guide\n")
-
-    all_chapters = []
-    total_blocks = 0
-    total_lines = 0
-    global_lang_counts = defaultdict(int)
-
-    # Process each chapter
-    chapters = sorted([d for d in sections_dir.iterdir() if d.is_dir()])
-
-    for chapter_path in chapters:
-        result = analyze_chapter(chapter_path)
-
-        if result:
-            all_chapters.append(result)
-            total_blocks += result['total_blocks']
-            total_lines += result['total_lines']
-
-            for lang, count in result['by_language'].items():
-                global_lang_counts[lang] += count
-
-    # Print summary
-    print(f"## Summary\n")
-    print(f"- **Total Chapters**: {len(all_chapters)}")
-    print(f"- **Total Code Blocks**: {total_blocks}")
-    print(f"- **Total Code Lines**: {total_lines}")
-    print(f"")
-
-    print(f"## Code Blocks by Language\n")
-    for lang, count in sorted(global_lang_counts.items(), key=lambda x: -x[1]):
-        percentage = (count / total_blocks * 100) if total_blocks > 0 else 0
-        print(f"- **{lang}**: {count} blocks ({percentage:.1f}%)")
-    print("")
-
-    print(f"## Per-Chapter Breakdown\n")
-    for chapter in all_chapters:
-        print(f"### {chapter['chapter']}")
-        print(f"- Code blocks: {chapter['total_blocks']}")
-        print(f"- Code lines: {chapter['total_lines']}")
-
-        if chapter['by_language']:
-            langs = ', '.join([f"{lang}({count})" for lang, count in chapter['by_language'].items()])
-            print(f"- Languages: {langs}")
-        print("")
-
-    # Export JSON for further processing
-    analysis_data = {
-        'summary': {
-            'total_chapters': len(all_chapters),
-            'total_blocks': total_blocks,
-            'total_lines': total_lines,
-            'by_language': dict(global_lang_counts)
-        },
-        'chapters': all_chapters
-    }
-
-    output_file = Path('code_blocks_analysis.json')
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(analysis_data, f, indent=2)
-
-    print(f"✅ Analysis complete. JSON data written to {output_file}")
-
-    return 0
-
-if __name__ == "__main__":
-    sys.exit(main())
+if __name__ == '__main__':
+    main()
