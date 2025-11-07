@@ -220,7 +220,9 @@ We'll expand this structure in the next sections by adding:
 
 ## 0.2 Editor Setup & Developer Tools
 
-Professional development requires professional tooling. This section covers setting up Zig Language Server (ZLS), code formatting, and editor integration.
+With our project structure in place, let's configure the development environment. Professional tooling accelerates development and catches errors early.
+
+This section covers setting up Zig Language Server (ZLS), code formatting, and editor integration.
 
 ### Installing and Configuring ZLS
 
@@ -490,15 +492,13 @@ Test that everything works:
    git status  # Should not show zig-out/ or zig-cache/
    ```
 
-With these tools configured, you have a professional Zig development environment. Let's build our HTTP client!
+With these tools configured, you have a professional Zig development environment. Next, we'll put these tools to use building a complete project.
 
 ---
 
-*[Content continues with remaining sections 0.4-0.9...]*
-
 ## 0.3 Building zighttp: Project Structure & Code Organization
 
-Now that we have our tools configured, let's build the `zighttp` CLI tool. We'll apply the patterns we learned from analyzing real projects.
+Now let's build something real. This section demonstrates professional project organization by implementing `zighttp`, a complete HTTP client with both CLI and library interfaces. You'll see how modular design, clear responsibilities, and proper separation of concerns come together in practice.
 
 ### Project Design
 
@@ -873,7 +873,7 @@ This modular structure follows the patterns we saw in ZLS, where each feature ge
 
 ## 0.4 Testing Strategy
 
-Professional projects need professional testing. We'll implement both unit tests and integration tests.
+With `zighttp` implemented, we need to ensure it works correctly across different scenarios and platforms. Testing isn't optional in professional projects - it's how you maintain confidence as code evolves. This section covers both unit tests (testing individual components) and integration tests (testing the complete system).
 
 > **📝 NOTE:** Zig makes testing a first-class feature. Tests run with the same compiler that builds your code, use the same syntax, and integrate into the build system. There's no separate test framework to learn - if you can write Zig, you can write tests. This simplicity encourages comprehensive testing.
 
@@ -1022,7 +1022,7 @@ From our analysis of real projects, we follow these patterns:
 
 ## 0.5 Build System Configuration
 
-Our `build.zig` needs to handle both library and executable builds, plus multiple test types.
+Tests are only useful if they run reliably and efficiently. Zig's build system ties everything together - compiling code, running tests, and enabling cross-compilation. Let's configure `build.zig` to handle our library, executable, and test targets professionally.
 
 ### Complete build.zig
 
@@ -1180,7 +1180,9 @@ pub fn main() !void {
 
 ## 0.6 Learning from Real Zig Projects
 
-Before building complex projects, study how professional Zig codebases are organized. We'll analyze six projects representing different archetypes: compiler, database, developer tool, runtime, GUI app, and game engine.
+You've now built a complete project from scratch. To level up further, let's study how major Zig projects tackle organization at scale. These aren't arbitrary patterns - they evolved to solve real problems in production codebases handling 40K to 500K+ lines of code.
+
+We'll analyze six projects representing different archetypes: compiler, database, developer tool, runtime, GUI app, and game engine. Understanding when and why to use each pattern will help you make better architectural decisions.
 
 > **📝 NOTE:** Learning from production codebases is one of the fastest ways to internalize best practices. The patterns you see here weren't invented arbitrarily - they evolved to solve real organizational challenges at scale. Don't feel obligated to adopt all patterns immediately; understand the problems they solve first.
 
@@ -1455,7 +1457,7 @@ Now that we understand professional patterns, let's apply them building zighttp.
 ---
 ## 0.7 CI/CD with GitHub Actions
 
-Automate testing and releases with GitHub Actions.
+Manual testing on your local machine isn't enough - code that works on your laptop might fail on different platforms or configurations. Continuous Integration and Continuous Deployment (CI/CD) automates testing across multiple platforms and handles releases. Let's configure GitHub Actions to catch issues early and ship reliably.
 
 > **📝 NOTE:** CI/CD prevents "works on my machine" problems. GitHub Actions is free for public repos and provides runners for Linux, macOS, and Windows. Every push triggers automated testing across all platforms, catching platform-specific bugs early. This is how ZLS, Zig compiler, and other major projects maintain quality.
 
@@ -1953,6 +1955,8 @@ Before releasing, verify:
 
 ## 0.9 Release Checklist & Next Steps
 
+You've built a complete professional project with code, tests, CI/CD, and documentation. Now it's time to share it with the world. This section covers the final checklist before release and where to go next.
+
 ### Pre-Release Checklist
 
 Before releasing zighttp v0.1.0:
@@ -2131,7 +2135,7 @@ You now have both theoretical knowledge (how major projects are structured) and 
 
 ## 0.10 Troubleshooting Common Issues
 
-Professional setup sometimes hits snags. Here are solutions to the most common problems.
+Even with clear instructions, setup can hit unexpected issues - wrong versions, missing dependencies, platform differences. This section documents solutions to the most common problems you'll encounter. Before searching elsewhere, check here first - these are the issues that trip up new Zig developers most frequently.
 
 ### Build Errors
 
