@@ -1,4 +1,5 @@
 const std = @import("std");
+const clap = @import("clap");
 
 /// HTTP methods supported by the CLI
 pub const Method = enum {
@@ -23,46 +24,52 @@ pub const Args = struct {
     body: ?[]const u8 = null,
     pretty: bool = true,
 
-    /// Parse command-line arguments
+    /// Parse command-line arguments using zig-clap
     pub fn parse(allocator: std.mem.Allocator) !Args {
-        var args = try std.process.argsWithAllocator(allocator);
-        defer args.deinit();
+        // Define CLI parameters at compile time
+        const params = comptime clap.parseParamsComptime(
+            \\-h, --help             Display this help and exit.
+            \\-X, --method <STR>     HTTP method (GET, POST, PUT, DELETE)
+            \\-d, --data <STR>       Request body data
+            \\    --no-pretty        Disable JSON pretty-printing
+            \\<STR>                  URL to request
+            \\
+        );
 
-        // Skip program name
-        _ = args.skip();
-
-        var result = Args{
-            .url = "",
+        // Parse arguments with diagnostic support
+        var diag = clap.Diagnostic{};
+        var res = clap.parse(clap.Help, &params, clap.parsers.default, .{
+            .diagnostic = &diag,
+            .allocator = allocator,
+        }) catch |err| {
+            diag.report(std.io.getStdErr().writer(), err) catch {};
+            return error.InvalidArguments;
         };
+        defer res.deinit();
 
-        var next_is_method = false;
-        var next_is_body = false;
-
-        while (args.next()) |arg| {
-            if (next_is_method) {
-                result.method = try Method.fromString(arg);
-                next_is_method = false;
-            } else if (next_is_body) {
-                result.body = try allocator.dupe(u8, arg);
-                next_is_body = false;
-            } else if (std.mem.eql(u8, arg, "-X") or std.mem.eql(u8, arg, "--method")) {
-                next_is_method = true;
-            } else if (std.mem.eql(u8, arg, "-d") or std.mem.eql(u8, arg, "--data")) {
-                next_is_body = true;
-            } else if (std.mem.eql(u8, arg, "--no-pretty")) {
-                result.pretty = false;
-            } else if (std.mem.eql(u8, arg, "-h") or std.mem.eql(u8, arg, "--help")) {
-                return error.ShowHelp;
-            } else {
-                // First non-flag argument is the URL
-                if (result.url.len == 0) {
-                    result.url = try allocator.dupe(u8, arg);
-                }
-            }
+        // Show help if requested
+        if (res.args.help != 0) {
+            return error.ShowHelp;
         }
 
-        if (result.url.len == 0) {
+        // Extract URL (required positional argument)
+        if (res.positionals.len == 0) {
             return error.MissingUrl;
+        }
+
+        var result = Args{
+            .url = try allocator.dupe(u8, res.positionals[0]),
+            .pretty = res.args.@"no-pretty" == 0,
+        };
+
+        // Parse method if provided
+        if (res.args.method) |method_str| {
+            result.method = try Method.fromString(method_str);
+        }
+
+        // Copy body if provided
+        if (res.args.data) |data| {
+            result.body = try allocator.dupe(u8, data);
         }
 
         return result;
@@ -70,9 +77,7 @@ pub const Args = struct {
 
     /// Free allocated memory
     pub fn deinit(self: Args, allocator: std.mem.Allocator) void {
-        if (self.url.len > 0) {
-            allocator.free(self.url);
-        }
+        allocator.free(self.url);
         if (self.body) |body| {
             allocator.free(body);
         }
@@ -80,22 +85,6 @@ pub const Args = struct {
 };
 
 // Unit tests
-test "parse GET request" {
-    const allocator = std.testing.allocator;
-
-    // Mock args - in a real test we'd use a different approach
-    // This is a simplified demonstration
-    const url = "https://example.com";
-    var args = Args{
-        .url = try allocator.dupe(u8, url),
-        .method = .GET,
-    };
-    defer args.deinit(allocator);
-
-    try std.testing.expectEqual(Method.GET, args.method);
-    try std.testing.expectEqualStrings("https://example.com", args.url);
-}
-
 test "method from string" {
     try std.testing.expectEqual(Method.GET, try Method.fromString("GET"));
     try std.testing.expectEqual(Method.POST, try Method.fromString("POST"));
