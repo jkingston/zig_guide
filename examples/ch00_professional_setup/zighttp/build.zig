@@ -13,9 +13,11 @@ pub fn build(b: *std.Build) void {
     // Library module for external consumption
     const lib = b.addStaticLibrary(.{
         .name = "zighttp",
-        .root_source_file = b.path("src/root.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/root.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
     lib.root_module.addImport("clap", clap.module("clap"));
     b.installArtifact(lib);
@@ -23,9 +25,11 @@ pub fn build(b: *std.Build) void {
     // CLI executable
     const exe = b.addExecutable(.{
         .name = "zighttp",
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
     exe.root_module.addImport("clap", clap.module("clap"));
     b.installArtifact(exe);
@@ -44,9 +48,11 @@ pub fn build(b: *std.Build) void {
 
     // Unit tests for the library
     const lib_unit_tests = b.addTest(.{
-        .root_source_file = b.path("src/root.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/root.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
     lib_unit_tests.root_module.addImport("clap", clap.module("clap"));
 
@@ -61,9 +67,11 @@ pub fn build(b: *std.Build) void {
 
     inline for (modules) |module_name| {
         const module_tests = b.addTest(.{
-            .root_source_file = b.path("src/" ++ module_name ++ ".zig"),
-            .target = target,
-            .optimize = optimize,
+            .root_module = b.createModule(.{
+                .root_source_file = b.path("src/" ++ module_name ++ ".zig"),
+                .target = target,
+                .optimize = optimize,
+            }),
         });
         module_tests.root_module.addImport("clap", clap.module("clap"));
 
@@ -73,9 +81,11 @@ pub fn build(b: *std.Build) void {
 
     // Integration tests
     const integration_tests = b.addTest(.{
-        .root_source_file = b.path("tests/integration_test.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("tests/integration_test.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
 
     // Give integration tests access to the library and dependencies
