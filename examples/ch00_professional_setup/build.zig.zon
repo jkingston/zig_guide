@@ -11,4 +11,5 @@
             .path = "./zighttp",
         },
     },
+    .fingerprint = 0x963e3f2c0ed84472,
 }
