@@ -27,10 +27,4 @@ pub fn build(b: *std.Build) void {
 
     const run_step = b.step("run", "Run the zighttp CLI");
     run_step.dependOn(&run_cmd.step);
-
-    // Test step - this will run tests defined in zighttp/build.zig
-    const test_step = b.step("test", "Run all tests");
-    // The tests are built by the dependency's build.zig, so we just need to ensure
-    // the dependency is built when tests are requested. In a more complete setup,
-    // we would reference specific test artifacts from the dependency.
 }
