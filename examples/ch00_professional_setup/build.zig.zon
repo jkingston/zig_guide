@@ -1,5 +1,5 @@
 .{
-    .name = "ch00_professional_setup",
+    .name = "ch00-professional-setup",
     .version = "0.1.0",
     .minimum_zig_version = "0.15.2",
     .dependencies = .{
