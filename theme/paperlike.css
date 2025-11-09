@@ -52,6 +52,78 @@
     --warning-bg: #FFF5E6;
 }
 
+/* Dark mode variant - aged parchment by lamplight */
+.coal, .navy, .ayu {
+    /* Dark paper-like background colors */
+    --bg: #2B2520;                    /* Dark warm brown - like aged parchment */
+    --fg: #E8DCC8;                    /* Light cream text */
+
+    /* Sidebar colors */
+    --sidebar-bg: #1F1B17;            /* Darker brown */
+    --sidebar-fg: #D4C4B0;            /* Light brown text */
+    --sidebar-non-existant: #6B5D52;  /* Muted for non-existent */
+    --sidebar-active: #D4A574;        /* Warm gold for active page */
+    --sidebar-spacer: #3A3226;        /* Darker divider */
+
+    /* Search colors */
+    --searchbar-border-color: #4A3F35;
+    --searchbar-bg: #352F28;
+    --searchbar-fg: #D4C4B0;
+    --searchbar-shadow-color: rgba(0, 0, 0, 0.3);
+    --searchresults-header-fg: #C4A882;
+    --searchresults-border-color: #4A3F35;
+    --searchresults-li-bg: #352F28;
+    --search-mark-bg: #5D4E37;        /* Dark olive highlight */
+
+    /* Scrollbar */
+    --scrollbar: #4A3F35;
+
+    /* Icons */
+    --icons: #9A8B7A;
+    --icons-hover: #C4A882;
+
+    /* Links */
+    --links: #D4A574;                 /* Warm gold links */
+
+    /* Inline code */
+    --inline-code-color: #C4A882;
+
+    /* Table colors */
+    --table-border-color: #4A3F35;
+    --table-header-bg: #352F28;
+    --table-alternate-bg: #2F2822;
+
+    /* Quotes */
+    --quote-bg: #352F28;
+    --quote-border: #8B7355;
+
+    /* Warning/Info boxes */
+    --warning-border: #8B7355;
+    --warning-bg: #3A3226;
+}
+
+.coal .page, .navy .page, .ayu .page {
+    background-color: #1A1612;        /* Very dark warm background */
+}
+
+.coal .content pre, .navy .content pre, .ayu .content pre {
+    background-color: #1F1B17;
+    border-color: #3A3226;
+}
+
+.coal .content code, .navy .content code, .ayu .content code {
+    background-color: #1F1B17;
+}
+
+.coal .content h1, .coal .content h2, .coal .content h3,
+.coal .content h4, .coal .content h5, .coal .content h6,
+.navy .content h1, .navy .content h2, .navy .content h3,
+.navy .content h4, .navy .content h5, .navy .content h6,
+.ayu .content h1, .ayu .content h2, .ayu .content h3,
+.ayu .content h4, .ayu .content h5, .ayu .content h6 {
+    color: #F0E6D8;
+}
+
 /* Apply serif fonts to main content */
 .content {
     font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
@@ -185,10 +257,7 @@
     background-color: #F0E8DC;
 }
 
-/* Hide theme picker - we have a custom theme */
-#theme-toggle, .theme-popup {
-    display: none !important;
-}
+/* Theme toggle is visible - switch between light and dark paperlike modes */
 
 /* Sidebar styling */
 .sidebar {
