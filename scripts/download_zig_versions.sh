@@ -72,25 +72,47 @@ for VERSION in "${VERSIONS[@]}"; do
         TARBALL="zig-$ARCH_NAME-$OS_NAME-$VERSION.tar.xz"
         EXTRACTED_NAME="zig-$ARCH_NAME-$OS_NAME-$VERSION"
     fi
-    URL="https://ziglang.org/download/$VERSION/$TARBALL"
 
     # Download to temp location with retry logic
     TEMP_FILE="$ZIG_VERSIONS_DIR/$TARBALL"
 
-    # Try up to 3 times with delays
+    # Community mirrors (primarily for nightly builds, but try for stable too)
+    MIRRORS=(
+        "https://pkg.machengine.org/zig"
+        "https://ziglang.freetls.fastly.net"
+        "https://zigmirror.hryx.net/zig"
+    )
+
+    # Try mirrors first (with short timeout since they may not have stable releases)
     DOWNLOAD_SUCCESS=false
-    for attempt in 1 2 3; do
-        if curl --retry 2 --retry-delay 2 -L -o "$TEMP_FILE" "$URL"; then
+    for MIRROR in "${MIRRORS[@]}"; do
+        MIRROR_URL="$MIRROR/$TARBALL?source=zig_guide"
+        echo "  Trying mirror: $MIRROR"
+        if curl --max-time 10 --silent --fail -L -o "$TEMP_FILE" "$MIRROR_URL"; then
+            echo "  ✓ Downloaded from mirror"
             DOWNLOAD_SUCCESS=true
             break
         fi
-        echo "  Download attempt $attempt failed, retrying..."
-        sleep 2
     done
 
+    # Fallback to official site (with version directory path)
     if [ "$DOWNLOAD_SUCCESS" = false ]; then
-        echo "Failed to download Zig $VERSION after 3 attempts"
-        echo "URL: $URL"
+        echo "  Mirrors unavailable, using official site..."
+        OFFICIAL_URL="https://ziglang.org/download/$VERSION/$TARBALL"
+
+        # Try up to 3 times with delays for official site
+        for attempt in 1 2 3; do
+            if curl --retry 2 --retry-delay 2 -L -o "$TEMP_FILE" "$OFFICIAL_URL"; then
+                DOWNLOAD_SUCCESS=true
+                break
+            fi
+            echo "  Download attempt $attempt failed, retrying..."
+            sleep 2
+        done
+    fi
+
+    if [ "$DOWNLOAD_SUCCESS" = false ]; then
+        echo "Failed to download Zig $VERSION from all sources"
         rm -f "$TEMP_FILE"
         continue
     fi

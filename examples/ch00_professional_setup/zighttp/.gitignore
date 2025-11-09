@@ -1,0 +1,32 @@
+# Zig build artifacts
+zig-out/
+zig-cache/
+.zig-cache/
+
+# Compiled binaries
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.pdb
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Dependency locks (optional - some projects commit these)
+# build.zig.zon.lock
+
+# Test artifacts
+test-results/
+coverage/
+
+# Local environment files
+.env
+.env.local

@@ -6,6 +6,7 @@
 
 # Guide Chapters
 
+- [Zero to Hero: Professional Zig Projects](ch00_professional_setup.md)
 - [Introduction](ch01_introduction.md)
 - [Language Idioms & Core Patterns](ch02_language_idioms.md)
 - [Memory & Allocators](ch03_memory_allocators.md)

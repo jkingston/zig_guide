@@ -1,0 +1,15 @@
+.{
+    .name = .ch00examples,
+    .version = "0.1.0",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "zighttp",
+    },
+    .dependencies = .{
+        .zighttp = .{
+            .path = "./zighttp",
+        },
+    },
+    .fingerprint = 0x963e3f2c0ed84472,
+}

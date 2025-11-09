@@ -1,0 +1,2293 @@
+# Professional Project Setup: From Zero to Production-Ready
+
+## Overview
+
+Most Zig tutorials show you how to write "Hello, World" - but then you're on your own when it comes to structuring a real project. This chapter bridges that gap by building a complete, production-ready CLI tool from scratch, incorporating all the professional practices used by major Zig projects.
+
+By the end of this chapter, you'll have:
+- A working HTTP client CLI tool (`zighttp`)
+- Complete understanding of professional project structure
+- Configured development tools (ZLS, formatting, CI/CD)
+- A template you can adapt for your own projects
+
+**Who this chapter is for:**
+- Developers setting up their first Zig project
+- Teams evaluating Zig and need a project template
+- Anyone wanting to understand how professional Zig projects are organized
+
+**What we'll build:**
+
+`zighttp` - A simple but complete HTTP client that demonstrates:
+- ✅ Standard project structure
+- ✅ Modular code organization
+- ✅ Comprehensive testing (unit + integration)
+- ✅ Professional build system
+- ✅ CI/CD automation
+- ✅ Cross-compilation support
+- ✅ Complete documentation
+
+This chapter complements the deep-dive chapters that follow. Where Chapter 8 explains build system concepts and Chapter 10 covers project layout theory, this chapter shows you the complete setup process from start to finish.
+
+---
+
+## 0.1 Project Initialization
+
+### Starting with `zig init`
+
+Zig provides a standard project template via `zig init`. This command generates a conventional directory structure that tooling expects.[^1]
+
+Let's start by creating our project:
+
+```bash
+$ mkdir zighttp && cd zighttp
+$ zig init
+info: Created build.zig
+info: Created build.zig.zon
+info: Created src/main.zig
+info: Created src/root.zig
+```
+
+> **💡 TIP:** Choose project names carefully - they appear in `build.zig.zon`, imports, and command-line tools. Use lowercase with hyphens or underscores. The project name becomes your package name if you publish it to the Zig package registry.
+
+### Understanding the Generated Structure
+
+The `zig init` command creates four essential files:
+
+```
+zighttp/
+├── build.zig          # Build configuration
+├── build.zig.zon      # Package manifest
+└── src/
+    ├── main.zig       # Executable entry point
+    └── root.zig       # Library module root
+```
+
+Let's examine each file:
+
+#### `build.zig` - Build Configuration
+
+```zig
+const std = @import("std");
+
+pub fn build(b: *std.Build) void {
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
+
+    const exe = b.addExecutable(.{
+        .name = "zighttp",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
+    });
+    b.installArtifact(exe);
+
+    const run_cmd = b.addRunArtifact(exe);
+    run_cmd.step.dependOn(b.getInstallStep());
+    if (b.args) |args| {
+        run_cmd.addArgs(args);
+    }
+
+    const run_step = b.step("run", "Run the app");
+    run_step.dependOn(&run_cmd.step);
+}
+```
+
+**Key elements:**
+- **`standardTargetOptions()`** - Accepts `-Dtarget=` from command line for cross-compilation
+- **`standardOptimizeOption()`** - Accepts `-Doptimize=` (Debug, ReleaseFast, ReleaseSafe, ReleaseSmall)
+- **`addExecutable()`** - Defines an executable artifact
+- **`installArtifact()`** - Marks for installation to `zig-out/bin/`
+- **`addRunArtifact()`** - Creates a run step that executes the binary
+
+> **📝 NOTE:** Cross-compilation is first-class in Zig. Build for any platform from any platform: `zig build -Dtarget=x86_64-windows`, `zig build -Dtarget=aarch64-macos`, etc. No cross-compiler toolchain needed!
+
+#### `build.zig.zon` - Package Manifest
+
+```zig
+.{
+    .name = "zighttp",
+    .version = "0.1.0",
+    .minimum_zig_version = "0.15.2",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "README.md",
+        "LICENSE",
+    },
+}
+```
+
+**Purpose:**
+- Declares package metadata (name, version)
+- Specifies minimum Zig version compatibility
+- Lists files to include when published as a package
+- Can declare dependencies (we'll add these later if needed)
+
+#### `src/main.zig` - Executable Entry Point
+
+```zig
+const std = @import("std");
+
+pub fn main() void {
+    std.debug.print("Hello, World!\n", .{});
+}
+```
+
+The `main()` function is the entry point for executables. It can return `void`, `!void` (for errors), or `u8` (for exit codes).
+
+#### `src/root.zig` - Library Module Root
+
+```zig
+const std = @import("std");
+
+pub fn add(a: i32, b: i32) i32 {
+    return a + b;
+}
+
+test "basic add functionality" {
+    try std.testing.expect(add(3, 7) == 10);
+}
+```
+
+The `root.zig` file defines your library's public API. Functions marked `pub` are accessible to dependents.
+
+### First Build
+
+Verify the project works:
+
+```bash
+$ zig build
+$ ./zig-out/bin/zighttp
+Hello, World!
+```
+
+Run tests:
+
+```bash
+$ zig build test
+All 1 tests passed.
+```
+
+Run the executable directly via build system:
+
+```bash
+$ zig build run
+Hello, World!
+```
+
+### Build Artifacts and Caching
+
+Zig creates two directories:
+- **`zig-cache/`** - Local build cache (incremental compilation)
+- **`zig-out/`** - Output directory for built artifacts
+
+Both should be excluded from version control (we'll add `.gitignore` soon).
+
+> **⚠️ WARNING:** Never commit `zig-cache/` or `zig-out/` to Git. They contain machine-specific binaries and can be gigabytes in size. Always add them to `.gitignore` before your first commit. Committing them causes merge conflicts and bloats repository history.
+
+### What Makes This Structure Standard?
+
+The `zig init` layout follows conventions established by the Zig community and major projects:[^2]
+
+1. **`build.zig` at project root** - All Zig projects use this name
+2. **`src/` for source files** - Consistent across projects
+3. **`main.zig` for executables** - Expected entry point name
+4. **`root.zig` for libraries** - Expected library root
+
+These conventions enable:
+- **ZLS** can find project root by locating `build.zig`
+- **Build tools** know where to look for configuration
+- **Developers** can navigate unfamiliar projects easily
+- **Package managers** understand project structure
+
+### Customizing for Our Project
+
+Our `zighttp` project will be both a library and a CLI tool. The default structure already supports this:
+- `src/main.zig` - CLI interface
+- `src/root.zig` - Library exports for programmatic use
+
+We'll expand this structure in the next sections by adding:
+- Additional modules (`args.zig`, `http_client.zig`, `json_formatter.zig`)
+- Test directory (`tests/`)
+- Configuration files (`.zls.json`, `.editorconfig`, `.gitignore`)
+- CI/CD workflows (`.github/workflows/`)
+- Documentation (`README.md`, `ARCHITECTURE.md`, `CONTRIBUTING.md`)
+
+---
+
+## 0.2 How Real Zig Projects Are Structured
+
+Before building our own project, let's study how major Zig projects organize their code. Understanding these patterns will help you make better structural decisions and recognize idiomatic Zig project organization.
+
+> **📝 NOTE:** Learning from production codebases is one of the fastest ways to internalize best practices. The patterns you see here weren't invented arbitrarily - they evolved to solve real organizational challenges at scale. Don't feel obligated to adopt all patterns immediately; understand the problems they solve first.
+
+We'll analyze six projects representing different archetypes:
+1. **Zig Compiler** - Large compiler project
+2. **TigerBeetle** - High-performance database
+3. **ZLS** - Developer tool with multi-version support
+4. **Bun** - Mixed-language codebase (Zig + C++ + JS)
+5. **Ghostty** - Cross-platform GUI application
+6. **Mach Engine** - Modular game engine
+
+### Project 1: Zig Compiler - Complex Multi-Stage Build
+
+**Repository:** https://github.com/ziglang/zig
+**Type:** Compiler / Language Implementation
+**Size:** 300K+ lines of code
+
+#### Structure
+
+```
+zig/
+├── build.zig
+├── build.zig.zon
+├── src/
+│   ├── main.zig
+│   ├── Compilation.zig      # Single struct per file
+│   ├── Sema.zig             # Semantic analysis
+│   ├── AstGen.zig           # AST generation
+│   ├── Zir.zig              # Zig IR
+│   ├── Air.zig              # Analyzed IR
+│   ├── codegen/             # Subsystem directory
+│   │   ├── llvm.zig
+│   │   ├── c.zig
+│   │   └── spirv/
+│   ├── link/                # Linker backends
+│   │   ├── Elf.zig
+│   │   ├── MachO.zig
+│   │   ├── Coff.zig
+│   │   └── Wasm.zig
+│   ├── arch/                # Architecture-specific
+│   │   ├── x86_64/
+│   │   ├── aarch64/
+│   │   └── wasm32/
+│   └── std/                 # Standard library source
+├── lib/                     # Bundled C libraries
+├── test/
+│   ├── behavior/            # Language semantics tests
+│   ├── cases/               # Compilation scenarios
+│   └── standalone/          # Complete project tests
+└── tools/
+    └── process_headers.zig  # Build-time codegen
+```
+
+#### Key Patterns
+
+**1. Single-file types with PascalCase naming**
+
+Files like `Compilation.zig`, `Sema.zig`, and `Module.zig` each export a single primary struct:
+
+```zig
+// src/Compilation.zig
+const Compilation = @This();
+
+const std = @import("std");
+const Module = @import("Module.zig");
+
+// Struct fields
+gpa: std.mem.Allocator,
+module: *Module,
+...
+
+pub fn create(gpa: std.mem.Allocator) !*Compilation {
+    // Implementation
+}
+```
+
+This pattern makes it trivial to find where a type is defined. If you see `Compilation` in code, you know it's in `Compilation.zig`.
+
+**2. Subsystem directories**
+
+Related functionality is grouped into directories:
+- `codegen/` - All code generation backends
+- `link/` - All linker implementations
+- `arch/` - Architecture-specific code
+
+Each subsystem can be developed and tested independently.
+
+**3. Test organization by purpose**
+
+Tests are organized by what they test, not where code lives:
+- `behavior/` - Tests language semantics and features
+- `cases/` - Tests specific compilation scenarios
+- `standalone/` - Tests complete project builds
+
+**4. Minimal dependencies**
+
+The Zig compiler only depends on LLVM/Clang for code generation. Everything else - the parser, semantic analyzer, linker - is self-hosted in Zig. This gives maximum control and makes the compiler self-sufficient.
+
+**Why this works:**
+- Clear pipeline: source → AST → ZIR → AIR → machine code
+- Each stage is isolated and testable
+- Multiple backends can coexist
+- 300K+ LOC remains navigable
+
+> **💡 TIP:** Use single-file structs (like `Compilation.zig`) when a type is substantial (300+ lines) and self-contained. For smaller types or closely related types, group them in a module (like `types.zig`). The pattern makes large codebases navigable: seeing `@import("Parser.zig")` immediately tells you what the file contains.
+
+### Project 2: TigerBeetle - Database with Zero Dependencies
+
+**Repository:** https://github.com/tigerbeetle/tigerbeetle
+**Type:** Distributed Database
+**Size:** 100K+ lines of code
+**Dependencies:** **None!**
+
+#### Structure
+
+```
+tigerbeetle/
+├── build.zig
+├── build.zig.zon            # Empty .dependencies = .{}
+├── src/
+│   ├── tigerbeetle/
+│   │   ├── main.zig
+│   │   └── client.zig
+│   ├── vsr.zig              # Viewstamped Replication
+│   ├── lsm/                 # Log-Structured Merge tree
+│   │   ├── tree.zig
+│   │   ├── manifest.zig
+│   │   └── compaction.zig
+│   ├── storage.zig
+│   ├── io.zig               # Async I/O abstraction
+│   ├── clients/             # Language bindings
+│   │   ├── c/
+│   │   ├── java/
+│   │   ├── node/
+│   │   └── dotnet/
+│   ├── simulator.zig        # Deterministic testing
+│   └── shell.zig
+├── docs/
+│   ├── DESIGN.md
+│   ├── PROTOCOL.md
+│   └── INTERNALS.md
+└── scripts/
+```
+
+#### Key Patterns
+
+**1. Zero external dependencies**
+
+TigerBeetle implements everything from scratch:
+- Networking stack
+- Cryptography
+- Data structures
+- I/O system
+
+This is unusual but critical for a financial database where correctness is paramount. Every line of code is auditable.
+
+**2. Simulator-first development**
+
+```zig
+// src/simulator.zig
+pub const Simulator = struct {
+    // Deterministic testing of distributed scenarios
+    // Can replay exact failure conditions
+};
+```
+
+The simulator enables exhaustive testing of distributed consensus scenarios that would be impossible to test reliably with traditional methods.
+
+**3. Language bindings co-located**
+
+Client libraries for other languages live in the same repository. This ensures:
+- All clients stay in sync with server changes
+- Single source of truth for protocol
+- Consistent testing across languages
+
+**4. Extensive design documentation**
+
+The `docs/` directory contains detailed explanations of design decisions, not just API references. This helps contributors understand the "why" behind implementation choices.
+
+**Why this works:**
+- Zero dependencies = predictable behavior
+- Simulator finds bugs traditional testing misses
+- Co-located clients prevent version skew
+- Full control enables optimization at every layer
+
+> **⚠️ WARNING:** Zero dependencies is NOT a universal best practice. TigerBeetle's requirements (financial correctness, auditability, deterministic behavior) justify implementing everything from scratch. Most projects should use well-tested dependencies - reimplementing cryptography, networking, or compression introduces risk and maintenance burden. Only go dependency-free if you have TigerBeetle-level requirements.
+
+### Project 3: ZLS - Multi-Version Developer Tool
+
+**Repository:** https://github.com/zigtools/zls
+**Type:** Language Server
+**Size:** 50K+ lines of code
+**Dependencies:** known-folders, diffz, tracy
+
+#### Structure
+
+```
+zls/
+├── build.zig
+├── build.zig.zon
+├── src/
+│   ├── main.zig
+│   ├── Server.zig
+│   ├── DocumentStore.zig
+│   ├── analysis.zig
+│   ├── completions.zig      # Feature-specific files
+│   ├── goto.zig
+│   ├── references.zig
+│   ├── hover.zig
+│   ├── signature_help.zig
+│   ├── inlay_hints.zig
+│   ├── semantic_tokens.zig
+│   ├── Config.zig
+│   └── types.zig
+├── tests/
+│   ├── utility/
+│   ├── lsp_features/
+│   └── toolchains/          # Multi-version testing
+├── schema.json              # Config schema
+└── .github/
+    └── workflows/
+        ├── ci.yml
+        ├── release.yml
+        └── zig_nightly.yml  # Test against nightlies
+```
+
+#### Key Patterns
+
+**1. Feature-per-file organization**
+
+Each LSP feature maps to a file:
+- `completions.zig` - All autocomplete logic
+- `goto.zig` - All go-to-definition logic
+- `hover.zig` - All hover documentation
+- `references.zig` - All find-references logic
+
+This makes features easy to locate and maintain.
+
+**2. Core types extracted**
+
+Major types get their own files:
+- `Server.zig` - LSP server struct and message handling
+- `DocumentStore.zig` - Document lifecycle management
+- `Config.zig` - Configuration parsing and validation
+
+**3. Schema-driven configuration**
+
+```json
+// schema.json
+{
+  "type": "object",
+  "properties": {
+    "enable_autofix": {
+      "type": "boolean",
+      "description": "Automatically apply fixes",
+      "default": true
+    },
+    ...
+  }
+}
+```
+
+Editors can validate `.zls.json` files against this schema, preventing configuration errors.
+
+**4. Multi-version compatibility**
+
+ZLS must support multiple Zig versions simultaneously (0.11, 0.12, 0.13, 0.14, 0.15). The CI workflow tests against all supported versions:
+
+```yaml
+# .github/workflows/zig_nightly.yml
+strategy:
+  matrix:
+    zig-version: ['0.13.0', '0.14.1', '0.15.2', 'master']
+```
+
+**Why this works:**
+- LSP features map cleanly to files
+- Schema prevents invalid configuration
+- Multi-version testing catches regressions early
+- Clear boundary between analysis and protocol
+
+> **💡 TIP:** Feature-per-file organization (like ZLS) works excellently for projects with distinct, independent features. If you're building a CLI tool with subcommands, an LSP with features, or a web framework with middleware, this pattern keeps code discoverable and prevents files from becoming dumping grounds.
+
+### Project 4: Bun - Mixed-Language Codebase
+
+**Repository:** https://github.com/oven-sh/bun
+**Type:** JavaScript Runtime
+**Size:** 500K+ lines (Zig + C++ + JavaScript)
+
+#### Structure
+
+```
+bun/
+├── build.zig                # Zig components
+├── CMakeLists.txt           # C++ components
+├── package.json             # JS bundler
+├── src/
+│   ├── main.zig
+│   ├── bun.js/              # JS runtime (C++)
+│   │   ├── bindings/        # Zig ↔ C++ FFI layer
+│   │   ├── modules/
+│   │   └── webcore/
+│   ├── deps/
+│   │   ├── picohttp.zig     # HTTP parser (Zig)
+│   │   ├── mimalloc/        # Allocator (C)
+│   │   └── zstd/            # Compression (C)
+│   ├── cli/                 # CLI (Zig)
+│   ├── install/             # Package manager (Zig)
+│   └── bundler/             # Bundler (Zig + C++)
+└── test/
+```
+
+#### Key Patterns
+
+**1. Hybrid build system**
+
+Two build systems coordinate:
+- `build.zig` for Zig code
+- `CMakeLists.txt` for C++ code
+
+Each language has its own compilation process, coordinated at the top level.
+
+**2. Clear language boundaries**
+
+Languages are chosen for their strengths:
+- **Zig:** CLI, package manager, HTTP parsing, file I/O
+- **C++:** JavaScript engine (JavaScriptCore)
+- **JavaScript:** Bundler logic
+
+**3. Isolated FFI layer**
+
+```zig
+// src/bun.js/bindings/exports.zig
+pub export fn Bun__fetch(
+    ctx: *JSContext,
+    url: [*:0]const u8,
+    options: *FetchOptions,
+) JSValue {
+    // Clean boundary between Zig and C++
+}
+```
+
+All cross-language calls go through the `bindings/` directory. This prevents FFI code from spreading throughout the codebase.
+
+**4. Vendored C dependencies**
+
+The `deps/` directory contains all C libraries:
+- Exact version control
+- No system dependencies
+- Reproducible builds
+
+**Why this works:**
+- Reuses mature JavaScriptCore for JS execution
+- Leverages Zig for performance-critical paths
+- Clear boundaries prevent integration complexity
+- Each language does what it's best at
+
+### Project 5: Ghostty - Cross-Platform GUI Application
+
+**Repository:** https://github.com/ghostty-org/ghostty
+**Type:** Terminal Emulator
+**Size:** 80K+ lines of code
+
+#### Structure
+
+```
+ghostty/
+├── build.zig
+├── src/
+│   ├── main.zig
+│   ├── App.zig
+│   ├── terminal/            # Platform-agnostic core
+│   │   ├── Terminal.zig
+│   │   ├── Screen.zig
+│   │   ├── parser.zig
+│   │   └── color.zig
+│   ├── renderer/            # Platform-specific rendering
+│   │   ├── metal.zig        # macOS Metal
+│   │   ├── opengl.zig       # Linux/Windows
+│   │   └── software.zig     # Fallback
+│   ├── font/
+│   │   ├── face.zig
+│   │   ├── shaper.zig       # HarfBuzz integration
+│   │   └── rasterizer.zig   # FreeType integration
+│   ├── gui/                 # Platform-specific UI
+│   │   ├── gtk/             # Linux
+│   │   ├── cocoa/           # macOS
+│   │   └── windows/         # Windows
+│   ├── config/
+│   │   ├── Config.zig
+│   │   └── parser.zig
+│   └── pty/                 # Platform-specific terminal
+│       ├── unix.zig
+│       └── windows.zig
+└── test/
+```
+
+#### Key Patterns
+
+**1. Platform abstraction layers**
+
+Core terminal emulation logic is platform-agnostic and lives in `terminal/`. Platform-specific code is isolated in subdirectories:
+- `renderer/` - Different GPU APIs per platform
+- `gui/` - Native UI frameworks
+- `pty/` - OS-specific pseudo-terminal APIs
+
+**2. Core is portable**
+
+The terminal parser, screen buffer, and color handling work identically on all platforms. This code can be tested independently of any specific OS.
+
+**3. Multiple renderer backends**
+
+```zig
+// Selected at compile time based on target
+const renderer = switch (target.os.tag) {
+    .macos => @import("renderer/metal.zig"),
+    .linux => @import("renderer/opengl.zig"),
+    .windows => @import("renderer/opengl.zig"),
+    else => @import("renderer/software.zig"),
+};
+```
+
+Each platform gets the fastest available renderer, with a software fallback.
+
+**4. C library integration**
+
+Ghostty uses established C libraries for complex tasks:
+- **HarfBuzz** - Text shaping (complex scripts, ligatures)
+- **FreeType** - Font rasterization
+- **GTK/Cocoa** - Native UI appearance
+
+Integration via `@cImport` and build system linking.
+
+**Why this works:**
+- Terminal core is testable without GUI
+- Each platform gets native performance
+- Clear boundaries for cross-platform code
+- Easy to add new platforms/renderers
+
+### Project 6: Mach Engine - Modular Architecture
+
+**Repository:** https://github.com/hexops/mach
+**Type:** Game Engine
+**Size:** 40K+ lines (modular)
+
+#### Structure
+
+```
+mach/
+├── build.zig
+├── build.zig.zon
+├── src/
+│   ├── core/                # Minimal core
+│   │   ├── Core.zig
+│   │   └── module.zig
+│   ├── gfx/                 # Graphics module
+│   │   ├── gfx.zig
+│   │   └── sprite.zig
+│   ├── audio/               # Audio module
+│   ├── ecs/                 # Entity-component system
+│   │   ├── entities.zig
+│   │   ├── components.zig
+│   │   └── systems.zig
+│   └── sysaudio/            # Platform audio backends
+│       ├── wasapi.zig       # Windows
+│       ├── coreaudio.zig    # macOS
+│       └── pulseaudio.zig   # Linux
+├── examples/                # Example per feature
+│   ├── core/
+│   │   ├── triangle/
+│   │   ├── textured-cube/
+│   │   └── fractal/
+│   ├── gfx/
+│   └── audio/
+└── libs/                    # Git submodules
+    ├── glfw/
+    ├── freetype/
+    └── opus/
+```
+
+#### Key Patterns
+
+**1. Modular architecture**
+
+Users can depend on only what they need:
+
+```zig
+// build.zig.zon - Use just core
+.dependencies = .{
+    .mach_core = .{ .url = "https://..." },
+}
+
+// Or use everything
+.dependencies = .{
+    .mach = .{ .url = "https://..." },
+}
+```
+
+Modules are independently versioned and maintained.
+
+**2. Example-driven development**
+
+Every feature has a corresponding example:
+- `examples/core/triangle/` - Basic rendering
+- `examples/gfx/sprite/` - 2D sprite system
+- `examples/audio/playback/` - Audio playback
+
+Examples serve as:
+- Documentation (show real usage)
+- Integration tests (verified in CI)
+- Starting points for users
+
+**3. Composable dependencies**
+
+```zig
+// build.zig.zon
+.{
+    .name = "mach",
+    .version = "0.3.0",
+    .dependencies = .{
+        .mach_core = .{ .path = "src/core" },
+        .mach_gfx = .{ .path = "src/gfx" },
+        .mach_audio = .{ .path = "src/audio" },
+    },
+}
+```
+
+Each module can be used independently or composed together.
+
+**4. Cross-platform by default**
+
+Mach uses WebGPU as the rendering abstraction, which works on:
+- Desktop (via Dawn or wgpu)
+- Web (via WebAssembly and WebGPU)
+- Mobile (via native implementations)
+
+Single codebase runs everywhere.
+
+**Why this works:**
+- Game engines need modularity (not everyone needs every feature)
+- Examples are living documentation
+- WebGPU abstraction = true cross-platform
+- Git submodules = reproducible C dependencies
+
+### Common Patterns Across All Projects
+
+Let's summarize the patterns we see consistently:
+
+| Pattern | Zig | TigerBeetle | ZLS | Bun | Ghostty | Mach |
+|---------|:---:|:-----------:|:---:|:---:|:-------:|:----:|
+| PascalCase.zig for single-struct files | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Feature/subsystem directories | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Tests mirror src/ structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Platform-specific code isolated | ✅ | ⚫ | ⚫ | ✅ | ✅ | ✅ |
+| Minimal dependencies | ✅ | ✅ | ⚫ | ⚫ | ⚫ | ⚫ |
+| C interop via dedicated layer | ✅ | ⚫ | ⚫ | ✅ | ✅ | ✅ |
+| Comprehensive CI testing | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Examples in repository | ✅ | ✅ | ⚫ | ✅ | ⚫ | ✅ |
+
+**Legend:** ✅ Present | ⚫ Not applicable
+
+### Decision Matrix: Which Pattern for Your Project?
+
+**If building a compiler or interpreter:**
+→ Follow **Zig compiler** pattern
+- Stage-based directories (parser, sema, codegen, link)
+- One file per major component (PascalCase.zig)
+- Test by compilation scenario
+- Minimal dependencies
+
+**If building a database or storage system:**
+→ Follow **TigerBeetle** pattern
+- Zero dependencies for predictability
+- Simulator for deterministic testing
+- Performance-critical paths isolated
+- Extensive design documentation
+
+**If building a CLI tool or developer tool:**
+→ Follow **ZLS** pattern
+- Feature per file
+- Schema-driven configuration
+- Version compatibility testing if needed
+- External deps OK if stable
+
+**If doing C/C++ interop:**
+→ Follow **Bun** or **Ghostty** pattern
+- Dedicated FFI/bindings layer
+- Clear language boundaries
+- Each language handles its strength
+- Vendor C deps for reproducibility
+
+**If building a library or framework:**
+→ Follow **Mach** pattern
+- Modular architecture
+- Example-driven development
+- Composable dependencies
+- Cross-platform from day one
+
+### Anti-Patterns to Avoid
+
+These patterns were **not** observed in successful projects:
+
+❌ **Deep nesting** - `src/lib/core/internal/impl/helpers/util.zig`
+✅ **Instead:** Flatten structure, use descriptive names
+
+❌ **Mixed naming conventions** - `myModule.zig` + `OtherMod.zig` + `another_one.zig`
+✅ **Instead:** PascalCase for types, snake_case for modules, consistently
+
+❌ **God files** - `utils.zig` with 5000 lines
+✅ **Instead:** `string_utils.zig`, `math_utils.zig`, split by domain
+
+❌ **Circular dependencies** - Module A imports B imports A
+✅ **Instead:** Extract shared types to `types.zig`
+
+❌ **Platform code everywhere** - Windows-specific code mixed in
+✅ **Instead:** `platform/windows/`, `platform/linux/`, `platform/darwin/`
+
+❌ **Disconnected tests** - `test/` with different structure than `src/`
+✅ **Instead:** Mirror structure - `src/foo.zig` → `test/foo.zig`
+
+### Key Takeaways
+
+Apply these principles to your own projects:
+
+1. **File naming matters**
+   - `PascalCase.zig` exports a single primary struct
+   - `snake_case.zig` is a module with multiple exports
+   - Directories use lowercase with underscores
+
+2. **Organization principles**
+   - Directories represent subsystems or features
+   - Platform-specific code goes in subdirectories
+   - Tests mirror source structure exactly
+
+3. **Dependency management**
+   - Minimize external dependencies when possible
+   - Use git submodules for C libraries (reproducibility)
+   - Document all dependencies in `build.zig.zon`
+
+4. **Build system**
+   - Keep complexity in `build.zig`, not shell scripts
+   - Support cross-compilation from the start
+   - Provide separate steps for different test types
+
+5. **Testing strategy**
+   - Co-locate unit tests with source code
+   - Integration tests in separate `tests/` directory
+   - Test against multiple platforms in CI
+
+6. **Documentation**
+   - README for quick start
+   - ARCHITECTURE for detailed design
+   - CONTRIBUTING for development process
+   - Examples show real usage patterns
+
+Now that we understand how professional projects are structured, let's apply these patterns to build `zighttp`.
+
+---
+
+## 0.3 Editor Setup & Developer Tools
+
+Professional development requires professional tooling. This section covers setting up Zig Language Server (ZLS), code formatting, and editor integration.
+
+### Installing and Configuring ZLS
+
+The Zig Language Server (ZLS) provides IDE features like autocomplete, go-to-definition, hover documentation, and inline diagnostics.[^3]
+
+> **📝 NOTE:** ZLS versions must match your Zig version closely. Using ZLS 0.13.0 with Zig 0.15.2 will cause errors. Always download the ZLS version that matches your Zig installation. Check compatibility at https://github.com/zigtools/zls#version-support-matrix
+
+#### Installation
+
+**Option 1: From releases (recommended)**
+
+```bash
+# Download latest release for your platform
+# https://github.com/zigtools/zls/releases
+
+# macOS/Linux
+wget https://github.com/zigtools/zls/releases/download/0.13.0/zls-x86_64-linux.tar.gz
+tar -xzf zls-x86_64-linux.tar.gz
+sudo mv zls /usr/local/bin/
+
+# Verify
+zls --version
+```
+
+**Option 2: Build from source**
+
+```bash
+git clone https://github.com/zigtools/zls.git
+cd zls
+zig build -Doptimize=ReleaseSafe
+sudo cp zig-out/bin/zls /usr/local/bin/
+```
+
+#### Configuring ZLS
+
+Create `.zls.json` in your project root:
+
+```json
+{
+  "enable_autofix": true,
+  "enable_snippets": true,
+  "enable_ast_check_diagnostics": true,
+  "warn_style": true,
+  "semantic_tokens": "full",
+  "enable_inlay_hints": true,
+  "inlay_hints_show_variable_type_hints": true,
+  "inlay_hints_show_parameter_name": true,
+  "inlay_hints_show_builtin": true,
+  "inlay_hints_exclude_single_argument": true,
+  "operator_completions": true,
+  "include_at_in_builtins": false
+}
+```
+
+**Key settings explained:**
+
+- **`enable_autofix`** - Automatically apply fixes for common issues
+- **`enable_ast_check_diagnostics`** - Show errors as you type
+- **`warn_style`** - Highlight style violations
+- **`semantic_tokens`** - Enhanced syntax highlighting
+- **`enable_inlay_hints`** - Show inferred types inline
+- **`inlay_hints_show_parameter_name`** - Show parameter names in function calls
+
+This configuration enables aggressive IDE assistance while coding.
+
+### Editor Integration
+
+#### VS Code
+
+1. Install the official Zig extension:
+   - Open VS Code
+   - Go to Extensions (Ctrl+Shift+X)
+   - Search for "Zig Language"
+   - Install the official extension by zigtools
+
+2. Configure in `.vscode/settings.json`:
+
+```json
+{
+  "zig.zls.enabled": true,
+  "zig.formattingProvider": "zls",
+  "zig.initialSetupDone": true,
+  "editor.formatOnSave": true,
+  "[zig]": {
+    "editor.defaultFormatter": "ziglang.vscode-zig",
+    "editor.formatOnSave": true
+  }
+}
+```
+
+#### Neovim
+
+Using `nvim-lspconfig`:
+
+```lua
+-- lua/lsp/init.lua
+local lspconfig = require('lspconfig')
+
+lspconfig.zls.setup{
+  cmd = { "zls" },
+  filetypes = { "zig", "zir" },
+  root_dir = lspconfig.util.root_pattern("build.zig", ".git"),
+  settings = {
+    zls = {
+      enable_autofix = true,
+      enable_snippets = true,
+      warn_style = true,
+    }
+  }
+}
+```
+
+#### Emacs
+
+Using `lsp-mode`:
+
+```elisp
+;; .emacs or init.el
+(use-package lsp-mode
+  :hook (zig-mode . lsp)
+  :commands lsp)
+
+(setq lsp-zig-zls-executable "/usr/local/bin/zls")
+```
+
+### Code Formatting with `zig fmt`
+
+Zig has a built-in code formatter that enforces consistent style.[^4]
+
+#### Usage
+
+Format all files:
+```bash
+zig fmt .
+```
+
+Check formatting without modifying:
+```bash
+zig fmt --check .
+```
+
+Format specific file:
+```bash
+zig fmt src/main.zig
+```
+
+#### What `zig fmt` Does
+
+The formatter enforces:
+- 4-space indentation
+- Consistent spacing around operators
+- Proper line breaks
+- Trailing commas in multiline lists
+- No trailing whitespace
+
+**Before formatting:**
+```zig
+const x=10;
+const  y  =  20  ;
+const z=x+y;
+```
+
+**After `zig fmt`:**
+```zig
+const x = 10;
+const y = 20;
+const z = x + y;
+```
+
+#### Integration with Editors
+
+Most editors can run `zig fmt` on save. This prevents formatting drift and makes code reviews focus on logic, not style.
+
+### EditorConfig for Consistency
+
+Create `.editorconfig` for cross-editor consistency:
+
+```ini
+# EditorConfig is awesome: https://editorconfig.org
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.zig]
+indent_style = space
+indent_size = 4
+
+[*.zon]
+indent_style = space
+indent_size = 4
+
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[*.{json,md}]
+indent_style = space
+indent_size = 2
+
+[Makefile]
+indent_style = tab
+```
+
+Most editors respect EditorConfig automatically. This ensures consistent formatting even for contributors using different editors.
+
+> **💡 TIP:** `.editorconfig` prevents "tab vs spaces" and "LF vs CRLF" debates that waste team time. It's especially valuable for open-source projects where contributors use varied editors. Most modern editors (VS Code, IntelliJ, Vim, Emacs) support EditorConfig automatically - no plugins needed.
+
+### Git Configuration
+
+Create `.gitignore`:
+
+```
+# Zig build artifacts
+zig-out/
+zig-cache/
+.zig-cache/
+
+# Compiled binaries
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.pdb
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test artifacts
+test-results/
+coverage/
+
+# Local environment
+.env
+.env.local
+```
+
+This prevents committing build artifacts and editor-specific files.
+
+### Verifying Your Setup
+
+Test that everything works:
+
+1. **ZLS is running:**
+   - Open a `.zig` file
+   - Hover over a function - you should see documentation
+   - Ctrl+Space should show autocomplete
+
+2. **Formatting works:**
+   ```bash
+   echo "const x=10;" > test.zig
+   zig fmt test.zig
+   cat test.zig  # Should show "const x = 10;"
+   rm test.zig
+   ```
+
+3. **Git ignores artifacts:**
+   ```bash
+   zig build
+   git status  # Should not show zig-out/ or zig-cache/
+   ```
+
+With these tools configured, you have a professional Zig development environment. Let's build our HTTP client!
+
+---
+
+*[Content continues with remaining sections 0.4-0.9...]*
+
+## 0.4 Building zighttp: Project Structure & Code Organization
+
+Now that we have our tools configured, let's build the `zighttp` CLI tool. We'll apply the patterns we learned from analyzing real projects.
+
+### Project Design
+
+**zighttp** will:
+- Make HTTP GET/POST/PUT/DELETE requests
+- Pretty-print JSON responses
+- Support command-line arguments
+- Be usable as both a library and CLI tool
+- Have comprehensive tests
+
+### Module Organization
+
+We'll organize code into focused modules:
+
+```
+zighttp/
+├── src/
+│   ├── main.zig           # CLI entry point
+│   ├── root.zig           # Library exports
+│   ├── args.zig           # Argument parsing
+│   ├── http_client.zig    # HTTP logic
+│   └── json_formatter.zig # JSON utilities
+└── tests/
+    └── integration_test.zig
+```
+
+Each module has a single, clear responsibility - a pattern we saw in ZLS.
+
+### Module 1: args.zig - Argument Parsing
+
+This module parses command-line arguments into a structured format.
+
+```zig
+const std = @import("std");
+
+/// HTTP methods supported
+pub const Method = enum {
+    GET,
+    POST,
+    PUT,
+    DELETE,
+
+    pub fn fromString(s: []const u8) !Method {
+        if (std.mem.eql(u8, s, "GET")) return .GET;
+        if (std.mem.eql(u8, s, "POST")) return .POST;
+        if (std.mem.eql(u8, s, "PUT")) return .PUT;
+        if (std.mem.eql(u8, s, "DELETE")) return .DELETE;
+        return error.InvalidMethod;
+    }
+};
+
+/// Parsed command-line arguments
+pub const Args = struct {
+    url: []const u8,
+    method: Method = .GET,
+    body: ?[]const u8 = null,
+    pretty: bool = true,
+
+    pub fn parse(allocator: std.mem.Allocator) !Args {
+        var args_iter = try std.process.argsWithAllocator(allocator);
+        defer args_iter.deinit();
+
+        // Skip program name
+        _ = args_iter.skip();
+
+        var result = Args{ .url = "" };
+        var next_is_method = false;
+        var next_is_body = false;
+
+        while (args_iter.next()) |arg| {
+            if (next_is_method) {
+                result.method = try Method.fromString(arg);
+                next_is_method = false;
+            } else if (next_is_body) {
+                result.body = try allocator.dupe(u8, arg);
+                next_is_body = false;
+            } else if (std.mem.eql(u8, arg, "-X") or std.mem.eql(u8, arg, "--method")) {
+                next_is_method = true;
+            } else if (std.mem.eql(u8, arg, "-d") or std.mem.eql(u8, arg, "--data")) {
+                next_is_body = true;
+            } else if (std.mem.eql(u8, arg, "--no-pretty")) {
+                result.pretty = false;
+            } else if (std.mem.eql(u8, arg, "-h") or std.mem.eql(u8, arg, "--help")) {
+                return error.ShowHelp;
+            } else if (result.url.len == 0) {
+                result.url = try allocator.dupe(u8, arg);
+            }
+        }
+
+        if (result.url.len == 0) return error.MissingUrl;
+        return result;
+    }
+
+    pub fn deinit(self: Args, allocator: std.mem.Allocator) void {
+        if (self.url.len > 0) allocator.free(self.url);
+        if (self.body) |body| allocator.free(body);
+    }
+};
+
+test "method from string" {
+    try std.testing.expectEqual(Method.GET, try Method.fromString("GET"));
+    try std.testing.expectEqual(Method.POST, try Method.fromString("POST"));
+    try std.testing.expectError(error.InvalidMethod, Method.fromString("INVALID"));
+}
+```
+
+**Key design decisions:**
+- Enum for HTTP methods (type-safe)
+- Allocator passed explicitly (Zig 0.15 style)
+- `deinit()` for cleanup (RAII pattern)
+- Unit tests co-located with code
+
+### Module 2: http_client.zig - HTTP Requests
+
+This module wraps `std.http.Client` with a simpler interface.
+
+> **📝 NOTE:** The `std.http.Client` API changed significantly in Zig 0.15. Key differences from 0.14: `client.open()` now takes explicit `.headers`, `req.send()` is separate from `.finish()`, and `Headers` must be deinitialized. If you're porting code from older Zig versions, check the standard library documentation for the current API.
+
+```zig
+const std = @import("std");
+const args_mod = @import("args.zig");
+const Args = args_mod.Args;
+const Method = args_mod.Method;
+
+pub const Response = struct {
+    status_code: u16,
+    body: []const u8,
+    allocator: std.mem.Allocator,
+
+    pub fn deinit(self: *Response) void {
+        self.allocator.free(self.body);
+    }
+};
+
+pub fn request(allocator: std.mem.Allocator, request_args: Args) !Response {
+    // Parse URL
+    const uri = try std.Uri.parse(request_args.url);
+
+    // Create HTTP client
+    var client = std.http.Client{ .allocator = allocator };
+    defer client.deinit();
+
+    // Convert to std.http.Method
+    const method: std.http.Method = switch (request_args.method) {
+        .GET => .GET,
+        .POST => .POST,
+        .PUT => .PUT,
+        .DELETE => .DELETE,
+    };
+
+    // Prepare headers
+    var headers = std.http.Headers{ .allocator = allocator };
+    defer headers.deinit();
+    try headers.append("User-Agent", "zighttp/0.1.0");
+    try headers.append("Accept", "*/*");
+
+    var server_header_buffer: [8192]u8 = undefined;
+
+    // Make request
+    var req = try client.open(method, uri, .{
+        .server_header_buffer = &server_header_buffer,
+        .headers = headers,
+    });
+    defer req.deinit();
+
+    try req.send();
+
+    // Send body if provided
+    if (request_args.body) |body| {
+        try req.writeAll(body);
+    }
+
+    try req.finish();
+    try req.wait();
+
+    // Read response
+    const status_code = @intFromEnum(req.response.status);
+
+    var response_body = std.ArrayList(u8).init(allocator);
+    defer response_body.deinit();
+
+    var buf: [4096]u8 = undefined;
+    while (true) {
+        const bytes_read = try req.readAll(&buf);
+        if (bytes_read == 0) break;
+        try response_body.appendSlice(buf[0..bytes_read]);
+    }
+
+    return Response{
+        .status_code = @intCast(status_code),
+        .body = try response_body.toOwnedSlice(),
+        .allocator = allocator,
+    };
+}
+```
+
+**Key design decisions:**
+- Uses `std.http.Client` (no external dependencies)
+- Reads response in chunks (handles large bodies)
+- Caller owns response memory (must call `deinit()`)
+- Custom User-Agent header
+
+> **⚠️ WARNING:** Memory ownership is explicit in Zig. The `Response` struct stores the allocator that allocated its memory. If you call `deinit()` with the wrong allocator, you'll get undefined behavior or crashes. Always call `response.deinit()` (uses stored allocator) or pass the same allocator you used for creation. Never mix allocators!
+
+### Module 3: json_formatter.zig - JSON Pretty-Printing
+
+This module detects and formats JSON.
+
+```zig
+const std = @import("std");
+
+pub fn format(allocator: std.mem.Allocator, json_str: []const u8) ![]const u8 {
+    // Parse JSON
+    const parsed = std.json.parseFromSlice(std.json.Value, allocator, json_str, .{}) catch {
+        // If parsing fails, return original
+        return try allocator.dupe(u8, json_str);
+    };
+    defer parsed.deinit();
+
+    // Re-serialize with pretty printing
+    var output = std.ArrayList(u8).init(allocator);
+    defer output.deinit();
+
+    try std.json.stringify(parsed.value, .{
+        .whitespace = .indent_2,
+    }, output.writer());
+
+    return try output.toOwnedSlice();
+}
+
+pub fn isJson(s: []const u8) bool {
+    if (s.len == 0) return false;
+    const trimmed = std.mem.trim(u8, s, " \t\n\r");
+    if (trimmed.len == 0) return false;
+    return trimmed[0] == '{' or trimmed[0] == '[';
+}
+
+test "format valid JSON" {
+    const allocator = std.testing.allocator;
+    const input = "{\"name\":\"John\",\"age\":30}";
+    const formatted = try format(allocator, input);
+    defer allocator.free(formatted);
+    
+    try std.testing.expect(std.mem.indexOf(u8, formatted, "  ") != null);
+}
+
+test "isJson detection" {
+    try std.testing.expect(isJson("{\"test\":1}"));
+    try std.testing.expect(isJson("[1,2,3]"));
+    try std.testing.expect(!isJson("not json"));
+}
+```
+
+**Key design decisions:**
+- Gracefully handles invalid JSON
+- Simple heuristic for detection
+- Two-space indentation (common convention)
+
+### Module 4: main.zig - CLI Entry Point
+
+The CLI orchestrates all modules:
+
+```zig
+const std = @import("std");
+const args = @import("args.zig");
+const http_client = @import("http_client.zig");
+const json_formatter = @import("json_formatter.zig");
+
+const version = "0.1.0";
+
+fn printHelp() void {
+    const help =
+        \\zighttp v{s} - Simple HTTP client CLI
+        \\
+        \\Usage: zighttp [options] <url>
+        \\
+        \\Options:
+        \\  -X, --method <METHOD>  HTTP method (GET, POST, PUT, DELETE)
+        \\  -d, --data <DATA>      Request body data
+        \\  --no-pretty            Disable JSON pretty-printing
+        \\  -h, --help             Show this help
+        \\
+        \\Examples:
+        \\  zighttp https://api.github.com/users/ziglang
+        \\  zighttp -X POST https://httpbin.org/post -d '{"key":"value"}'
+        \\
+    ;
+    std.debug.print(help, .{version});
+}
+
+pub fn main() !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
+    // Parse arguments
+    const parsed_args = args.Args.parse(allocator) catch |err| {
+        if (err == error.ShowHelp) {
+            printHelp();
+            return;
+        }
+        std.debug.print("Error: {s}\n", .{@errorName(err)});
+        std.process.exit(1);
+    };
+    defer parsed_args.deinit(allocator);
+
+    // Make request
+    var response = http_client.request(allocator, parsed_args) catch |err| {
+        std.debug.print("HTTP request failed: {s}\n", .{@errorName(err)});
+        std.process.exit(1);
+    };
+    defer response.deinit();
+
+    // Print response
+    const stdout = std.io.getStdOut().writer();
+    try stdout.print("HTTP {d}\n", .{response.status_code});
+    try stdout.writeAll("---\n");
+
+    // Format JSON if applicable
+    if (parsed_args.pretty and json_formatter.isJson(response.body)) {
+        const formatted = json_formatter.format(allocator, response.body) catch response.body;
+        defer if (formatted.ptr != response.body.ptr) allocator.free(formatted);
+        try stdout.writeAll(formatted);
+    } else {
+        try stdout.writeAll(response.body);
+    }
+    try stdout.writeAll("\n");
+}
+```
+
+**Key design decisions:**
+- `GeneralPurposeAllocator` for leak detection
+- Friendly error messages
+- Help on error
+- Clean separation of concerns
+
+### Module 5: root.zig - Library Exports
+
+The library root re-exports everything for external use:
+
+```zig
+const std = @import("std");
+
+pub const args = @import("args.zig");
+pub const http_client = @import("http_client.zig");
+pub const json_formatter = @import("json_formatter.zig");
+
+// Re-export common types
+pub const Args = args.Args;
+pub const Method = args.Method;
+pub const Response = http_client.Response;
+pub const request = http_client.request;
+pub const formatJson = json_formatter.format;
+pub const isJson = json_formatter.isJson;
+
+test {
+    std.testing.refAllDecls(@This());
+}
+```
+
+**Why this structure works:**
+- Each module has one job
+- Clean dependency graph
+- Easy to test independently
+- Can use as library or CLI
+
+This modular structure follows the patterns we saw in ZLS, where each feature gets its own file.
+
+> **💡 TIP:** Organize imports from most general to most specific: `std` imports first, then third-party dependencies, then local modules. Use `pub const` re-exports in `root.zig` to provide a clean API - library users import `zighttp` and get everything they need without knowing internal module structure.
+
+---
+
+## 0.5 Testing Strategy
+
+Professional projects need professional testing. We'll implement both unit tests and integration tests.
+
+> **📝 NOTE:** Zig makes testing a first-class feature. Tests run with the same compiler that builds your code, use the same syntax, and integrate into the build system. There's no separate test framework to learn - if you can write Zig, you can write tests. This simplicity encourages comprehensive testing.
+
+### Unit Tests
+
+Unit tests are co-located with code using Zig's `test` blocks. We already added some in our modules. Let's review the strategy:
+
+**In `args.zig`:**
+```zig
+test "method from string" {
+    try std.testing.expectEqual(Method.GET, try Method.fromString("GET"));
+    try std.testing.expectEqual(Method.POST, try Method.fromString("POST"));
+    try std.testing.expectError(error.InvalidMethod, Method.fromString("INVALID"));
+}
+```
+
+**In `http_client.zig`:**
+```zig
+test "response structure" {
+    const allocator = std.testing.allocator;
+    const body = try allocator.dupe(u8, "test body");
+    var response = Response{
+        .status_code = 200,
+        .body = body,
+        .allocator = allocator,
+    };
+    defer response.deinit();
+
+    try std.testing.expectEqual(@as(u16, 200), response.status_code);
+}
+```
+
+**In `json_formatter.zig`:**
+```zig
+test "format valid JSON" {
+    const allocator = std.testing.allocator;
+    const input = "{\"name\":\"John\"}";
+    const formatted = try format(allocator, input);
+    defer allocator.free(formatted);
+    
+    try std.testing.expect(std.mem.indexOf(u8, formatted, "  ") != null);
+}
+
+test "isJson detection" {
+    try std.testing.expect(isJson("{\"test\":1}"));
+    try std.testing.expect(!isJson("plain text"));
+}
+```
+
+> **💡 TIP:** Co-locate unit tests with the code they test. This makes tests easy to find, encourages developers to write tests (they're right there!), and ensures tests stay updated when code changes. Tests in `src/` test implementation details; tests in `tests/` test public APIs. This mirrors the pattern used by the Zig compiler itself.
+
+### Integration Tests
+
+Integration tests live in `tests/integration_test.zig` and test the full library API:
+
+```zig
+const std = @import("std");
+const zighttp = @import("zighttp");
+
+test "library imports work" {
+    _ = zighttp.Args;
+    _ = zighttp.Method;
+    _ = zighttp.Response;
+    _ = zighttp.request;
+    _ = zighttp.formatJson;
+    _ = zighttp.isJson;
+}
+
+test "args parsing logic" {
+    const allocator = std.testing.allocator;
+    
+    const get = try zighttp.Method.fromString("GET");
+    try std.testing.expectEqual(zighttp.Method.GET, get);
+    
+    const post = try zighttp.Method.fromString("POST");
+    try std.testing.expectEqual(zighttp.Method.POST, post);
+}
+
+test "json formatter" {
+    const allocator = std.testing.allocator;
+    
+    const input = "{\"name\":\"test\",\"value\":123}";
+    const formatted = try zighttp.formatJson(allocator, input);
+    defer allocator.free(formatted);
+    
+    try std.testing.expect(std.mem.indexOf(u8, formatted, "  ") != null);
+    
+    try std.testing.expect(zighttp.isJson("{\"test\":1}"));
+    try std.testing.expect(!zighttp.isJson("plain text"));
+}
+
+test "response structure creation" {
+    const allocator = std.testing.allocator;
+    
+    const body = try allocator.dupe(u8, "test response");
+    var response = zighttp.Response{
+        .status_code = 200,
+        .body = body,
+        .allocator = allocator,
+    };
+    defer response.deinit();
+    
+    try std.testing.expectEqual(@as(u16, 200), response.status_code);
+}
+```
+
+**Note on network tests:**
+Real HTTP requests are difficult to test reliably (require network, external services). In production code, you'd either:
+1. Mock the HTTP layer
+2. Spin up a local test server
+3. Test against a stable API endpoint
+
+For zighttp, we focus on unit tests for each component.
+
+> **⚠️ WARNING:** Avoid network-dependent tests in CI. They're flaky (network outages, rate limits, API changes), slow, and can fail spuriously. TigerBeetle's simulator approach (deterministic testing) is the gold standard for distributed systems. For HTTP clients, either mock the network layer or mark network tests as manual-only (not run in CI).
+
+### Running Tests
+
+The `build.zig` provides several test commands:
+
+```bash
+# Run all tests
+zig build test
+
+# Run just unit tests
+zig build test-unit
+
+# Run just integration tests
+zig build test-integration
+
+# Verbose output
+zig build test --summary all
+```
+
+### Test Organization Best Practices
+
+From our analysis of real projects, we follow these patterns:
+
+1. **Unit tests co-located** - Test blocks in source files
+2. **Integration tests separate** - `tests/` directory
+3. **One test = one assertion concept** - Focused tests
+4. **Descriptive names** - "test format valid JSON" not "test 1"
+5. **Clean up resources** - Use `defer` for test allocations
+
+---
+
+## 0.6 Build System Configuration
+
+Our `build.zig` needs to handle both library and executable builds, plus multiple test types.
+
+### Complete build.zig
+
+```zig
+const std = @import("std");
+
+pub fn build(b: *std.Build) void {
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
+
+    // ===== Library =====
+    const lib = b.addStaticLibrary(.{
+        .name = "zighttp",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/root.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
+    });
+    b.installArtifact(lib);
+
+    // ===== Executable =====
+    const exe = b.addExecutable(.{
+        .name = "zighttp",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
+    });
+    b.installArtifact(exe);
+
+    // ===== Run Step =====
+    const run_cmd = b.addRunArtifact(exe);
+    run_cmd.step.dependOn(b.getInstallStep());
+    
+    if (b.args) |args| {
+        run_cmd.addArgs(args);
+    }
+    
+    const run_step = b.step("run", "Run the zighttp CLI");
+    run_step.dependOn(&run_cmd.step);
+
+    // ===== Unit Tests =====
+    const lib_unit_tests = b.addTest(.{
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/root.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
+    });
+    
+    const run_lib_unit_tests = b.addRunArtifact(lib_unit_tests);
+    
+    // Test individual modules
+    const modules = [_][]const u8{
+        "args",
+        "http_client",
+        "json_formatter",
+    };
+    
+    inline for (modules) |module_name| {
+        const module_tests = b.addTest(.{
+            .root_module = b.createModule(.{
+                .root_source_file = b.path("src/" ++ module_name ++ ".zig"),
+                .target = target,
+                .optimize = optimize,
+            }),
+        });
+        
+        const run_module_tests = b.addRunArtifact(module_tests);
+        run_lib_unit_tests.step.dependOn(&run_module_tests.step);
+    }
+
+    // ===== Integration Tests =====
+    const integration_tests = b.addTest(.{
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("tests/integration_test.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
+    });
+    
+    integration_tests.root_module.addImport("zighttp", &lib.root_module);
+    
+    const run_integration_tests = b.addRunArtifact(integration_tests);
+
+    // ===== Test Steps =====
+    const test_step = b.step("test", "Run all tests");
+    test_step.dependOn(&run_lib_unit_tests.step);
+    test_step.dependOn(&run_integration_tests.step);
+    
+    const unit_test_step = b.step("test-unit", "Run unit tests only");
+    unit_test_step.dependOn(&run_lib_unit_tests.step);
+    
+    const integration_test_step = b.step("test-integration", "Run integration tests only");
+    integration_test_step.dependOn(&run_integration_tests.step);
+}
+```
+
+### Key Features
+
+**1. Multiple artifacts:**
+- Static library (`libzighttp.a`)
+- Executable (`zighttp`)
+- Test executables (multiple)
+
+**2. Custom build steps:**
+- `zig build` - Build library and executable
+- `zig build run` - Run the CLI
+- `zig build test` - Run all tests
+- `zig build test-unit` - Unit tests only
+- `zig build test-integration` - Integration tests only
+
+**3. Cross-compilation support:**
+```bash
+# Build for Linux
+zig build -Dtarget=x86_64-linux -Doptimize=ReleaseFast
+
+# Build for macOS
+zig build -Dtarget=aarch64-macos -Doptimize=ReleaseFast
+
+# Build for Windows
+zig build -Dtarget=x86_64-windows -Doptimize=ReleaseFast
+```
+
+**4. Optimization modes:**
+- `Debug` - No optimization, all safety checks
+- `ReleaseSafe` - Optimized, keeps safety checks
+- `ReleaseFast` - Maximum speed, removes safety
+- `ReleaseSmall` - Minimize binary size
+
+### Build Options (Advanced)
+
+For compile-time configuration, you can add build options:
+
+```zig
+const build_options = b.addOptions();
+build_options.addOption([]const u8, "version", "0.1.0");
+build_options.addOption(bool, "enable_logging", optimize == .Debug);
+
+exe.root_module.addOptions("build_options", build_options);
+```
+
+Then use in code:
+```zig
+const build_options = @import("build_options");
+
+pub fn main() !void {
+    std.debug.print("zighttp v{s}\n", .{build_options.version});
+}
+```
+
+---
+
+## 0.7 CI/CD with GitHub Actions
+
+Automate testing and releases with GitHub Actions.
+
+> **📝 NOTE:** CI/CD prevents "works on my machine" problems. GitHub Actions is free for public repos and provides runners for Linux, macOS, and Windows. Every push triggers automated testing across all platforms, catching platform-specific bugs early. This is how ZLS, Zig compiler, and other major projects maintain quality.
+
+### CI Workflow
+
+Create `.github/workflows/ci.yml`:
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  format:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.15.2
+      
+      - name: Check formatting
+        run: zig fmt --check .
+
+  test:
+    name: Build and Test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.15.2
+      
+      - name: Cache Zig artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/zig
+            zig-cache
+          key: ${{ runner.os }}-zig-${{ hashFiles('build.zig.zon') }}
+      
+      - name: Build
+        run: zig build
+      
+      - name: Run tests
+        run: zig build test --summary all
+
+  build-artifacts:
+    name: Build Release Artifacts
+    needs: [format, test]
+    if: github.event_name != 'pull_request'
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-linux
+          - os: macos-latest
+            target: aarch64-macos
+          - os: windows-latest
+            target: x86_64-windows
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.15.2
+      
+      - name: Build for ${{ matrix.target }}
+        run: zig build -Dtarget=${{ matrix.target }} -Doptimize=ReleaseFast
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zighttp-${{ matrix.target }}
+          path: zig-out/bin/zighttp*
+          retention-days: 7
+```
+
+### Release Workflow
+
+Create `.github/workflows/release.yml`:
+
+```yaml
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+> **⚠️ WARNING:** `GITHUB_TOKEN` is automatically provided by GitHub Actions - never manually create or commit tokens. For custom secrets (API keys, signing keys), use GitHub's encrypted secrets feature (Settings → Secrets). Never hardcode secrets in workflow files or source code - they'll be visible in git history forever, even if you delete them later.
+
+  build:
+    name: Build Release Artifacts
+    needs: create-release
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-linux
+            archive: tar.gz
+          - os: macos-latest
+            target: aarch64-macos
+            archive: tar.gz
+          - os: windows-latest
+            target: x86_64-windows
+            archive: zip
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.15.2
+      
+      - name: Build for ${{ matrix.target }}
+        run: zig build -Dtarget=${{ matrix.target }} -Doptimize=ReleaseFast
+      
+      - name: Package (Unix)
+        if: matrix.archive == 'tar.gz'
+        run: |
+          cd zig-out/bin
+          tar czf ../../zighttp-${{ matrix.target }}.tar.gz zighttp
+          cd ../..
+          sha256sum zighttp-${{ matrix.target }}.tar.gz > zighttp-${{ matrix.target }}.tar.gz.sha256
+      
+      - name: Package (Windows)
+        if: matrix.archive == 'zip'
+        shell: bash
+        run: |
+          cd zig-out/bin
+          7z a ../../zighttp-${{ matrix.target }}.zip zighttp.exe
+          cd ../..
+          sha256sum zighttp-${{ matrix.target }}.zip > zighttp-${{ matrix.target }}.zip.sha256
+      
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./zighttp-${{ matrix.target }}.${{ matrix.archive }}
+          asset_name: zighttp-${{ matrix.target }}.${{ matrix.archive }}
+          asset_content_type: application/octet-stream
+```
+
+### What This Gives You
+
+**CI Workflow (on every push/PR):**
+1. ✅ Format check
+2. ✅ Build on Linux, macOS, Windows
+3. ✅ Run all tests on all platforms
+4. ✅ Cache build artifacts for speed
+5. ✅ Build release binaries (non-PR only)
+
+**Release Workflow (on git tags):**
+1. ✅ Triggered by pushing a tag: `git tag v0.1.0 && git push origin v0.1.0`
+2. ✅ Cross-compiles for multiple platforms
+3. ✅ Creates archives with checksums
+4. ✅ Creates GitHub release
+5. ✅ Uploads all artifacts
+
+---
+
+## 0.8 Documentation & Polish
+
+Professional projects need professional documentation.
+
+### README.md
+
+We already created a comprehensive README with:
+- Project description
+- Installation instructions
+- Usage examples (CLI and library)
+- Development setup
+- Testing instructions
+- Project structure overview
+- Links to other documentation
+
+### ARCHITECTURE.md
+
+Documents the internal design:
+- Module responsibilities
+- Key design decisions
+- Memory management patterns
+- Error handling strategy
+- Performance considerations
+- Future enhancements
+
+### CONTRIBUTING.md
+
+Guides contributors:
+- Development workflow
+- Code style guidelines
+- Testing requirements
+- Commit message format
+- Pull request process
+- Common tasks (adding features, fixing bugs)
+
+### LICENSE
+
+We used MIT License - permissive and widely used. Choose the license that fits your project's goals.
+
+### Additional Polish
+
+**1. Configuration Files**
+- `.zls.json` - ZLS settings
+- `.editorconfig` - Cross-editor consistency
+- `.gitignore` - Exclude build artifacts
+
+**2. CI/CD**
+- `.github/workflows/ci.yml` - Continuous integration
+- `.github/workflows/release.yml` - Release automation
+
+**3. Package Manifest**
+- `build.zig.zon` - Version, metadata, dependencies
+
+---
+
+## 0.9 Release Checklist & Next Steps
+
+### Pre-Release Checklist
+
+Before releasing zighttp v0.1.0:
+
+- [x] All code formatted (`zig fmt .`)
+- [x] All tests passing (`zig build test`)
+- [x] CI passing on all platforms
+- [x] Documentation complete (README, ARCHITECTURE, CONTRIBUTING)
+- [x] License file added
+- [x] Version set in `build.zig.zon`
+- [x] CHANGELOG.md created (optional but recommended)
+- [ ] Tagged release (`git tag v0.1.0`)
+- [ ] Pushed to remote (`git push origin v0.1.0`)
+
+### Creating Your First Release
+
+> **💡 TIP:** Use semantic versioning (semver): `MAJOR.MINOR.PATCH`. Increment MAJOR for breaking changes, MINOR for new features (backwards compatible), PATCH for bug fixes. Start at `0.1.0` for initial development. Once API is stable, release `1.0.0`. This matches the versioning used by Zig packages and helps users understand compatibility at a glance.
+
+```bash
+# Update version in build.zig.zon
+# Commit all changes
+git add .
+git commit -m "chore: prepare v0.1.0 release"
+
+# Tag the release
+git tag v0.1.0
+
+# Push including tags
+git push origin main --tags
+
+# GitHub Actions will automatically:
+# - Build for multiple platforms
+# - Create GitHub release
+# - Upload binaries
+```
+
+### What You've Built
+
+Congratulations! You now have a **production-ready** Zig project with:
+
+✅ **Professional Structure**
+- Standard project layout
+- Modular code organization
+- Clear separation of concerns
+
+✅ **Development Tools**
+- ZLS for IDE support
+- Formatting automation
+- Git configuration
+
+✅ **Testing Infrastructure**
+- Unit tests (co-located)
+- Integration tests (separate)
+- Test automation in CI
+
+✅ **Build System**
+- Library and executable
+- Multiple test targets
+- Cross-compilation support
+
+✅ **CI/CD Automation**
+- Automated testing on 3 platforms
+- Release automation
+- Artifact generation
+
+✅ **Complete Documentation**
+- User-facing (README)
+- Developer-facing (ARCHITECTURE, CONTRIBUTING)
+- Code documentation (doc comments)
+
+### Using zighttp as a Template
+
+The `zighttp` project serves as a template for your own projects:
+
+```bash
+# Copy the structure
+cp -r examples/ch00_professional_setup/zighttp my-project
+cd my-project
+
+# Customize
+# - Update build.zig.zon (name, version)
+# - Update README.md
+# - Replace modules with your own code
+# - Update GitHub Actions workflows
+
+# Start developing!
+```
+
+### Next Steps
+
+Now that you have a professional project structure:
+
+**Learn More:**
+- Chapter 2: Language Idioms - Write idiomatic Zig
+- Chapter 3: Memory & Allocators - Master memory management
+- Chapter 8: Build System - Advanced build.zig patterns
+- Chapter 10: Project Layout & CI - Deep dive into organization
+- Chapter 12: Testing & Benchmarking - Comprehensive testing strategies
+
+**Enhance zighttp:**
+- Add custom headers support
+- Implement retry logic
+- Add configuration file support
+- Implement response streaming
+- Add progress indicators
+- Support HTTP/2 when std.http adds it
+
+**Build Your Own:**
+- Use zighttp as a template
+- Apply patterns from Section 0.2 (real projects)
+- Follow the professional setup checklist
+- Automate everything with CI/CD
+
+### Key Lessons
+
+From zero to production-ready, we learned:
+
+1. **Structure matters** - Consistent layout helps everyone
+2. **Tooling is essential** - ZLS, formatting, CI/CD save time
+3. **Testing is non-negotiable** - Both unit and integration tests
+4. **Documentation is code** - Good docs make projects usable
+5. **Automation prevents mistakes** - CI catches issues early
+6. **Patterns are portable** - Learn from major projects
+
+You're now equipped to build professional Zig projects. Welcome to the Zig community!
+
+---
+
+## Summary
+
+This chapter took you from an empty directory to a complete, production-ready CLI tool. Along the way, you learned:
+
+**Project Initialization:**
+- Using `zig init` for standard structure
+- Understanding generated files
+- Basic build system setup
+
+**Real Project Analysis:**
+- Studied 6 major Zig projects
+- Identified common patterns
+- Learned when to use each pattern
+
+**Development Environment:**
+- Configured ZLS for IDE support
+- Set up formatting automation
+- Established Git workflow
+
+**Code Organization:**
+- Modular architecture
+- Clear responsibilities per file
+- Dependency management
+
+**Testing:**
+- Co-located unit tests
+- Separate integration tests
+- Multiple test targets
+
+**Build System:**
+- Library and executable artifacts
+- Cross-compilation support
+- Multiple build targets
+
+**CI/CD:**
+- Automated testing on multiple platforms
+- Release automation
+- Artifact generation
+
+**Documentation:**
+- User documentation (README)
+- Developer documentation (ARCHITECTURE, CONTRIBUTING)
+- Code documentation (comments)
+
+You now have both theoretical knowledge (how major projects are structured) and practical experience (building zighttp). Use this foundation for all your Zig projects!
+
+---
+
+## References
+
+[^1]: Zig Standard Library - Build System, https://ziglang.org/documentation/0.15.2/#Build-System
+[^2]: Zig Community - Project Structure Conventions, https://github.com/ziglang/zig/wiki/FAQ
+[^3]: ZLS (Zig Language Server), https://github.com/zigtools/zls
+[^4]: Zig Documentation - zig fmt, https://ziglang.org/documentation/0.15.2/#zig-fmt
+
