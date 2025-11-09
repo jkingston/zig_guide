@@ -948,4 +948,4 @@ All three exemplar projects emphasize practical examples:
 
 **Next Step:** Use these findings to write Chapter 1 content following the recommended structure.
 
-**See:** [VERSIONING.md](../../VERSIONING.md) for retention and archival policy
+**See:** [versioning.md](../../versioning.md) for retention and archival policy

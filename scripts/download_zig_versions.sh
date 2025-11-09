@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 ZIG_VERSIONS_DIR="$PROJECT_ROOT/zig_versions"
 
-# Target versions from VERSIONING.md
+# Target versions from versioning.md
 VERSIONS=(
     "0.14.0"
     "0.14.1"
