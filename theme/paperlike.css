@@ -1,0 +1,238 @@
+/* Paperlike Theme for mdBook
+ * Provides a warm, paper-like reading experience with serif fonts
+ * and a light, cream background
+ */
+
+:root {
+    /* Paper-like background colors */
+    --bg: #FFF8F0;                    /* Warm cream - main background */
+    --fg: #2C2416;                    /* Dark brown - main text */
+
+    /* Sidebar colors */
+    --sidebar-bg: #F5EFE7;            /* Slightly darker cream */
+    --sidebar-fg: #3A3226;            /* Dark text for sidebar */
+    --sidebar-non-existant: #9A8B7A;  /* Muted brown for non-existent pages */
+    --sidebar-active: #8B4513;        /* Rich brown for active page */
+    --sidebar-spacer: #D4C4B0;        /* Subtle divider */
+
+    /* Search colors */
+    --searchbar-border-color: #D4C4B0;
+    --searchbar-bg: #FFFFFF;
+    --searchbar-fg: #2C2416;
+    --searchbar-shadow-color: rgba(139, 69, 19, 0.1);
+    --searchresults-header-fg: #5D4E37;
+    --searchresults-border-color: #D4C4B0;
+    --searchresults-li-bg: #FFFFFF;
+    --search-mark-bg: #FFE5B4;        /* Soft peach highlight */
+
+    /* Scrollbar */
+    --scrollbar: #C4B5A0;
+
+    /* Icons */
+    --icons: #8B7355;
+    --icons-hover: #5D4E37;
+
+    /* Links */
+    --links: #8B4513;                 /* Rich brown links */
+
+    /* Inline code */
+    --inline-code-color: #6B5444;
+
+    /* Table colors */
+    --table-border-color: #D4C4B0;
+    --table-header-bg: #F0E6D8;
+    --table-alternate-bg: #FAF5EE;
+
+    /* Quotes */
+    --quote-bg: #F5EFE7;
+    --quote-border: #C4A882;
+
+    /* Warning/Info boxes */
+    --warning-border: #D4A574;
+    --warning-bg: #FFF5E6;
+}
+
+/* Apply serif fonts to main content */
+.content {
+    font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
+    line-height: 1.75;
+    color: var(--fg);
+}
+
+/* Headings with serif font */
+.content h1, .content h2, .content h3,
+.content h4, .content h5, .content h6 {
+    font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
+    font-weight: 600;
+    color: #3A3226;
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+}
+
+.content h1 {
+    font-size: 2.25em;
+    border-bottom: 2px solid var(--table-border-color);
+    padding-bottom: 0.3em;
+}
+
+.content h2 {
+    font-size: 1.75em;
+    border-bottom: 1px solid var(--table-border-color);
+    padding-bottom: 0.25em;
+}
+
+/* Keep sans-serif for UI elements */
+.sidebar, .nav-chapters, .menu-bar,
+#searchbar, .searchresults {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Enhanced paragraph spacing for better readability */
+.content p {
+    margin-bottom: 1.25em;
+    text-align: justify;
+    hyphens: auto;
+}
+
+/* Links with underline on hover */
+.content a {
+    color: var(--links);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom-color 0.2s ease;
+}
+
+.content a:hover {
+    border-bottom-color: var(--links);
+}
+
+/* Code blocks with subtle paper effect */
+.content pre {
+    background-color: #F5F0E8;
+    border: 1px solid #E0D5C7;
+    border-left: 4px solid var(--links);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.content pre > code {
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono',
+                 Consolas, 'Courier New', monospace;
+}
+
+/* Inline code */
+.content code {
+    background-color: #F5F0E8;
+    color: var(--inline-code-color);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+/* Blockquotes with paper-like styling */
+.content blockquote {
+    background-color: var(--quote-bg);
+    border-left: 4px solid var(--quote-border);
+    padding: 0.75em 1.25em;
+    margin: 1.5em 0;
+    font-style: italic;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Tables with refined styling */
+.content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.5em 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.content table thead {
+    background-color: var(--table-header-bg);
+}
+
+.content table th,
+.content table td {
+    border: 1px solid var(--table-border-color);
+    padding: 0.75em 1em;
+}
+
+.content table tbody tr:nth-child(even) {
+    background-color: var(--table-alternate-bg);
+}
+
+/* Lists with better spacing */
+.content ul, .content ol {
+    margin-bottom: 1.25em;
+    padding-left: 2em;
+}
+
+.content li {
+    margin-bottom: 0.5em;
+}
+
+/* Main content area with subtle shadow for paper effect */
+.content {
+    background-color: var(--bg);
+    max-width: 50rem;
+    padding: 2rem 3rem;
+}
+
+/* Page wrapper */
+.page {
+    background-color: #F0E8DC;
+}
+
+/* Sidebar styling */
+.sidebar {
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-fg);
+}
+
+.chapter.active {
+    background-color: transparent;
+    color: var(--sidebar-active) !important;
+    font-weight: 600;
+}
+
+/* Search bar */
+#searchbar {
+    background-color: var(--searchbar-bg);
+    border: 1px solid var(--searchbar-border-color);
+    box-shadow: 0 1px 3px var(--searchbar-shadow-color);
+}
+
+/* Horizontal rules */
+.content hr {
+    border: none;
+    border-top: 2px solid var(--table-border-color);
+    margin: 2em 0;
+}
+
+/* Warning/Note admonitions */
+.content .warning,
+.content .note {
+    background-color: var(--warning-bg);
+    border-left: 4px solid var(--warning-border);
+    padding: 1em 1.25em;
+    margin: 1.5em 0;
+}
+
+/* Print styles - optimize for actual paper */
+@media print {
+    .content {
+        background-color: white;
+        font-size: 11pt;
+    }
+
+    .content p {
+        text-align: justify;
+        orphans: 3;
+        widows: 3;
+    }
+
+    .content h1, .content h2, .content h3,
+    .content h4, .content h5, .content h6 {
+        page-break-after: avoid;
+    }
+}
