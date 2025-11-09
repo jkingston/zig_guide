@@ -176,6 +176,7 @@
     background-color: var(--bg);
     max-width: 72rem;
     padding: 2rem 3rem;
+    margin: 0 auto;
 }
 
 /* Page wrapper */
