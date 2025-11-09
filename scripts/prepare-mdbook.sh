@@ -14,6 +14,7 @@ rm -f src/ch*.md src/references.md src/style_guide.md
 
 # Copy chapter content files
 echo "Copying chapter files..."
+cp sections/00_professional_setup/content.md src/ch00_professional_setup.md
 cp sections/01_introduction/content.md src/ch01_introduction.md
 cp sections/02_language_idioms/content.md src/ch02_language_idioms.md
 cp sections/03_memory_allocators/content.md src/ch03_memory_allocators.md
@@ -36,7 +37,7 @@ cp references.md src/references.md
 cp style_guide.md src/style_guide.md
 
 echo "✓ mdBook sources prepared in src/"
-echo "  - 15 chapter files"
+echo "  - 16 chapter files"
 echo "  - 2 reference files"
 echo ""
 echo "Ready to build with: mdbook build"
