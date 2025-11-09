@@ -7,7 +7,7 @@ Thank you for your interest in contributing! This guide is a community effort to
 ## Quick Links
 
 - **Report Issues:** [GitHub Issues](https://github.com/jkingston/zig_guide/issues)
-- **View Progress:** [TODO.md](TODO.md)
+- **View Progress:** [todo.md](todo.md)
 - **AI Agent Instructions:** [AGENTS.md](AGENTS.md) (for AI-generated content)
 
 ---
@@ -46,12 +46,12 @@ mdbook build
 ```
 zig_guide/
 ├── README.md                    # Project overview
-├── TODO.md                      # Task tracking and roadmap
+├── todo.md                      # Task tracking and roadmap
 ├── CONTRIBUTING.md              # This file
 ├── AGENTS.md                    # AI agent instructions
 ├── style_guide.md               # Writing standards
 ├── references.md                # Authoritative sources
-├── VERSIONING.md                # Version support policy
+├── versioning.md                # Version support policy
 ├── book.toml                    # mdBook configuration
 │
 ├── sections/                    # Chapter source content (16 chapters)
@@ -116,7 +116,7 @@ Have ideas for new content or improvements?
 
 Want to write or improve content?
 
-1. **Check TODO.md** for planned work
+1. **Check todo.md** for planned work
 2. **Open an issue** to discuss your contribution first
 3. **Follow the workflow** below
 

@@ -11,7 +11,7 @@
 Before generating content, read:
 1. **[style_guide.md](style_guide.md)** - Writing and formatting standards (CRITICAL)
 2. **[references.md](references.md)** - Authoritative sources only (CRITICAL)
-3. **[VERSIONING.md](VERSIONING.md)** - Version support policy
+3. **[versioning.md](versioning.md)** - Version support policy
 
 ---
 
@@ -124,12 +124,12 @@ const value = parseValue() catch |err| return err;
 ```
 zig_guide/
 ├── README.md                    # Project overview
-├── TODO.md                      # Task tracking
+├── todo.md                      # Task tracking
 ├── AGENTS.md                    # This file
 ├── CONTRIBUTING.md              # Human contributor guide
 ├── style_guide.md               # Writing standards (CRITICAL)
 ├── references.md                # Authoritative sources (CRITICAL)
-├── VERSIONING.md                # Version policy
+├── versioning.md                # Version policy
 ├── metadata/sections.yaml       # Section definitions
 ├── scripts/
 │   ├── update_reference_repos.sh

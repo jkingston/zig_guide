@@ -2,7 +2,7 @@
 
 This repository hosts the in-progress **Zig Developer Guide** focused on idioms and best practices for Zig 0.14.0, 0.14.1, 0.15.1, and 0.15.2.
 
-This is a comprehensive guide to Zig development. Most patterns work across all supported versions; when they differ, we clearly mark version-specific code. See [VERSIONING.md](VERSIONING.md) for version support policy and update workflow.
+This is a comprehensive guide to Zig development. Most patterns work across all supported versions; when they differ, we clearly mark version-specific code. See [versioning.md](versioning.md) for version support policy and update workflow.
 
 The guide includes **16 chapters** from "Zero to Hero" (Chapter 0) through core concepts, advanced topics, and comprehensive appendices. The `/sections` directory contains structured folders per chapter (ch00-ch15).
 
@@ -24,7 +24,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development instructions.
 
 ## Project Status
 
-**📖 See [TODO.md](TODO.md) for detailed task tracking and progress.**
+**📖 See [todo.md](todo.md) for detailed task tracking and progress.**
 
 ### Current State (November 9, 2025)
 
@@ -41,7 +41,7 @@ All critical priority items complete:
 
 ### Next: 1.0 Release
 
-See [TODO.md](TODO.md) for the full roadmap. High priority items:
+See [todo.md](todo.md) for the full roadmap. High priority items:
 - Additional hands-on projects
 - Technical review from Zig community
 - Visual diagrams for key concepts
@@ -65,9 +65,9 @@ This is the **only comprehensive production-focused Zig resource** for experienc
 
 ## Documentation
 
-- **[TODO.md](TODO.md)** - Project roadmap and task tracking
+- **[todo.md](todo.md)** - Project roadmap and task tracking
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute (for humans)
 - **[AGENTS.md](AGENTS.md)** - AI agent instructions (for AI)
-- **[VERSIONING.md](VERSIONING.md)** - Version support policy
+- **[versioning.md](versioning.md)** - Version support policy
 - **[style_guide.md](style_guide.md)** - Writing standards
 - **[references.md](references.md)** - Authoritative sources
