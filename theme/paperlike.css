@@ -185,6 +185,11 @@
     background-color: #F0E8DC;
 }
 
+/* Hide theme picker - we have a custom theme */
+#theme-toggle, .theme-popup {
+    display: none !important;
+}
+
 /* Sidebar styling */
 .sidebar {
     background-color: var(--sidebar-bg);
