@@ -29,10 +29,10 @@ pub const Args = struct {
         // Define CLI parameters at compile time
         const params = comptime clap.parseParamsComptime(
             \\-h, --help             Display this help and exit.
-            \\-X, --method <STR>     HTTP method (GET, POST, PUT, DELETE)
-            \\-d, --data <STR>       Request body data
+            \\-X, --method <str>     HTTP method (GET, POST, PUT, DELETE)
+            \\-d, --data <str>       Request body data
             \\    --no-pretty        Disable JSON pretty-printing
-            \\<STR>                  URL to request
+            \\<str>                  URL to request
             \\
         );
 
@@ -42,7 +42,9 @@ pub const Args = struct {
             .diagnostic = &diag,
             .allocator = allocator,
         }) catch |err| {
-            diag.report(std.io.getStdErr().writer(), err) catch {};
+            var stderr_buffer: [4096]u8 = undefined;
+            var stderr_writer = std.fs.File.stderr().writer(&stderr_buffer);
+            diag.report(&stderr_writer.interface, err) catch {};
             return error.InvalidArguments;
         };
         defer res.deinit();
@@ -58,7 +60,7 @@ pub const Args = struct {
         }
 
         var result = Args{
-            .url = try allocator.dupe(u8, res.positionals[0]),
+            .url = try allocator.dupe(u8, res.positionals[0].?),
             .pretty = res.args.@"no-pretty" == 0,
         };
 

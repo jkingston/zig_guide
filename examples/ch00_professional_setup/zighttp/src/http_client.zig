@@ -23,7 +23,7 @@ pub fn request(allocator: std.mem.Allocator, request_args: Args) !Response {
     var client = std.http.Client{ .allocator = allocator };
     defer client.deinit();
 
-    // Prepare request
+    // Prepare request method
     const method: std.http.Method = switch (request_args.method) {
         .GET => .GET,
         .POST => .POST,
@@ -32,49 +32,30 @@ pub fn request(allocator: std.mem.Allocator, request_args: Args) !Response {
     };
 
     // Build request headers
-    var headers = std.http.Headers{ .allocator = allocator };
-    defer headers.deinit();
-    try headers.append("User-Agent", "zighttp/0.1.0");
-    try headers.append("Accept", "*/*");
+    const headers = &[_]std.http.Header{
+        .{ .name = "User-Agent", .value = "zighttp/0.1.0" },
+        .{ .name = "Accept", .value = "*/*" },
+    };
 
-    // Create server header buffer
-    var server_header_buffer: [8192]u8 = undefined;
+    // Create writer for response
+    var response_writer_obj = std.Io.Writer.Allocating.init(allocator);
+    defer response_writer_obj.deinit();
 
-    // Make request
-    var req = try client.open(method, uri, .{
-        .server_header_buffer = &server_header_buffer,
-        .headers = headers,
+    // Make request using fetch
+    const fetch_result = try client.fetch(.{
+        .method = method,
+        .location = .{ .uri = uri },
+        .extra_headers = headers,
+        .payload = request_args.body,
+        .response_writer = &response_writer_obj.writer,
     });
-    defer req.deinit();
 
-    // Send request
-    try req.send();
-
-    // Add body if provided (for POST, PUT)
-    if (request_args.body) |body| {
-        try req.writeAll(body);
-    }
-
-    try req.finish();
-    try req.wait();
-
-    // Read response
-    const status_code = @intFromEnum(req.response.status);
-
-    // Read all response body
-    var response_body = std.ArrayList(u8).init(allocator);
-    defer response_body.deinit();
-
-    var buf: [4096]u8 = undefined;
-    while (true) {
-        const bytes_read = try req.readAll(&buf);
-        if (bytes_read == 0) break;
-        try response_body.appendSlice(buf[0..bytes_read]);
-    }
+    // Get status code
+    const status_code = @intFromEnum(fetch_result.status);
 
     return Response{
         .status_code = @intCast(status_code),
-        .body = try response_body.toOwnedSlice(),
+        .body = try response_writer_obj.toOwnedSlice(),
         .allocator = allocator,
     };
 }

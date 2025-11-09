@@ -19,27 +19,28 @@ fn printHelp() void {
         \\
         \\Examples:
         \\  zighttp https://api.github.com/users/ziglang
-        \\  zighttp -X POST https://httpbin.org/post -d '{"key":"value"}'
+        \\  zighttp -X POST https://httpbin.org/post -d '{{"key":"value"}}'
         \\
     ;
     std.debug.print(help_text, .{version});
 }
 
 fn printError(err: anyerror) void {
+    if (err == error.ShowHelp) {
+        printHelp();
+        return;
+    }
+
     const msg = switch (err) {
         error.MissingUrl => "Error: Missing URL argument. Use -h for help.",
         error.InvalidMethod => "Error: Invalid HTTP method. Use GET, POST, PUT, or DELETE.",
-        error.ShowHelp => {
-            printHelp();
-            return;
-        },
-        else => "Error: {s}",
+        else => null,
     };
 
-    if (err == error.ShowHelp) {
-        return;
+    if (msg) |message| {
+        std.debug.print("{s}\n", .{message});
     } else {
-        std.debug.print("{s}\n", .{@errorName(err)});
+        std.debug.print("Error: {s}\n", .{@errorName(err)});
     }
 }
 
@@ -64,7 +65,9 @@ pub fn main() !void {
     defer response.deinit();
 
     // Get stdout
-    const stdout = std.io.getStdOut().writer();
+    var stdout_buffer: [4096]u8 = undefined;
+    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
+    const stdout = &stdout_writer.interface;
 
     // Print status
     try stdout.print("HTTP {d}\n", .{response.status_code});

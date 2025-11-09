@@ -10,12 +10,12 @@ pub fn format(allocator: std.mem.Allocator, json_str: []const u8) ![]const u8 {
     defer parsed.deinit();
 
     // Re-serialize with pretty printing
-    var output = std.ArrayList(u8).init(allocator);
+    var output = std.Io.Writer.Allocating.init(allocator);
     defer output.deinit();
 
-    try std.json.stringify(parsed.value, .{
+    try std.json.Stringify.value(parsed.value, .{
         .whitespace = .indent_2,
-    }, output.writer());
+    }, &output.writer);
 
     return try output.toOwnedSlice();
 }

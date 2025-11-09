@@ -11,8 +11,9 @@ pub fn build(b: *std.Build) void {
     });
 
     // Library module for external consumption
-    const lib = b.addStaticLibrary(.{
-        .name = "zighttp",
+    const lib = b.addLibrary(.{
+        .name = "libzighttp",
+        .linkage = .static,
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/root.zig"),
             .target = target,
@@ -89,7 +90,7 @@ pub fn build(b: *std.Build) void {
     });
 
     // Give integration tests access to the library and dependencies
-    integration_tests.root_module.addImport("zighttp", &lib.root_module);
+    integration_tests.root_module.addImport("zighttp", lib.root_module);
     integration_tests.root_module.addImport("clap", clap.module("clap"));
 
     const run_integration_tests = b.addRunArtifact(integration_tests);
