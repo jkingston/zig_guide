@@ -176,7 +176,8 @@
     background-color: var(--bg);
     max-width: 72rem;
     padding: 2rem 3rem;
-    margin: 0 auto;
+    margin: 2rem auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Page wrapper */
