@@ -174,7 +174,7 @@
 /* Main content area with subtle shadow for paper effect */
 .content {
     background-color: var(--bg);
-    max-width: 50rem;
+    max-width: 72rem;
     padding: 2rem 3rem;
 }
 
