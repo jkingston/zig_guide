@@ -586,7 +586,9 @@ pub const Args = struct {
             .diagnostic = &diag,
             .allocator = allocator,
         }) catch |err| {
-            diag.report(std.io.getStdErr().writer(), err) catch {};
+            var stderr_buf: [256]u8 = undefined;
+            var stderr = std.fs.File.stderr().writer(&stderr_buf);
+            diag.report(&stderr.interface, err) catch {};
             return error.InvalidArguments;
         };
         defer res.deinit();
@@ -713,19 +715,19 @@ pub fn request(allocator: std.mem.Allocator, request_args: Args) !Response {
     // Read response
     const status_code = @intFromEnum(req.response.status);
 
-    var response_body = std.ArrayList(u8).init(allocator);
-    defer response_body.deinit();
+    var response_body: std.ArrayList(u8) = .empty;
+    defer response_body.deinit(allocator);
 
     var buf: [4096]u8 = undefined;
     while (true) {
         const bytes_read = try req.readAll(&buf);
         if (bytes_read == 0) break;
-        try response_body.appendSlice(buf[0..bytes_read]);
+        try response_body.appendSlice(allocator, buf[0..bytes_read]);
     }
 
     return Response{
         .status_code = @intCast(status_code),
-        .body = try response_body.toOwnedSlice(),
+        .body = try response_body.toOwnedSlice(allocator),
         .allocator = allocator,
     };
 }
@@ -755,14 +757,14 @@ pub fn format(allocator: std.mem.Allocator, json_str: []const u8) ![]const u8 {
     defer parsed.deinit();
 
     // Re-serialize with pretty printing
-    var output = std.ArrayList(u8).init(allocator);
-    defer output.deinit();
+    var output: std.ArrayList(u8) = .empty;
+    defer output.deinit(allocator);
 
     try std.json.stringify(parsed.value, .{
         .whitespace = .indent_2,
-    }, output.writer());
+    }, output.writer(allocator));
 
-    return try output.toOwnedSlice();
+    return try output.toOwnedSlice(allocator);
 }
 
 pub fn isJson(s: []const u8) bool {
@@ -849,19 +851,21 @@ pub fn main() !void {
     defer response.deinit();
 
     // Print response
-    const stdout = std.io.getStdOut().writer();
-    try stdout.print("HTTP {d}\n", .{response.status_code});
-    try stdout.writeAll("---\n");
+    var stdout_buf: [4096]u8 = undefined;
+    var stdout = std.fs.File.stdout().writer(&stdout_buf);
+    try stdout.interface.print("HTTP {d}\n", .{response.status_code});
+    try stdout.interface.writeAll("---\n");
 
     // Format JSON if applicable
     if (parsed_args.pretty and json_formatter.isJson(response.body)) {
         const formatted = json_formatter.format(allocator, response.body) catch response.body;
         defer if (formatted.ptr != response.body.ptr) allocator.free(formatted);
-        try stdout.writeAll(formatted);
+        try stdout.interface.writeAll(formatted);
     } else {
-        try stdout.writeAll(response.body);
+        try stdout.interface.writeAll(response.body);
     }
-    try stdout.writeAll("\n");
+    try stdout.interface.writeAll("\n");
+    try stdout.interface.flush();
 }
 ```
 
@@ -2432,8 +2436,8 @@ error: memory leak detected
 
 2. **Verify all deinit() calls:**
    ```zig
-   var list = std.ArrayList(u8).init(allocator);
-   defer list.deinit();  // Required!
+   var list: std.ArrayList(u8) = .empty;
+   defer list.deinit(allocator);  // Required!
    ```
 
 3. **Use testing.allocator:**
