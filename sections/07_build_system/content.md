@@ -886,6 +886,8 @@ This pattern demonstrates production-grade build systems for complex projects wi
 - Platform-specific graphics APIs (D3D12, Vulkan, Metal)
 - Cross-compilation to Windows, Linux, macOS from any host
 
+> **See also:** Chapter 10 (Interoperability) for zig-gamedev's C++ library integration patterns with ImGui, PhysX, and WebGPU.
+
 ### Zig Compiler: Comprehensive Testing
 
 The Zig compiler builds separate test suites for different categories:

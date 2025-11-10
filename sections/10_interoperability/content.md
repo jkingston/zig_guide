@@ -2273,6 +2273,8 @@ test "ImGui context lifecycle" {
 
 This pattern enables Zig projects to leverage mature C++ game development libraries (ImGui, PhysX, Dear ImPlot) while maintaining Zig's safety guarantees and explicit allocator model.
 
+> **See also:** Chapter 7 (Build System) for zig-gamedev's build organization and multi-library dependency management.
+
 ### Memory Safety with defer and errdefer
 
 Production code uses defer consistently for cleanup:

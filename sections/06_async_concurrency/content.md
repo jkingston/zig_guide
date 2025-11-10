@@ -1701,6 +1701,8 @@ This section links to production concurrency patterns in real-world Zig projects
 - libxev: General-purpose event loop (files, sockets, timers, signals)
 - Both demonstrate Zig's library-based async approach (no language keywords)
 
+> **See also:** Chapter 4 (I/O Streams) for zap's buffered response writers and zero-copy request parsing patterns.
+
 ### Zig Compiler Self-Hosting
 
 **Project**: Zig compiler itself (written in Zig)

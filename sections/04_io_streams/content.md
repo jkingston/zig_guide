@@ -593,41 +593,118 @@ The Zig Language Server demonstrates I/O patterns for protocol communication.
 zigimg, an image encoding/decoding library, demonstrates structured I/O patterns for binary format parsing.
 
 **Streaming Decoders with Fixed Buffers**
-- Uses reader interface to parse PNG, JPEG, and other formats incrementally
+
+```zig
+const std = @import("std");
+const zigimg = @import("zigimg");
+
+pub fn loadImage(path: []const u8, allocator: std.mem.Allocator) !zigimg.Image {
+    const file = try std.fs.cwd().openFile(path, .{});
+    defer file.close();
+
+    var buf: [8192]u8 = undefined;
+    var file_reader = file.reader(&buf);
+
+    // Format detection from magic bytes
+    const image = try zigimg.Image.fromFile(allocator, &file_reader.interface);
+
+    // Caller owns image.pixels - must call image.deinit()
+    return image;
+}
+```
+
+**Key Patterns:**
+- Stream-based chunk parsing without loading entire file into memory
 - Source: [`src/formats/png.zig`](https://github.com/zigimg/zigimg/blob/master/src/formats/png.zig)
-- Pattern: Stream-based chunk parsing without loading entire file into memory
 - Validates chunk CRCs and structure as data streams in
 
-**Multi-Format I/O Abstraction**
-- Generic `Image.readFrom()` API works across all supported formats
-- Source: [`src/Image.zig`](https://github.com/zigimg/zigimg/blob/master/src/Image.zig)
-- Format detection from file headers/magic bytes
-- Unified error handling across different image format parsers
+**Multi-Format I/O Abstraction:**
 
-**Allocator-Aware Pixel Data Management**
+```zig
+// Generic API works across PNG, JPEG, BMP, etc.
+pub fn processImage(reader: anytype, allocator: std.mem.Allocator) !void {
+    const image = try zigimg.Image.fromReader(allocator, reader);
+    defer image.deinit();
+
+    std.debug.print("Format: {s}, Size: {}x{}\n", .{
+        @tagName(image.format),
+        image.width,
+        image.height,
+    });
+
+    // Access pixel data
+    const pixels = image.pixels.asBytes();
+    // Process pixels...
+}
+```
+
+**Allocator-Aware Design:**
 - Explicit allocator threading for pixel buffer allocation
 - Arena allocator pattern for temporary decode buffers
 - Caller-owned pixel data with clear ownership semantics
+
+> **See also:** Chapter 2 (Memory & Allocators) for allocator patterns used in image decoding.
 
 ### zap: HTTP Server Streaming
 
 zap, a high-performance HTTP server framework, shows production-grade request/response streaming patterns.
 
 **Buffered Response Writers**
+
+```zig
+const zap = @import("zap");
+
+fn handleRequest(req: *zap.Request, res: *zap.Response) !void {
+    // Stack-allocated buffer for response headers
+    var header_buf: [1024]u8 = undefined;
+
+    // Write response with explicit buffering control
+    try res.setHeader("Content-Type", "application/json");
+    try res.write("{\"status\":\"ok\"}");
+
+    // Explicit flush for streaming response
+    try res.flush();
+}
+
+pub fn main() !void {
+    var server = zap.Server.init(.{
+        .port = 8080,
+        .on_request = handleRequest,
+    });
+
+    try server.listen();
+}
+```
+
+**Key Patterns:**
 - Pre-allocated response buffers for common HTTP scenarios
 - Source: [`src/http.zig`](https://github.com/zigzap/zap/blob/master/src/http.zig)
-- Pattern: Stack-allocated buffers for headers, dynamic allocation for large bodies
+- Stack-allocated buffers for headers, dynamic allocation for large bodies
 - Explicit flush control for chunked transfer encoding
 
-**Event Loop Integration**
+**Zero-Copy Request Body Handling:**
+
+```zig
+fn handleUpload(req: *zap.Request, res: *zap.Response) !void {
+    // Body is a slice into connection buffer - no allocation
+    const body = req.body();
+
+    // Parse in-place without copying
+    if (std.mem.indexOf(u8, body, "filename=")) |idx| {
+        const filename_slice = body[idx + 9 ..];
+        // Process without allocating...
+    }
+
+    try res.write("Upload received");
+}
+```
+
+**Event Loop Integration:**
 - Tight integration with epoll/kqueue for async I/O
 - Non-blocking reads with automatic buffer management
 - Connection pooling with buffer reuse to minimize allocations
 
-**Zero-Copy Request Body Handling**
-- Uses slices into connection buffers when possible
-- Avoids unnecessary copies for POST/PUT request bodies
-- Pattern: Parse-in-place for headers, defer allocation until content handling
+> **See also:** Chapter 6 (Async & Concurrency) for zap's event loop architecture and concurrency patterns.
 
 ## Summary
 

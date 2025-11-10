@@ -36,7 +36,7 @@ zig version
 
 **Install ZLS (Zig Language Server)** for IDE support:
 - Download from [ZLS releases](https://github.com/zigtools/zls/releases)
-- ⚠️ Version must match your Zig version (0.15.2 requires ZLS 0.15.0)
+- ⚠️ Use matching tagged releases of Zig and ZLS (or both nightly). See [ZLS compatibility guide](https://github.com/zigtools/zls#compatibility)
 - See **Appendix A: Development Setup** for detailed editor configuration
 
 ### Your First Project
@@ -279,7 +279,7 @@ Real-world Zig projects demonstrate these patterns at scale:
 
 **Bun**[^5] is a JavaScript runtime and bundler demonstrating large-scale Zig usage with multi-language interop. Its codebase shows practical patterns for organizing complex projects.
 
-These projects are referenced throughout the guide as exemplars of production Zig patterns.
+Additional exemplars include **zap** (high-performance HTTP server), **zigimg** (image format parsing), **zig-gamedev** (complex C++ library integration), and **zig-bootstrap** (official CI/CD reference). These projects are referenced throughout the guide as exemplars of production Zig patterns.
 
 ---
 
@@ -299,6 +299,25 @@ These projects are referenced throughout the guide as exemplars of production Zi
 - [TigerBeetle](https://github.com/tigerbeetle/tigerbeetle) — Safety-first database patterns
 - [Ghostty](https://github.com/ghostty-org/ghostty) — Terminal emulator architecture
 - [Bun](https://github.com/oven-sh/bun) — Large-scale runtime implementation
+
+### Finding the Right Exemplar
+
+The guide references production Zig projects throughout. Use this quick reference to find examples for specific patterns:
+
+| If you need... | Study this project | See Chapter |
+|----------------|-------------------|-------------|
+| **HTTP server patterns** | [zap](https://github.com/zigzap/zap) | 4 (I/O), 6 (Concurrency) |
+| **Binary format parsing** | [zigimg](https://github.com/zigimg/zigimg) | 4 (I/O) |
+| **Complex C++ interop** | [zig-gamedev](https://github.com/michal-z/zig-gamedev) | 7 (Build), 10 (Interop) |
+| **Official CI/CD patterns** | [zig-bootstrap](https://github.com/ziglang/zig-bootstrap) | 9 (CI/CD) |
+| **CLI tool design** | [zigup](https://github.com/marler8997/zigup) | References |
+| **Database architecture** | [TigerBeetle](https://github.com/tigerbeetle/tigerbeetle) | Multiple chapters |
+| **Terminal emulation** | [Ghostty](https://github.com/ghostty-org/ghostty) | Multiple chapters |
+| **JavaScript runtime** | [Bun](https://github.com/oven-sh/bun) | Multiple chapters |
+| **Game/graphics framework** | [Mach](https://github.com/hexops/mach) | 7 (Build) |
+| **Language server** | [ZLS](https://github.com/zigtools/zls) | 6 (Concurrency), 9 (CI/CD) |
+
+See the [**References**](../references.md) document for the complete list of exemplar projects with detailed descriptions.
 
 ---
 
