@@ -96,11 +96,6 @@
                             aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
                         </button>
-                        {{#if git_repository_edit_url}}
-                        <button id="edit-button" class="icon-button" type="button" title="Edit this page on GitHub" aria-label="Edit this page on GitHub">
-                            <i class="fa fa-edit"></i>
-                        </button>
-                        {{/if}}
                         <!-- Custom paperlike theme toggle -->
                         <button id="theme-toggle" class="icon-button" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">
                             <i class="fa fa-sun-o theme-icon-light"></i>
@@ -151,14 +146,6 @@
                     link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
                 });
             </script>
-
-            {{#if git_repository_edit_url}}
-            <script type="text/javascript">
-                document.getElementById("edit-button").addEventListener("click", function () {
-                    window.open("{{git_repository_edit_url}}");
-                });
-            </script>
-            {{/if}}
 
             <!-- Paperlike theme toggle script -->
             <script type="text/javascript">
