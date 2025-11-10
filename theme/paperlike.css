@@ -257,22 +257,18 @@
     background-color: #F0E8DC;
 }
 
+/* Hide the theme dropdown - we use custom toggle instead */
+.theme-popup {
+    display: none !important;
+}
+
 /* Custom theme toggle button styling */
 #theme-toggle {
     position: relative;
-    width: 24px;
-    height: 24px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
 }
 
 #theme-toggle .theme-icon-light,
 #theme-toggle .theme-icon-dark {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
     transition: opacity 0.2s ease;
 }
 
