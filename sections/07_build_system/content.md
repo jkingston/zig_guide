@@ -813,6 +813,81 @@ fn getVersion(b: *Build) std.SemanticVersion {
 
 This eliminates manual version bumping in source files and ensures consistency between releases and development builds.[^19]
 
+### zig-gamedev: Complex C/C++ Library Integration
+
+zig-gamedev demonstrates sophisticated build patterns for game development with multiple C/C++ dependencies:
+
+**Multi-Library Dependency Management:**
+```zig
+// zig-gamedev/libs/build.zig structure
+pub const Package = struct {
+    zgui: *std.Build.Module,
+    zgpu: *std.Build.Module,
+    zphysics: *std.Build.Module,
+    zaudio: *std.Build.Module,
+    // ... 10+ libraries
+};
+
+pub fn link(b: *std.Build, artifact: *std.Build.Step.Compile) void {
+    // Links ImGui, WebGPU/Dawn, PhysX, miniaudio, etc.
+    artifact.linkLibrary(zgui);
+    artifact.linkSystemLibrary("c++"); // Required for PhysX
+}
+```
+
+**Key Patterns:**
+
+1. **Centralized Library Builds:**
+   - Single `libs/` directory with per-library build.zig
+   - Shared build configuration across examples and samples
+   - Consistent compiler flags for C/C++ code
+
+2. **Platform-Specific Linking:**
+   - Conditional system library linking (Windows: d3d12, Linux: X11/Wayland)
+   - macOS Metal framework integration
+   - Cross-compilation support for all desktop platforms
+
+3. **Build Option Propagation:**
+   - Feature flags cascade from root to dependencies
+   - Debug/release builds affect C++ optimization levels
+   - Selective library builds reduce compilation time
+
+4. **External C++ Library Wrapping:**
+   - Type-safe Zig APIs over C++ libraries (ImGui, PhysX)
+   - Memory ownership clear at FFI boundary
+   - Allocator threading through C++ allocators
+
+**Example: Multi-Target Game Build:**
+```zig
+pub fn build(b: *std.Build) void {
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
+
+    const libs = Package.init(b, target, optimize);
+
+    const game = b.addExecutable(.{
+        .name = "game",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
+    });
+
+    // Link all graphics, physics, audio libraries
+    libs.link(b, game);
+
+    b.installArtifact(game);
+}
+```
+
+This pattern demonstrates production-grade build systems for complex projects with:
+- 10+ external C/C++ libraries
+- Platform-specific graphics APIs (D3D12, Vulkan, Metal)
+- Cross-compilation to Windows, Linux, macOS from any host
+
+> **See also:** Chapter 10 (Interoperability) for zig-gamedev's C++ library integration patterns with ImGui, PhysX, and WebGPU.
+
 ### Zig Compiler: Comprehensive Testing
 
 The Zig compiler builds separate test suites for different categories:
@@ -882,3 +957,4 @@ Understanding these patterns enables building libraries, CLI tools, and complex 
 [^18]: Mach optional features - https://github.com/hexops/mach/blob/main/build.zig#L47-L69
 [^19]: ZLS git-based versioning - https://github.com/zigtools/zls/blob/master/build.zig#L333-L390
 [^20]: Zig compiler test organization - https://github.com/ziglang/zig/blob/master/build.zig#L381-L621
+[^21]: zig-gamedev build system - https://github.com/michal-z/zig-gamedev - Multi-library C/C++ integration patterns

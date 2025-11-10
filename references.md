@@ -57,6 +57,11 @@
 | **[NCDU 2](https://dev.yorhel.nl/ncdu)**                         | Disk usage analyzer rewritten in Zig. Compact, idiomatic CLI structure.                                                                                  |
 | **[ZigMod](https://github.com/nektro/zigmod)**                   | Package/dependency manager for Zig projects; showcases extensible build scripts and dependency resolution.                                               |
 | **[Ziglings](https://github.com/ratfactor/ziglings)**            | (Also above) – reference for idiomatic syntax and progressive code patterns.                                                                             |
+| **[zig-gamedev](https://github.com/michal-z/zig-gamedev)**       | Graphics and game development libraries. Complex C/C++ interop, sophisticated multi-library build patterns, and cross-platform abstractions.             |
+| **[zig-ci-template](https://github.com/ziglang/zig-bootstrap)**  | Official CI configuration examples. Matrix builds, cross-compilation workflows, and artifact caching strategies.                                          |
+| **[zap](https://github.com/zigzap/zap)**                         | High-performance HTTP server framework. Production event loop patterns, middleware architecture, and efficient request/response handling.                |
+| **[zigimg](https://github.com/zigimg/zigimg)**                   | Image encoding/decoding library. Structured binary I/O, format parsing, streaming decoders, and allocator usage patterns.                                |
+| **[zigup](https://github.com/marler8997/zigup)**                 | Zig version manager. Cross-platform CLI patterns, filesystem operations, HTTP downloads, and version lifecycle management.                               |
 
 ---
 
@@ -88,20 +93,23 @@
 When building the *Zig Developer Guide* itself:
 
 1. **Cite official docs** for any syntax or standard-library feature.
-2. **Pull idioms** and code examples primarily from  
-   - Zig by Example  
-   - Ziglings  
-   - TigerBeetle and Ghostty codebases  
+2. **Pull idioms** and code examples primarily from
+   - Zig by Example
+   - Ziglings
+   - TigerBeetle, Ghostty, and zap codebases
+   - zig-gamedev for complex build patterns
+   - zigimg for binary I/O and format parsing
 3. **Annotate differences** between 0.14.1 and 0.15.2 with direct links to the relevant release notes.
-4. **Reference community discussions** for “why” behind patterns (error handling, ownership, build idioms).
-5. **Cross-link** to real projects in the “Exemplars” section whenever illustrating a best practice.
+4. **Reference community discussions** for "why" behind patterns (error handling, ownership, build idioms).
+5. **Cross-link** to real projects in the "Exemplars" section whenever illustrating a best practice.
+6. **Use zig-ci-template** as canonical reference for CI/CD patterns and cross-compilation workflows.
 
 ---
 
 ### Summary
 
-This reference list ensures the developer guide remains authoritative, current, and idiomatically grounded.  
-By combining official documentation with living examples (Ghostty, TigerBeetle, Bun, Mach, ZLS),  
+This reference list ensures the developer guide remains authoritative, current, and idiomatically grounded.
+By combining official documentation with living examples (TigerBeetle, Ghostty, Bun, Mach, ZLS, zap, zig-gamedev, zigimg),
 the guide will align with community consensus while documenting version-specific differences across Zig 0.14.1 → 0.15.2.
 
 ---

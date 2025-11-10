@@ -588,6 +588,124 @@ The Zig Language Server demonstrates I/O patterns for protocol communication.
 - Uses `std.fs.File.stderr().writer(&.{})` for immediate error output
 - Source: [`src/main.zig:98`](https://github.com/zigtools/zls/blob/master/src/main.zig#L98)
 
+### zigimg: Binary Format Parsing
+
+zigimg, an image encoding/decoding library, demonstrates structured I/O patterns for binary format parsing.
+
+**Streaming Decoders with Fixed Buffers**
+
+```zig
+const std = @import("std");
+const zigimg = @import("zigimg");
+
+pub fn loadImage(path: []const u8, allocator: std.mem.Allocator) !zigimg.Image {
+    const file = try std.fs.cwd().openFile(path, .{});
+    defer file.close();
+
+    var buf: [8192]u8 = undefined;
+    var file_reader = file.reader(&buf);
+
+    // Format detection from magic bytes
+    const image = try zigimg.Image.fromFile(allocator, &file_reader.interface);
+
+    // Caller owns image.pixels - must call image.deinit()
+    return image;
+}
+```
+
+**Key Patterns:**
+- Stream-based chunk parsing without loading entire file into memory
+- Source: [`src/formats/png.zig`](https://github.com/zigimg/zigimg/blob/master/src/formats/png.zig)
+- Validates chunk CRCs and structure as data streams in
+
+**Multi-Format I/O Abstraction:**
+
+```zig
+// Generic API works across PNG, JPEG, BMP, etc.
+pub fn processImage(reader: anytype, allocator: std.mem.Allocator) !void {
+    const image = try zigimg.Image.fromReader(allocator, reader);
+    defer image.deinit();
+
+    std.debug.print("Format: {s}, Size: {}x{}\n", .{
+        @tagName(image.format),
+        image.width,
+        image.height,
+    });
+
+    // Access pixel data
+    const pixels = image.pixels.asBytes();
+    // Process pixels...
+}
+```
+
+**Allocator-Aware Design:**
+- Explicit allocator threading for pixel buffer allocation
+- Arena allocator pattern for temporary decode buffers
+- Caller-owned pixel data with clear ownership semantics
+
+> **See also:** Chapter 2 (Memory & Allocators) for allocator patterns used in image decoding.
+
+### zap: HTTP Server Streaming
+
+zap, a high-performance HTTP server framework, shows production-grade request/response streaming patterns.
+
+**Buffered Response Writers**
+
+```zig
+const zap = @import("zap");
+
+fn handleRequest(req: *zap.Request, res: *zap.Response) !void {
+    // Stack-allocated buffer for response headers
+    var header_buf: [1024]u8 = undefined;
+
+    // Write response with explicit buffering control
+    try res.setHeader("Content-Type", "application/json");
+    try res.write("{\"status\":\"ok\"}");
+
+    // Explicit flush for streaming response
+    try res.flush();
+}
+
+pub fn main() !void {
+    var server = zap.Server.init(.{
+        .port = 8080,
+        .on_request = handleRequest,
+    });
+
+    try server.listen();
+}
+```
+
+**Key Patterns:**
+- Pre-allocated response buffers for common HTTP scenarios
+- Source: [`src/http.zig`](https://github.com/zigzap/zap/blob/master/src/http.zig)
+- Stack-allocated buffers for headers, dynamic allocation for large bodies
+- Explicit flush control for chunked transfer encoding
+
+**Zero-Copy Request Body Handling:**
+
+```zig
+fn handleUpload(req: *zap.Request, res: *zap.Response) !void {
+    // Body is a slice into connection buffer - no allocation
+    const body = req.body();
+
+    // Parse in-place without copying
+    if (std.mem.indexOf(u8, body, "filename=")) |idx| {
+        const filename_slice = body[idx + 9 ..];
+        // Process without allocating...
+    }
+
+    try res.write("Upload received");
+}
+```
+
+**Event Loop Integration:**
+- Tight integration with epoll/kqueue for async I/O
+- Non-blocking reads with automatic buffer management
+- Connection pooling with buffer reuse to minimize allocations
+
+> **See also:** Chapter 6 (Async & Concurrency) for zap's event loop architecture and concurrency patterns.
+
 ## Summary
 
 Zig's I/O abstraction provides explicit control over buffering, resource lifetimes, and formatting. Key decisions:
@@ -626,4 +744,7 @@ The explicit nature of 0.15+ buffering may seem verbose initially, but it provid
 8. Ghostty – Config file patterns ([src/config/file_load.zig:136-166](https://github.com/ghostty-org/ghostty/blob/main/src/config/file_load.zig#L136-L166))
 9. Bun – Buffered I/O with reference counting ([src/shell/IOReader.zig](https://github.com/oven-sh/bun/blob/main/src/shell/IOReader.zig))
 10. ZLS – Fixed buffer logging ([src/main.zig:50-100](https://github.com/zigtools/zls/blob/master/src/main.zig#L50-L100))
-11. zig.guide – Readers and Writers ([standard-library/readers-and-writers](https://zig.guide/standard-library/readers-and-writers))
+11. zigimg – Binary format parsing ([src/formats/png.zig](https://github.com/zigimg/zigimg/blob/master/src/formats/png.zig))
+12. zigimg – Multi-format I/O abstraction ([src/Image.zig](https://github.com/zigimg/zigimg/blob/master/src/Image.zig))
+13. zap – HTTP server streaming patterns ([src/http.zig](https://github.com/zigzap/zap/blob/master/src/http.zig))
+14. zig.guide – Readers and Writers ([standard-library/readers-and-writers](https://zig.guide/standard-library/readers-and-writers))

@@ -1661,6 +1661,48 @@ This section links to production concurrency patterns in real-world Zig projects
 - Platform-specific event loop integration
 - Rendering decoupled from terminal processing for 120+ FPS
 
+### zap: HTTP Server Framework
+
+**Project**: High-performance HTTP server framework for Zig
+**Concurrency Model**: Event loop with connection pooling and worker threads
+**Repository**: [zigzap/zap](https://github.com/zigzap/zap)
+
+**Key Patterns:**
+
+1. **Event Loop Integration with epoll/kqueue**
+   - Pattern: Platform-specific event notification for non-blocking I/O
+   - File: Event loop abstraction in core HTTP handling
+   - Single-threaded event loop processes thousands of concurrent connections
+   - Tight integration with OS primitives for minimal overhead
+
+2. **Connection Pooling**
+   - Pattern: Pre-allocated connection structures reused across requests
+   - Reduces allocation pressure in hot path
+   - Buffer reuse minimizes memory churn for request/response cycles
+
+3. **Middleware Chain Architecture**
+   - Pattern: Composable request handlers with explicit control flow
+   - Zero-cost abstraction for handler dispatch
+   - Clear ownership semantics for request/response lifecycle
+
+4. **Zero-Copy Request Parsing**
+   - Pattern: Parse HTTP headers in-place without copying
+   - Slices reference connection buffers directly
+   - Defers allocation until handler explicitly requires owned data
+
+**Architectural Notes:**
+- Single event loop handles I/O multiplexing (Linux: epoll, BSD: kqueue)
+- Optional worker thread pool for CPU-bound request handlers
+- Explicit flush control for streaming responses
+- Production-grade performance: handles 100K+ requests/sec
+
+**Comparison with libxev:**
+- zap: HTTP-specific, optimized for web server workloads
+- libxev: General-purpose event loop (files, sockets, timers, signals)
+- Both demonstrate Zig's library-based async approach (no language keywords)
+
+> **See also:** Chapter 4 (I/O Streams) for zap's buffered response writers and zero-copy request parsing patterns.
+
 ### Zig Compiler Self-Hosting
 
 **Project**: Zig compiler itself (written in Zig)
@@ -1691,6 +1733,7 @@ Source: [main.zig](https://github.com/ziglang/zig/blob/master/src/main.zig)
 | Bun | Work-stealing thread pool | Lock-free ring buffer | [ThreadPool.zig:849-1042](https://github.com/oven-sh/bun/blob/main/src/threading/ThreadPool.zig#L849-L1042) |
 | ZLS | Thread pool + RwLock | Reader-writer document store | [DocumentStore.zig:20-36](https://github.com/zigtools/zls/blob/master/src/DocumentStore.zig#L20-L36) |
 | Ghostty | Multi-loop libxev | Per-thread event loops | [ghostty repository](https://github.com/ghostty-org/ghostty) |
+| zap | Event loop + worker pool | Connection pooling + zero-copy parsing | [zap repository](https://github.com/zigzap/zap) |
 | Zig Compiler | Parallel compilation | WaitGroup coordination | [main.zig](https://github.com/ziglang/zig/blob/master/src/main.zig) |
 
 ---
@@ -1773,6 +1816,7 @@ Zig's concurrency model rewards careful design but provides the tools for buildi
 
 **Libraries:**
 - [libxev: Event Loop for Zig](https://github.com/mitchellh/libxev)
+- [zap: HTTP Server Framework](https://github.com/zigzap/zap) - Production event loop patterns for web services
 - [kprotty/zap: Original Thread Pool Design](https://github.com/kprotty/zap/blob/blog/src/thread_pool.zig)
 - [Tracy Profiler](https://github.com/wolfpld/tracy)
 

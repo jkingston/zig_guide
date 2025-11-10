@@ -2175,6 +2175,106 @@ pub fn init(
 - Explicit .c calling convention
 - Slice reconstruction from pointer-length pairs
 
+### zig-gamedev: Advanced C++ Library Integration
+
+zig-gamedev demonstrates sophisticated patterns for integrating complex C++ libraries (ImGui, PhysX, WebGPU) with type-safe Zig APIs.[^16]
+
+**C++ Library Wrapping Pattern:**
+
+```zig
+// zig-gamedev/libs/zgui/build.zig
+const zgui = b.addStaticLibrary(.{
+    .name = "zgui",
+    .target = target,
+    .optimize = optimize,
+});
+
+zgui.addCSourceFiles(&.{
+    "libs/imgui/imgui.cpp",
+    "libs/imgui/imgui_draw.cpp",
+    "libs/imgui/imgui_widgets.cpp",
+    "libs/imgui/imgui_tables.cpp",
+    "libs/imgui/imgui_demo.cpp",
+    "src/imgui_impl.cpp",  // Zig-friendly adapter layer
+}, &.{"-std=c++17", "-fno-exceptions", "-fno-rtti"});
+
+zgui.linkLibCpp();  // Required for C++ standard library
+```
+
+**Type-Safe Zig API Over C++:**
+
+```zig
+// Type-safe wrapper for ImGui C++ API
+pub fn begin(name: [:0]const u8, flags: WindowFlags) bool {
+    return c.zgui_Begin(name.ptr, null, @intFromEnum(flags));
+}
+
+pub fn button(label: [:0]const u8, size: [2]f32) bool {
+    return c.zgui_Button(label.ptr, size[0], size[1]);
+}
+
+pub fn text(comptime fmt: []const u8, args: anytype) void {
+    var buf: [1024]u8 = undefined;
+    const text_slice = std.fmt.bufPrintZ(&buf, fmt, args) catch &buf;
+    c.zgui_Text(text_slice.ptr);
+}
+```
+
+**Key Patterns:**
+
+1. **Adapter Layer Pattern:**
+   - C++ libraries wrapped in extern "C" adapter functions
+   - Zig code calls C-ABI functions, not C++ directly
+   - Avoids name mangling and exception handling complexity
+
+2. **Memory Ownership at FFI Boundary:**
+   - Allocators passed through to C++ when possible
+   - Clear documentation of which side owns memory
+   - RAII objects wrapped with explicit `init()`/`deinit()` pairs
+
+3. **Platform-Specific Graphics API Integration:**
+```zig
+pub fn link(compile: *std.Build.Step.Compile) void {
+    switch (compile.target.result.os.tag) {
+        .windows => {
+            compile.linkSystemLibrary("d3d12");
+            compile.linkSystemLibrary("dxgi");
+        },
+        .macos => {
+            compile.linkFramework("Metal");
+            compile.linkFramework("MetalKit");
+            compile.linkFramework("QuartzCore");
+        },
+        .linux => {
+            compile.linkSystemLibrary("vulkan");
+            compile.linkSystemLibrary("X11");
+        },
+        else => @panic("Unsupported platform"),
+    }
+}
+```
+
+4. **Multi-Library Dependency Management:**
+   - Central `Package` struct exports all library modules
+   - Shared compilation flags across all C/C++ code
+   - Consistent allocator threading through FFI boundaries
+
+**Testing C++ Interop:**
+
+```zig
+test "ImGui context lifecycle" {
+    const ctx = c.zgui_CreateContext(null);
+    defer c.zgui_DestroyContext(ctx);
+
+    try testing.expect(ctx != null);
+    try testing.expect(c.zgui_GetCurrentContext() == ctx);
+}
+```
+
+This pattern enables Zig projects to leverage mature C++ game development libraries (ImGui, PhysX, Dear ImPlot) while maintaining Zig's safety guarantees and explicit allocator model.
+
+> **See also:** Chapter 7 (Build System) for zig-gamedev's build organization and multi-library dependency management.
+
 ### Memory Safety with defer and errdefer
 
 Production code uses defer consistently for cleanup:
@@ -2400,3 +2500,4 @@ The zero-overhead nature of Zig's FFI—combined with compile-time safety checks
 [^13]: https://github.com/ziglang/zig/blob/master/lib/std/os/wasi.zig
 [^14]: https://github.com/ghostty-org/ghostty/blob/main/src/os/passwd.zig
 [^15]: https://github.com/tigerbeetle/tigerbeetle/blob/main/src/clients/c/tb_client_exports.zig
+[^16]: https://github.com/michal-z/zig-gamedev - C++ library integration patterns (ImGui, PhysX, WebGPU)
