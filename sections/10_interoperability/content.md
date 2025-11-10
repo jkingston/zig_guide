@@ -11,17 +11,19 @@
 
 ## Overview
 
-Zig's design philosophy treats C as a first-class citizen. Unlike languages that treat C interoperability as an afterthought requiring complex FFI libraries or code generation tools, Zig provides direct, zero-overhead integration with C code. This seamless interoperability enables gradual migration from C codebases, leveraging existing C libraries, and exposing Zig code to C consumers.
+Zig treats C as a first-class citizen, providing direct, zero-overhead integration via:
 
-The language achieves this through three core mechanisms: `@cImport` for translating C headers at compile time using Clang, `extern` and `export` keywords for declaring cross-language function boundaries, and C-compatible type primitives that match platform ABIs exactly. These features combine to eliminate the impedance mismatch common in other language FFI systems.
+- **`@cImport`** - Translates C headers at compile-time using Clang
+- **`extern`/`export`** - Declares cross-language function boundaries
+- **C-compatible types** - Match platform ABIs exactly
 
-Understanding interoperability is critical for real-world Zig development. Most production systems integrate with existing C libraries—whether system APIs, databases like SQLite, graphics libraries like Vulkan, or platform frameworks. Beyond C, this chapter covers C++ integration through extern "C" bridges, WebAssembly compilation for browser and edge environments, and WASI's capability-based security model for sandboxed execution.
+This eliminates the impedance mismatch common in FFI systems, enabling gradual C migration and library integration (SQLite, Vulkan, system APIs).
 
-Memory safety at language boundaries demands explicit attention. When Zig code calls C functions or vice versa, responsibility for allocation, deallocation, and lifetime management must be clearly defined. The defer mechanism provides scope-based resource cleanup that prevents leaks when crossing language boundaries. However, mixing allocators between Zig and C, or mismatching C types with Zig types, introduces subtle bugs that only surface on specific platforms or under certain conditions.
+**Memory safety at boundaries:** Responsibility for allocation/deallocation must be explicit. Use `defer` for cleanup (see Ch5). Mixing allocators or mismatched types causes platform-specific bugs.
 
-WebAssembly targets add another dimension to interoperability. Compiling to wasm32-freestanding enables Zig code to run in browsers with JavaScript FFI, while wasm32-wasi provides POSIX-like capabilities for server-side execution. Both targets use a linear memory model where pointers become 32-bit offsets into a contiguous memory space, fundamentally changing how string passing and memory management work.
+**WebAssembly:** wasm32-freestanding (browser + JS FFI) and wasm32-wasi (POSIX-like). Linear memory model: pointers become 32-bit offsets.
 
-This chapter provides comprehensive coverage of interoperability patterns validated in production systems. Examples demonstrate patterns from Ghostty's platform abstraction, TigerBeetle's C client API generation, and Bun's JavaScript runtime integration. Each section builds from fundamentals to advanced patterns, equipping readers to integrate Zig into existing ecosystems and expose Zig APIs to other languages.
+**Coverage:** C/C++ integration, WASM compilation, production patterns from Ghostty, TigerBeetle, Bun.
 
 ## Quick Reference: C Interop Mechanisms
 

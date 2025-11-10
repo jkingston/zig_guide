@@ -10,21 +10,15 @@
 
 ## Overview
 
-Testing, benchmarking, and profiling form the foundation of reliable, performant software development. Zig's approach to these practices reflects its core philosophy: simplicity, explicitness, and zero hidden costs. Unlike many languages that require external testing frameworks, Zig provides testing capabilities directly in the language and compiler.
+Zig provides integrated testing, benchmarking, and profiling reflecting its philosophy: simplicity, explicitness, and zero hidden costs.
 
-The `zig test` command discovers and executes test blocks automatically, providing immediate feedback without configuration. The `std.testing` module supplies essential assertions and utilities, including automatic memory leak detection through `testing.allocator`. This integrated approach eliminates dependency management overhead while ensuring tests remain maintainable and deterministic.
+**Testing:** `zig test` discovers and executes test blocks automatically. The `std.testing` module provides assertions and `testing.allocator` (fails on leaks). Tests use deterministic random seeds for reproducibility. The `builtin.is_test` flag enables test-only code without bloating binaries.
 
-Testing in Zig emphasizes reproducibility. Every test runs with a deterministic random seed, enabling consistent reproduction of failures. The `builtin.is_test` flag allows conditional compilation of test-only code without bloating production binaries. Memory safety testing is first-class—`testing.allocator` fails tests that leak memory, enforcing cleanup discipline from day one.
+**Benchmarking:** Manual instrumentation with `std.time.Timer` provides accuracy over convenience. Use `std.mem.doNotOptimizeAway` to prevent dead code elimination. Developers control warm-up iterations and statistical sampling.
 
-Benchmarking requires manual instrumentation using `std.time.Timer`, providing full control over measurement methodology. This design philosophy prioritizes accuracy over convenience. Developers explicitly manage warm-up iterations, statistical sampling, and optimization barriers using `std.mem.doNotOptimizeAway` to prevent the compiler from invalidating benchmarks through dead code elimination.
+**Profiling:** Integration with perf (Linux), Instruments (macOS), Valgrind (Callgrind, Massif). Use `-Dstrip=false` for symbols and `-Doptimize=ReleaseFast` for representative performance.
 
-Profiling integrates with industry-standard tools: Linux perf for sampling, Valgrind Callgrind for instruction-level analysis, and Massif for heap profiling. Zig's build system configures debug symbols and optimization flags, enabling production-realistic profiling without sacrificing observability. The `-Dstrip=false` flag preserves symbols while `-Doptimize=ReleaseFast` ensures representative performance.
-
-Production codebases demonstrate sophisticated testing patterns. TigerBeetle's deterministic time simulation and network fault injection enable testing distributed consensus algorithms without flakiness. Ghostty's platform-specific test organization handles cross-platform GUI code cleanly. ZLS's custom assertion framework provides semantic comparison through JSON serialization, generating human-readable diffs for complex data structures.
-
-This chapter equips readers with practical knowledge for testing, measuring, and optimizing Zig code. Examples progress from fundamental test blocks to advanced patterns including table-driven tests, allocator testing, comprehensive benchmarking suites, and profiling workflows. Production patterns from real-world projects illustrate scaling these techniques to complex systems.
-
-Understanding these tools enables developers to write correct, performant code with confidence. Zig's integrated testing catches bugs early, benchmarking quantifies optimization impact, and profiling identifies bottlenecks precisely. Together, these capabilities support building robust systems from prototype through production deployment.
+**Production patterns:** TigerBeetle (deterministic simulation, fault injection), Ghostty (platform-specific organization), ZLS (semantic JSON comparison for diffs).
 
 ## Core Concepts
 
