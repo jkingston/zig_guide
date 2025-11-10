@@ -876,7 +876,7 @@ Understanding these patterns enables building libraries, CLI tools, and complex 
 [^12]: TigerBeetle test organization - https://github.com/tigerbeetle/tigerbeetle/blob/main/build.zig#L853-L886
 [^13]: Zig 0.15 migration guide - https://github.com/ziglang/zig/wiki/0.15.0-Release-Notes
 [^14]: std.Build.path documentation - https://ziglang.org/documentation/master/std/#std.Build.path
-[^15]: Lazy dependencies - Covered in Chapter 9: Packages & Dependencies
+[^15]: Lazy dependencies - Covered in Chapter 1: Packages & Dependencies
 [^16]: TigerBeetle CPU feature enforcement - https://github.com/tigerbeetle/tigerbeetle/blob/main/build.zig#L13-L42
 [^17]: Ghostty modular build organization - https://github.com/ghostty-org/ghostty/blob/main/build.zig#L17-L34
 [^18]: Mach optional features - https://github.com/hexops/mach/blob/main/build.zig#L47-L69

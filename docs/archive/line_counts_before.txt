@@ -1,0 +1,17 @@
+  2644 sections/00_professional_setup/content.md
+   250 sections/01_introduction/content.md
+   621 sections/02_language_idioms/content.md
+   445 sections/03_memory_allocators/content.md
+  1046 sections/04_collections_containers/content.md
+   629 sections/05_io_streams/content.md
+  1181 sections/06_error_handling/content.md
+  1793 sections/07_async_concurrency/content.md
+   884 sections/08_build_system/content.md
+   843 sections/09_packages_dependencies/content.md
+  2047 sections/10_project_layout_ci/content.md
+  2402 sections/11_interoperability/content.md
+  2696 sections/12_testing_benchmarking/content.md
+  1260 sections/13_logging_diagnostics/content.md
+  1237 sections/14_migration_guide/content.md
+  2375 sections/15_appendices/content.md
+ 22353 total

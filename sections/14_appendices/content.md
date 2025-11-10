@@ -1,4 +1,4 @@
-# Chapter 15: Appendices & Reference Material
+# Chapter 1: Appendices & Reference Material
 
 This chapter provides comprehensive reference materials for Zig development: a complete glossary of terms, idiomatic style guidelines, consolidated references from all chapters, and quick lookup tables for syntax, patterns, and APIs. Use this as a desk reference while writing Zig code.
 

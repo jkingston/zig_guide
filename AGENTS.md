@@ -178,13 +178,15 @@ zig_guide/
 │   ├── prepare-mdbook.sh
 │   └── extract_code_blocks.py
 ├── reference_repos/             # Exemplar projects (git-ignored)
-├── examples/                    # 16 chapter example directories
-│   ├── ch00_professional_setup/
+├── examples/                    # 14 chapters + appendix example directories
+│   ├── appendix_b_zighttp/
 │   ├── ch01_introduction/
+│   ├── ch01_idioms/
 │   ├── ...
-│   └── ch15_appendices/
-└── sections/                    # 16 chapter directories
-    ├── 00_professional_setup/
+│   └── ch14_appendices/
+└── sections/                    # 14 chapter directories + Introduction
+    ├── 01_introduction/
+    ├── 01_language_idioms/
     │   ├── prompt.md            # Generated section prompt
     │   └── content.md           # Agent-generated content
     ├── 01_introduction/

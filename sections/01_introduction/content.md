@@ -20,6 +20,141 @@ This guide teaches practical Zig idioms and best practices for developers using 
 
 ---
 
+## Quick Start
+
+Get started with Zig in under 10 minutes. For a complete project tutorial, see **Appendix B: Architectural Analysis - zighttp**.
+
+### Installation
+
+Download Zig from the [official website](https://ziglang.org/download/):
+
+```bash
+# Verify installation
+zig version
+# Should show: 0.15.2 (or your installed version)
+```
+
+**Install ZLS (Zig Language Server)** for IDE support:
+- Download from [ZLS releases](https://github.com/zigtools/zls/releases)
+- ⚠️ Version must match your Zig version (0.15.2 requires ZLS 0.15.0)
+- See **Appendix A: Development Setup** for detailed editor configuration
+
+### Your First Project
+
+Create a simple word counter that demonstrates core Zig concepts:
+
+```bash
+mkdir wordcount && cd wordcount
+zig init
+```
+
+Replace `src/main.zig` with:
+
+```zig
+const std = @import("std");
+
+pub fn main() !void {
+    // Memory allocation with leak detection
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
+    // Parse command-line arguments
+    const args = try std.process.argsAlloc(allocator);
+    defer std.process.argsFree(allocator, args);
+
+    if (args.len < 2) {
+        std.debug.print("Usage: wordcount <file>\n", .{});
+        return;
+    }
+
+    // Read file with automatic cleanup
+    const file = try std.fs.cwd().openFile(args[1], .{});
+    defer file.close();
+
+    const content = try file.readToEndAlloc(allocator, 1024 * 1024);
+    defer allocator.free(content);
+
+    // Count words
+    var count: usize = 0;
+    var iter = std.mem.splitScalar(u8, content, ' ');
+    while (iter.next()) |_| count += 1;
+
+    std.debug.print("Words: {}\n", .{count});
+}
+```
+
+**What this demonstrates:**
+- **Memory allocation** (Chapter 2) - `GeneralPurposeAllocator` with leak detection
+- **Error handling** (Chapter 5) - `!void` return type, `try` keyword
+- **Resource cleanup** (Chapter 5) - `defer` ensures cleanup on all exit paths
+- **I/O operations** (Chapter 4) - File reading with proper error handling
+- **String processing** (Chapter 1) - Splitting and iteration
+
+**Build and run:**
+
+```bash
+zig build-exe src/main.zig
+./wordcount README.md
+# Output: Words: 42
+```
+
+### Development Workflow
+
+Essential commands for day-to-day development:
+
+```bash
+# Initialize project structure
+zig init
+
+# Build project
+zig build
+
+# Run tests
+zig build test
+
+# Format code (automatic style enforcement)
+zig fmt .
+
+# Build and run
+zig build run
+
+# Cross-compile for different targets
+zig build -Dtarget=x86_64-linux -Doptimize=ReleaseFast
+zig build -Dtarget=aarch64-macos -Doptimize=ReleaseFast
+```
+
+**Project structure created by `zig init`:**
+
+```
+myproject/
+├── build.zig          # Build configuration (see Chapter 7)
+├── build.zig.zon      # Package manifest (see Chapter 8)
+├── src/
+│   ├── main.zig       # Executable entry point
+│   └── root.zig       # Library exports
+└── .gitignore         # Excludes zig-cache/, zig-out/
+```
+
+### Next Steps
+
+**Choose your learning path:**
+
+- **New to Zig idioms?** → Chapter 1 (Language Idioms & Core Patterns)
+- **Coming from C/Rust?** → Chapter 1, then Chapter 2 (Memory & Allocators)
+- **Want complete project tutorial?** → Appendix B (zighttp architectural analysis)
+- **Need troubleshooting?** → Appendix D (Troubleshooting Guide)
+
+**Key chapters for common tasks:**
+- **Memory management** → Chapter 2 (Memory & Allocators)
+- **Error handling** → Chapter 5 (Error Handling & Resource Cleanup)
+- **File I/O** → Chapter 4 (I/O, Streams & Formatting)
+- **Building projects** → Chapter 7 (Build System)
+- **Testing** → Chapter 11 (Testing, Benchmarking & Profiling)
+- **Project setup** → Chapter 9 (Project Layout, Cross-Compilation & CI)
+
+---
+
 ## How to Read This Guide
 
 ### Version Markers
@@ -48,13 +183,13 @@ The 0.15 change reflects Zig's shift toward explicit allocator passing, making m
 
 All examples are self-contained and runnable unless otherwise noted. To run an example, save it to a file (e.g., `example.zig`) and execute:
 
-```
+```bash
 $ zig run example.zig
 ```
 
 For test examples, use:
 
-```
+```bash
 $ zig test example.zig
 ```
 
@@ -66,7 +201,7 @@ Examples follow these conventions:[^1]
 
 ### Guide Structure
 
-The guide is organized into 15 chapters covering language features, standard library patterns, tooling, and project organization. Each chapter follows a consistent structure:
+The guide is organized into 14 chapters covering language features, standard library patterns, tooling, and project organization. Each chapter follows a consistent structure:
 
 1. **Overview** — Why this topic matters
 2. **Core Concepts** — Key ideas with examples
@@ -80,32 +215,9 @@ Chapters can be read sequentially or consulted independently. Cross-references l
 
 ---
 
-## Your First Zig Program
-
-The simplest Zig program demonstrates imports, entry points, and format strings:[^2]
-
-```zig
-const std = @import("std");
-
-pub fn main() void {
-    std.debug.print("Hello, {s}!\n", .{"World"});
-}
-```
-
-**What this shows:**
-- `const std = @import("std")` imports the standard library
-- `pub fn main() void` is the public entry point
-- `std.debug.print` writes to stderr (unbuffered, thread-safe)
-- `{s}` is a format specifier for UTF-8 text
-- `.{"World"}` is an anonymous tuple providing format arguments
-
-This example works identically in all supported versions (0.14.0, 0.14.1, 0.15.1, 0.15.2).
-
----
-
 ## What Makes Zig Unique
 
-Zig's `comptime` keyword enables computation at compile time:[^3]
+Zig's `comptime` keyword enables computation at compile time:[^2]
 
 ```zig
 const std = @import("std");
@@ -125,72 +237,35 @@ The `comptime` annotation forces evaluation during compilation. The result is a 
 
 ---
 
-## Version Awareness
-
-Zig 0.15 introduced breaking changes to several core APIs. This guide supports developers using either version by teaching patterns first, then noting version-specific differences where they exist.
-
-### stdout Writer Changes in 0.15
-
-One significant breaking change is the stdout Writer interface:[^4]
-
-**🕐 0.14.x — Unbuffered stdout**
-```zig
-const std = @import("std");
-
-pub fn main() !void {
-    const stdout = std.io.getStdOut().writer();
-    try stdout.print("Hello from 0.14!\n", .{});
-}
-```
-
-**✅ 0.15.1+ — Buffered stdout**
-```zig
-const std = @import("std");
-
-pub fn main() !void {
-    const stdout = std.io.getStdOut().writer();
-    try stdout.print("Hello from 0.15!\n", .{});
-    try stdout.context.flush();
-}
-```
-
-**Why this changed:** Buffered I/O reduces system calls for bulk output. Explicit flushing makes buffering costs visible. Forgetting `.flush()` causes missing output—a common migration pitfall.
-
-### When Version Markers Appear
-
-Version markers appear only when APIs differ between the 0.14.x and 0.15.x series. Most Zig code works identically across all supported versions. For comprehensive migration guidance, see Chapter 14 (Migration Guide).
-
----
-
 ## Chapter Overview
 
-**Chapter 2: Language Idioms** — Zig-specific patterns for error handling, memory management, resource cleanup, control flow, and comptime programming. Establishes mental models for how Zig differs from C and C++.
+**Chapter 1: Language Idioms** — Zig-specific patterns for error handling, memory management, resource cleanup, control flow, and comptime programming. Establishes mental models for how Zig differs from C and C++.
 
-**Chapter 3: Memory & Allocators** — Allocator strategies (arena, general-purpose, fixed-buffer), memory ownership patterns, and debugging memory issues.
+**Chapter 2: Memory & Allocators** — Allocator strategies (arena, general-purpose, fixed-buffer), memory ownership patterns, and debugging memory issues.
 
-**Chapter 4: Collections & Containers** — Standard library data structures (ArrayList, HashMap, etc.) with version-specific API differences where they exist.
+**Chapter 3: Collections & Containers** — Standard library data structures (ArrayList, HashMap, etc.) with version-specific API differences where they exist.
 
-**Chapter 5: I/O & Streams** — File operations, network I/O, the 0.15 Writer/Reader changes, buffering strategies, and error handling.
+**Chapter 4: I/O & Streams** — File operations, network I/O, the 0.15 Writer/Reader changes, buffering strategies, and error handling.
 
-**Chapter 6: Error Handling** — Advanced error patterns including error sets, payload capture, and idiomatic propagation across API boundaries.
+**Chapter 5: Error Handling** — Advanced error patterns including error sets, payload capture, and idiomatic propagation across API boundaries.
 
-**Chapter 7: Async & Concurrency** — Thread management, synchronization primitives, and async removal in 0.15 with future directions.
+**Chapter 6: Async & Concurrency** — Thread management, synchronization primitives, and async removal in 0.15 with future directions.
 
-**Chapter 8: Build System** — `build.zig` structure, dependency management, cross-compilation, and 0.15 build system changes.
+**Chapter 7: Build System** — `build.zig` structure, dependency management, cross-compilation, and 0.15 build system changes.
 
-**Chapter 9: Packages & Dependencies** — Package layout conventions, vendoring strategies, and integration with third-party code.
+**Chapter 8: Packages & Dependencies** — Package layout conventions, vendoring strategies, and integration with third-party code.
 
-**Chapter 10: Project Layout & CI** — Directory structures, testing strategies, and continuous integration setup for Zig projects.
+**Chapter 9: Project Layout & CI** — Directory structures, testing strategies, continuous integration setup, and production project patterns.
 
-**Chapter 11: Interoperability** — C interop patterns, calling conventions, and integrating Zig into existing C/C++ projects.
+**Chapter 10: Interoperability** — C interop patterns, calling conventions, and integrating Zig into existing C/C++ projects.
 
-**Chapter 12: Testing & Benchmarking** — Test organization, property-based testing, and performance measurement techniques.
+**Chapter 11: Testing & Benchmarking** — Test organization, property-based testing, and performance measurement techniques.
 
-**Chapter 13: Logging & Diagnostics** — Structured logging patterns, debugging techniques, and production observability.
+**Chapter 12: Logging & Diagnostics** — Structured logging patterns, debugging techniques, and production observability.
 
-**Chapter 14: Migration Guide** — Detailed 0.14 → 0.15 migration checklist with automated tooling recommendations.
+**Chapter 13: Migration Guide** — Detailed 0.14 → 0.15 migration checklist with automated tooling recommendations.
 
-**Chapter 15: Appendices** — Quick reference tables, naming conventions, and links to community resources.
+**Chapter 14: Appendices** — Development setup, complete project analysis, release checklist, troubleshooting guide, and reference material.
 
 ---
 
@@ -198,11 +273,11 @@ Version markers appear only when APIs differ between the 0.14.x and 0.15.x serie
 
 Real-world Zig projects demonstrate these patterns at scale:
 
-**TigerBeetle**[^5] is a distributed financial transaction database prioritizing safety and correctness. Its [TIGER_STYLE.md](https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md) establishes rigorous engineering standards including minimum 2 assertions per function and comprehensive "why" comments.
+**TigerBeetle**[^3] is a distributed financial transaction database prioritizing safety and correctness. Its [TIGER_STYLE.md](https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md) establishes rigorous engineering standards including minimum 2 assertions per function and comprehensive "why" comments.
 
-**Ghostty**[^6] is a GPU-accelerated terminal emulator written primarily in Zig with Swift integration for macOS. The project demonstrates cross-platform abstractions and modular architecture.
+**Ghostty**[^4] is a GPU-accelerated terminal emulator written primarily in Zig with Swift integration for macOS. The project demonstrates cross-platform abstractions and modular architecture.
 
-**Bun**[^7] is a JavaScript runtime and bundler demonstrating large-scale Zig usage with multi-language interop. Its codebase shows practical patterns for organizing complex projects.
+**Bun**[^5] is a JavaScript runtime and bundler demonstrating large-scale Zig usage with multi-language interop. Its codebase shows practical patterns for organizing complex projects.
 
 These projects are referenced throughout the guide as exemplars of production Zig patterns.
 
@@ -229,22 +304,20 @@ These projects are referenced throughout the guide as exemplars of production Zi
 
 ## Summary
 
-This guide teaches Zig idioms and best practices for developers using versions 0.14.0, 0.14.1, 0.15.1, or 0.15.2. It is organized into 15 chapters, each focusing on a specific aspect of Zig development.
+This guide teaches Zig idioms and best practices for developers using versions 0.14.0, 0.14.1, 0.15.1, or 0.15.2. It is organized into 14 chapters, each focusing on a specific aspect of Zig development.
 
 Most patterns work identically across all supported versions. When APIs differ, version markers (🕐 0.14.x, ✅ 0.15.1+) clearly indicate compatibility. The guide assumes familiarity with systems programming and intermediate experience.
 
-Chapter 1 has oriented you to the guide structure, version markers, and provided a working Hello World example. You have seen a glimpse of Zig's compile-time execution with `comptime` and understand when version-specific differences appear.
+This introduction has oriented you to the guide structure, version markers, and provided a working Quick Start example. You've seen a glimpse of Zig's compile-time execution with `comptime` and understand when version-specific differences appear.
 
-Proceed to Chapter 2 to explore Zig's language idioms in depth, including error handling, memory management, resource cleanup, and the patterns that make Zig unique among systems programming languages.
+Proceed to Chapter 1 to explore Zig's language idioms in depth, including error handling, memory management, resource cleanup, and the patterns that make Zig unique among systems programming languages.
 
 ---
 
 ## References
 
 [^1]: [Zig Official Style Guide](https://ziglang.org/documentation/0.15.2/#Style-Guide) — Naming conventions and formatting standards
-[^2]: [Zig.guide - Hello World](https://zig.guide/getting-started/hello-world) — Basic program structure
-[^3]: [Zig.guide - Comptime](https://zig.guide/language-basics/comptime) — Compile-time execution
-[^4]: [Zig 0.15.1 I/O Overhaul Explained](https://dev.to/bkataru/zig-0151-io-overhaul-understanding-the-new-readerwriter-interfaces-30oe) — Writer interface changes
-[^5]: [TigerBeetle Repository](https://github.com/tigerbeetle/tigerbeetle) — Distributed database in Zig
-[^6]: [Ghostty Repository](https://github.com/ghostty-org/ghostty) — Terminal emulator
-[^7]: [Bun Repository](https://github.com/oven-sh/bun) — JavaScript runtime
+[^2]: [Zig.guide - Comptime](https://zig.guide/language-basics/comptime) — Compile-time execution
+[^3]: [TigerBeetle Repository](https://github.com/tigerbeetle/tigerbeetle) — Distributed database in Zig
+[^4]: [Ghostty Repository](https://github.com/ghostty-org/ghostty) — Terminal emulator
+[^5]: [Bun Repository](https://github.com/oven-sh/bun) — JavaScript runtime

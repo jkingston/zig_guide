@@ -62,13 +62,14 @@ zig_guide/
 │   ├── ...
 │   └── 15_appendices/
 │
-├── examples/                    # Runnable code examples (16 chapters)
-│   ├── ch00_professional_setup/
+├── examples/                    # Runnable code examples (14 chapters + appendix)
+│   ├── appendix_b_zighttp/
 │   │   ├── build.zig
 │   │   └── zighttp/             # Complete example project
 │   ├── ch01_introduction/
+│   ├── ch01_idioms/
 │   ├── ...
-│   └── ch15_appendices/
+│   └── ch14_appendices/
 │
 ├── src/                         # mdBook generated sources
 │   ├── SUMMARY.md               # Table of contents
@@ -153,10 +154,10 @@ Code examples live in `examples/chXX_name/`:
 
 ```bash
 # Edit or add example
-vim examples/ch02_idioms/01_naming_conventions.zig
+vim examples/ch01_idioms/01_naming_conventions.zig
 
 # Test it compiles
-cd examples/ch02_idioms
+cd examples/ch01_idioms
 zig build
 ```
 
