@@ -53,25 +53,16 @@ This example demonstrates the core interface with leak detection. The `GeneralPu
 
 ### Allocator Types and Selection
 
-Zig's standard library provides specialized allocators for different use cases. Choosing the right allocator improves performance, safety, and code clarity.
+Zig's standard library provides specialized allocators for different use cases:
 
-**ArenaAllocator** — Optimized for request-scoped allocations where all memory is freed together. Individual `free()` calls are no-ops; a single `deinit()` releases everything. This simplifies cleanup for HTTP handlers, parsers, or temporary data structures. TigerBeetle and ZLS use arenas extensively for configuration parsing and request handling.[^2][^3]
-
-**FixedBufferAllocator** — Allocates from a pre-provided buffer, typically on the stack. Because it requires no system calls, it offers predictable performance and automatic cleanup when the buffer goes out of scope. Ideal for known maximum sizes or performance-critical code paths. The Zig test runner uses this for command-line argument processing.[^4]
-
-**GeneralPurposeAllocator** — Thread-safe allocator with safety features: prevents double-free and use-after-free, detects leaks with stack traces. Recommended for development and applications prioritizing safety over raw performance. The allocator never reuses addresses, helping catch use-after-free bugs.
-
-**c_allocator** — Wrapper around C's `malloc/free`. Offers high performance with minimal overhead, but requires linking libc and provides no safety features. Suitable for release builds where performance is critical.
-
-**std.testing.allocator** — Fails tests automatically if allocations are not freed, with stack traces for leak locations. Essential for all test code.
-
-| Scenario | Recommended Allocator | Rationale |
-|----------|----------------------|-----------|
-| Testing | `std.testing.allocator` | Automatic leak detection |
-| Development | `GeneralPurposeAllocator` | Safety features, debugging |
-| Request handling | `ArenaAllocator` | Bulk cleanup, scoped lifetime |
-| Known max size | `FixedBufferAllocator` | No syscalls, bounded |
-| Release builds | `c_allocator` | Performance |
+| Allocator | Characteristics | Best For | Trade-offs | Production Use |
+|-----------|-----------------|----------|------------|----------------|
+| `std.testing.allocator` | Fails tests on leaks, stack traces | Testing | Safety (dev-only) | Required for tests |
+| `GeneralPurposeAllocator` | Thread-safe, detects double-free/use-after-free, never reuses addresses | Development, debugging | Safety > performance | Ghostty, ZLS[^2][^3] |
+| `ArenaAllocator` | Bulk deallocation, `free()` is no-op | Request-scoped, parsers, temp data | Holds all until `deinit()` | TigerBeetle config[^2][^3] |
+| `FixedBufferAllocator` | Pre-allocated buffer (often stack), no syscalls | Known max size, perf-critical | Fixed capacity | Zig test runner[^4] |
+| `c_allocator` | Wraps malloc/free, minimal overhead | Release builds, C interop | No safety features | Production (after testing) |
+| `page_allocator` | Direct OS page mapping (4KB min) | Large buffers, isolation | High overhead for small allocs | Security-critical |
 
 ### Allocator Propagation
 
@@ -164,36 +155,34 @@ TigerBeetle also uses an "out-pointer" style for performance-critical code, wher
 
 ### Cleanup Idioms
 
-Zig's `defer` and `errdefer` keywords provide deterministic cleanup without runtime overhead.
-
-**defer** executes cleanup code when leaving scope, regardless of how the scope exits (return, break, or fall-through). Defer statements execute in LIFO order. Best practice: place `defer` immediately after allocation.
+Zig provides `defer` and `errdefer` for deterministic cleanup (see Ch5 for comprehensive coverage). Best practice: pair allocations with cleanup immediately:
 
 ```zig
 const data = try allocator.alloc(u8, 100);
-defer allocator.free(data); // Executes when scope exits
+defer allocator.free(data);  // LIFO order: runs at scope exit
 
 const file = try std.fs.cwd().openFile("data.txt", .{});
 defer file.close();
 ```
 
-**errdefer** executes cleanup only when the scope exits via error return. This is essential for multi-step initialization where later steps might fail.
+For multi-step initialization where later steps might fail, `errdefer` executes only on error returns:
 
 ```zig
 fn createResources(allocator: std.mem.Allocator) !Resources {
     const buffer1 = try allocator.alloc(u8, 100);
-    errdefer allocator.free(buffer1); // Only on error
+    errdefer allocator.free(buffer1);  // Cleanup if subsequent errors occur
 
     const buffer2 = try allocator.alloc(u8, 200);
-    errdefer allocator.free(buffer2); // Only on error
+    errdefer allocator.free(buffer2);
 
     return .{ .buf1 = buffer1, .buf2 = buffer2 };
-    // Success: both buffers returned, no cleanup
 }
 ```
 
-TigerBeetle's manifest initialization demonstrates cascading errdefer for nested structures: if level initialization fails midway, all previously initialized levels are cleaned up automatically.[^6]
-
-**Arena vs Manual Cleanup** — Use arenas for request-scoped allocations where all memory is freed together. Use manual cleanup (defer/errdefer) when individual allocations have different lifetimes or memory must be reclaimed incrementally.
+**Memory Management Strategy:**
+- **Arenas** — Request-scoped bulk cleanup (all freed together)
+- **Manual cleanup (defer/errdefer)** — Individual lifetimes or incremental reclamation
+- See TigerBeetle's manifest initialization for cascading errdefer patterns[^6]
 
 ## Code Examples
 

@@ -83,9 +83,9 @@ fn process(gpa: Allocator, arena: Allocator) !void {
 
 ### defer and errdefer
 
-Zig's `defer` executes code when leaving the current scope (via return, break, or block end). `errdefer` executes only when leaving via error return.[^5]
+Zig's `defer` executes code when leaving the current scope (via return, break, or block end). `errdefer` executes only when leaving via error return.[^5] See Ch5 for comprehensive coverage of resource cleanup patterns.
 
-**Execution order** is last-in-first-out (LIFO):
+**Execution order is LIFO:**
 
 ```zig
 const std = @import("std");
