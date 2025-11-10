@@ -1,5 +1,13 @@
 # Testing, Benchmarking & Profiling
 
+> **TL;DR for experienced developers:**
+> - **Testing:** `test "name" { ... }` blocks, run with `zig test file.zig`
+> - **Assertions:** `try testing.expect(condition)`, `try testing.expectEqual(expected, actual)`
+> - **Memory leak detection:** `testing.allocator` fails tests if allocations aren't freed
+> - **Benchmarking:** Manual timing with `std.time.Timer`, prevent DCE with `doNotOptimizeAway`
+> - **Profiling:** Use perf (Linux), Instruments (macOS), or Valgrind for detailed analysis
+> - **Jump to:** [Basic tests §11.2](#zig-test-and-test-discovery) | [Benchmarking §11.5](#benchmarking-patterns) | [Profiling §11.6](#profiling-techniques)
+
 ## Overview
 
 Testing, benchmarking, and profiling form the foundation of reliable, performant software development. Zig's approach to these practices reflects its core philosophy: simplicity, explicitness, and zero hidden costs. Unlike many languages that require external testing frameworks, Zig provides testing capabilities directly in the language and compiler.

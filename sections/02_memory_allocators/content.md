@@ -1,5 +1,13 @@
 # Memory & Allocators
 
+> **TL;DR for C/C++/Rust developers:**
+> - **No implicit allocations** - all allocations require explicit allocator parameter
+> - **Allocator interface:** `allocator.alloc(T, count)`, `allocator.free(slice)`
+> - **Choose allocator:** GPA (dev), c_allocator (prod), Arena (request-scoped), testing.allocator (tests)
+> - **Cleanup:** `defer allocator.free(ptr)` immediately after allocation
+> - **Error handling:** `errdefer` for multi-step initialization cleanup
+> - **See [comparison table](#allocator-types-and-selection) below for full allocator guide**
+
 ## Overview
 
 Memory management in Zig is explicit, deterministic, and designed to eliminate an entire class of bugs common in other systems languages. Unlike languages with garbage collection or hidden allocations, Zig requires every memory allocation to specify an allocator explicitly. This philosophy—"no hidden memory allocations"—forces clarity about ownership, lifetime, and resource cleanup throughout the codebase.

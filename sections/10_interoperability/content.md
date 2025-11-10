@@ -1,5 +1,14 @@
 # Interoperability (C/C++/WASI/WASM)
 
+> **TL;DR for experienced C/C++ developers:**
+> - **Import C headers:** `const c = @cImport(@cInclude("header.h"));`
+> - **Call C function:** `extern "c" fn function_name(...) return_type;`
+> - **Expose to C:** `export fn zig_function(...) return_type`
+> - **Function pointers:** Add `callconv(.C)` for ABI compatibility
+> - **Link libc:** `exe.linkLibC()` in build.zig
+> - **See [Quick Reference](#quick-reference-c-interop-mechanisms) below for decision tree**
+> - **Jump to:** [C headers](#cimport-and-c-header-translation) | [Extern/Export](#extern-and-export-declarations) | [WASM](#webassembly-targets)
+
 ## Overview
 
 Zig's design philosophy treats C as a first-class citizen. Unlike languages that treat C interoperability as an afterthought requiring complex FFI libraries or code generation tools, Zig provides direct, zero-overhead integration with C code. This seamless interoperability enables gradual migration from C codebases, leveraging existing C libraries, and exposing Zig code to C consumers.
@@ -13,6 +22,22 @@ Memory safety at language boundaries demands explicit attention. When Zig code c
 WebAssembly targets add another dimension to interoperability. Compiling to wasm32-freestanding enables Zig code to run in browsers with JavaScript FFI, while wasm32-wasi provides POSIX-like capabilities for server-side execution. Both targets use a linear memory model where pointers become 32-bit offsets into a contiguous memory space, fundamentally changing how string passing and memory management work.
 
 This chapter provides comprehensive coverage of interoperability patterns validated in production systems. Examples demonstrate patterns from Ghostty's platform abstraction, TigerBeetle's C client API generation, and Bun's JavaScript runtime integration. Each section builds from fundamentals to advanced patterns, equipping readers to integrate Zig into existing ecosystems and expose Zig APIs to other languages.
+
+## Quick Reference: C Interop Mechanisms
+
+| Mechanism | Purpose | When to Use | Example | Requires libc |
+|-----------|---------|-------------|---------|---------------|
+| `@cImport` | Import C headers | Need full C API, translate types at compile-time | `const c = @cImport(@cInclude("stdio.h"));` | Yes |
+| `extern` | Declare external C function | Call C function without header, minimal deps | `extern "c" fn malloc(size: usize) ?*anyopaque;` | No (but must link) |
+| `export` | Expose Zig function to C | Create C-callable library/API | `export fn add(a: i32, b: i32) i32` | No |
+| `callconv(.C)` | Specify calling convention | Function pointers, platform-specific APIs | `fn callback() callconv(.C) void` | No |
+| `@cDefine` | Define C macro for import | Control conditional compilation in headers | `@cDefine("DEBUG", "1")` (in `@cImport`) | Yes |
+
+**Decision tree:**
+- **Have C header?** → Use `@cImport` (easiest, full type translation)
+- **No header, calling C?** → Use `extern` (manual declaration)
+- **Exposing Zig to C?** → Use `export` (creates C-compatible symbols)
+- **Function pointer for C?** → Add `callconv(.C)` (ensures ABI compatibility)
 
 ## Core Concepts
 

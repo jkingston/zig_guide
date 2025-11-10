@@ -1,5 +1,13 @@
 # Async, Concurrency & Performance
 
+> **TL;DR for experienced systems programmers:**
+> - **Breaking change:** Language-level async/await removed in 0.15 → use library-based solutions
+> - **CPU parallelism:** `std.Thread` for OS threads, `std.Thread.Pool` for work distribution
+> - **I/O concurrency:** Use library event loops (libxev, zap) with io_uring/kqueue/IOCP
+> - **Synchronization:** `std.Thread.Mutex`, `RwLock`, `Condition`, atomic operations
+> - **Memory ordering:** `.seq_cst` (default), `.acquire`, `.release`, `.monotonic`
+> - **Jump to:** [Threading §6.2](#stdthread-explicit-thread-management) | [Atomics §6.3](#atomic-operations) | [Thread pools §6.4](#thread-pools)
+
 This chapter examines Zig's concurrency model, synchronization primitives, and performance measurement tools. Modern systems programming demands efficient handling of both CPU-bound parallelism and I/O-bound concurrency. Zig provides explicit, zero-cost abstractions for both through threading primitives and library-based event loops.
 
 ---
