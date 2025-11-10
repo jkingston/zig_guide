@@ -1,0 +1,101 @@
+╔════════════════════════════════════════════════════════════════╗
+║        Zig Guide: Comprehensive Baseline Metrics              ║
+╚════════════════════════════════════════════════════════════════╝
+
+Date: 2025-11-10
+
+## Total Line Count
+
+Total lines: 20207
+Number of chapters: 15
+Average lines per chapter: 1347
+
+## Chapter Breakdown (by size)
+
+Chapter                        |  Lines
+────────────────────────────────────────
+01_introduction                |    342
+02_memory_allocators           |    445
+01_language_idioms             |    621
+04_io_streams                  |    750
+08_packages_dependencies       |    843
+07_build_system                |    960
+03_collections_containers      |   1046
+05_error_handling              |   1181
+13_migration_guide             |   1237
+12_logging_diagnostics         |   1260
+06_async_concurrency           |   1837
+09_project_layout_ci           |   2111
+14_appendices                  |   2375
+10_interoperability            |   2503
+11_testing_benchmarking        |   2696
+
+## Allocator Mentions (by chapter)
+
+02_memory_allocators           |    124
+03_collections_containers      |    195
+04_io_streams                  |     29
+05_error_handling              |    124
+Total allocator mentions: 519
+
+## Defer/Errdefer Mentions (by chapter)
+
+01_language_idioms             |     27
+02_memory_allocators           |     36
+03_collections_containers      |     59
+04_io_streams                  |     24
+05_error_handling              |    103
+06_async_concurrency           |     26
+Total defer/errdefer mentions: 287
+
+## Error Union Mentions (by chapter)
+
+01_language_idioms             |     37
+02_memory_allocators           |     33
+03_collections_containers      |     68
+04_io_streams                  |     65
+05_error_handling              |     98
+06_async_concurrency           |     32
+09_project_layout_ci           |     35
+10_interoperability            |     76
+11_testing_benchmarking        |    142
+12_logging_diagnostics         |     56
+13_migration_guide             |     55
+14_appendices                  |     90
+Total error handling mentions: 805
+
+## Code vs Prose Analysis
+
+Total code blocks: 690
+Average code blocks per chapter: 46
+
+## Tables Analysis
+
+Total table rows: 12
+Average tables per chapter: 0
+
+## Philosophical Introductions
+
+14_appendices                  |    541 lines before first code
+Chapters with >150 line intros: 1
+
+═══════════════════════════════════════════════════════════════
+## Summary Metrics
+═══════════════════════════════════════════════════════════════
+
+Metric                                   |      Value
+───────────────────────────────────────────────────────
+Total lines                              |      20207
+Total chapters                           |         15
+Average lines per chapter                |       1347
+Total code blocks                        |        690
+Total allocator mentions                 |        519
+Total defer mentions                     |        287
+Chapters with long intros                |          1
+Total tables                             |         12
+
+Estimated redundancy percentage: 4.0%
+
+═══════════════════════════════════════════════════════════════
+Baseline measurement complete.
+═══════════════════════════════════════════════════════════════
