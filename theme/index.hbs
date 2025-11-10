@@ -152,45 +152,6 @@
                 });
             </script>
 
-            <!-- Paperlike theme toggle script -->
-            <script type="text/javascript">
-                (function() {
-                    var themeToggle = document.getElementById('theme-toggle');
-
-                    function updateThemeIcon() {
-                        var currentTheme = document.body.className;
-                        var lightIcon = themeToggle.querySelector('.theme-icon-light');
-                        var darkIcon = themeToggle.querySelector('.theme-icon-dark');
-
-                        if (currentTheme === 'coal') {
-                            lightIcon.style.display = 'inline';
-                            darkIcon.style.display = 'none';
-                            themeToggle.setAttribute('title', 'Switch to light mode');
-                        } else {
-                            lightIcon.style.display = 'none';
-                            darkIcon.style.display = 'inline';
-                            themeToggle.setAttribute('title', 'Switch to dark mode');
-                        }
-                    }
-
-                    themeToggle.addEventListener('click', function() {
-                        var currentTheme = document.body.className;
-                        var newTheme = currentTheme === 'light' ? 'coal' : 'light';
-
-                        document.body.className = newTheme;
-                        document.querySelector('html').className = newTheme + ' js';
-
-                        try {
-                            localStorage.setItem('mdbook-theme', newTheme);
-                        } catch (e) { }
-
-                        updateThemeIcon();
-                    });
-
-                    updateThemeIcon();
-                })();
-            </script>
-
             <div id="content" class="content">
                 <main>
                     {{{ content }}}
