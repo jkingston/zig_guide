@@ -1,0 +1,27 @@
+total 4
+drwxr-xr-x 1 jack jack  766 Nov  8 18:48 .
+drwxr-xr-x 1 jack jack  480 Nov 10 08:28 ..
+drwxr-xr-x 1 jack jack  106 Nov  9 04:01 ch00_professional_setup
+drwxr-xr-x 1 jack jack  286 Nov  7 06:53 ch01_introduction
+drwxr-xr-x 1 jack jack  512 Nov  6 06:15 ch02_idioms
+drwxr-xr-x 1 jack jack  342 Nov  6 06:47 ch03_memory
+drwxr-xr-x 1 jack jack 1048 Nov  6 07:04 ch04_collections
+drwxr-xr-x 1 jack jack  102 Nov  6 07:16 ch05_io
+drwxr-xr-x 1 jack jack  262 Nov  6 07:20 ch06_errors
+drwxr-xr-x 1 jack jack  102 Nov  6 07:20 ch07_async
+drwxr-xr-x 1 jack jack    0 Nov  5 20:28 ch08_build
+drwxr-xr-x 1 jack jack  272 Nov  6 07:59 ch08_build_system
+drwxr-xr-x 1 jack jack    0 Nov  5 20:28 ch09_packages
+drwxr-xr-x 1 jack jack  278 Nov  6 07:59 ch09_packages_dependencies
+drwxr-xr-x 1 jack jack    0 Nov  5 20:28 ch10_project
+drwxr-xr-x 1 jack jack  360 Nov  6 07:37 ch10_project_layout_ci
+drwxr-xr-x 1 jack jack    0 Nov  5 20:28 ch11_interop
+drwxr-xr-x 1 jack jack  438 Nov  6 08:23 ch11_interoperability
+drwxr-xr-x 1 jack jack    0 Nov  5 20:28 ch12_testing
+drwxr-xr-x 1 jack jack  706 Nov  6 08:57 ch12_testing_benchmarking
+drwxr-xr-x 1 jack jack    0 Nov  5 20:28 ch13_logging
+drwxr-xr-x 1 jack jack  330 Nov  6 07:39 ch13_logging_diagnostics
+drwxr-xr-x 1 jack jack    0 Nov  5 20:28 ch14_migration
+drwxr-xr-x 1 jack jack  314 Nov  6 07:35 ch14_migration_guide
+drwxr-xr-x 1 jack jack  144 Nov  6 07:47 ch15_appendices
+-rw-r--r-- 1 jack jack 3168 Nov  6 08:46 STUB_MODULES_README.md

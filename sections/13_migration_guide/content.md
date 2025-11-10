@@ -1189,9 +1189,9 @@ END: Migration complete
 **Example code**: All examples in this chapter are available in the `examples/` directory with working code for both Zig 0.14.1 and 0.15.2.
 
 **Related chapters**:
-- Chapter 4: Collections & Containers - Deep dive on managed vs unmanaged
-- Chapter 5: I/O, Streams & Formatting - Comprehensive I/O patterns
-- Chapter 8: Build System - Advanced build.zig patterns
+- Chapter 1: Collections & Containers - Deep dive on managed vs unmanaged
+- Chapter 1: I/O, Streams & Formatting - Comprehensive I/O patterns
+- Chapter 1: Build System - Advanced build.zig patterns
 
 **Community resources**:
 - Ziggit forum: Migration questions and experiences

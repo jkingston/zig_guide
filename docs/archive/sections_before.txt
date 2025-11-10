@@ -1,0 +1,19 @@
+total 0
+drwxr-xr-x 1 jack jack 606 Nov  9 04:01 .
+drwxr-xr-x 1 jack jack 480 Nov 10 08:28 ..
+drwxr-xr-x 1 jack jack 236 Nov  9 04:01 00_professional_setup
+drwxr-xr-x 1 jack jack  72 Nov 10 06:59 01_introduction
+drwxr-xr-x 1 jack jack  72 Nov  5 18:10 02_language_idioms
+drwxr-xr-x 1 jack jack  72 Nov  3 09:44 03_memory_allocators
+drwxr-xr-x 1 jack jack 104 Nov  3 09:44 04_collections_containers
+drwxr-xr-x 1 jack jack 376 Nov  3 21:14 05_io_streams
+drwxr-xr-x 1 jack jack 382 Nov  3 22:23 06_error_handling
+drwxr-xr-x 1 jack jack 350 Nov  3 23:15 07_async_concurrency
+drwxr-xr-x 1 jack jack  88 Nov  4 00:09 08_build_system
+drwxr-xr-x 1 jack jack  88 Nov  4 07:12 09_packages_dependencies
+drwxr-xr-x 1 jack jack 120 Nov  7 06:53 10_project_layout_ci
+drwxr-xr-x 1 jack jack 120 Nov  4 09:12 11_interoperability
+drwxr-xr-x 1 jack jack 120 Nov 10 06:59 12_testing_benchmarking
+drwxr-xr-x 1 jack jack 194 Nov  9 04:01 13_logging_diagnostics
+drwxr-xr-x 1 jack jack 194 Nov 10 06:59 14_migration_guide
+drwxr-xr-x 1 jack jack 156 Nov  5 08:55 15_appendices

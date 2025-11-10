@@ -4,7 +4,7 @@ This repository hosts the in-progress **Zig Developer Guide** focused on idioms 
 
 This is a comprehensive guide to Zig development. Most patterns work across all supported versions; when they differ, we clearly mark version-specific code. See [versioning.md](versioning.md) for version support policy and update workflow.
 
-The guide includes **16 chapters** from "Zero to Hero" (Chapter 0) through core concepts, advanced topics, and comprehensive appendices. The `/sections` directory contains structured folders per chapter (ch00-ch15).
+The guide includes **14 chapters** covering Introduction through Migration Guide, plus comprehensive appendices. The `/sections` directory contains structured folders per chapter.
 
 ## Quick Start
 
@@ -31,8 +31,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development instructions.
 **✅ Beta Release Ready!** 🎉
 
 All critical priority items complete:
-- ✅ 16 chapters (ch00-ch15) - 22,353+ lines
-- ✅ Chapter 0: Zero to Hero professional setup guide
+- ✅ 14 chapters + comprehensive appendices - ~22,000+ lines
+- ✅ Introduction with Quick Start guide
 - ✅ 100 Zig example files (4,430+ lines of code)
 - ✅ 97+ examples, 100% compilation success on Zig 0.15.2
 - ✅ Complete CI/CD pipeline (validation + GitHub Pages)
