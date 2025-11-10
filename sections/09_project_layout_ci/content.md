@@ -404,6 +404,8 @@ Ghostty builds static musl binaries for Linux distribution to avoid glibc versio
 
 GitHub Actions dominates Zig CI workflows. Common patterns include Zig installation, caching, build matrices, and artifact collection.
 
+**Canonical Reference:** The official [zig-bootstrap](https://github.com/ziglang/zig-bootstrap) repository provides authoritative CI configuration examples for cross-platform builds. It demonstrates matrix builds, artifact packaging, and caching strategies used by the Zig project itself. Use it as a reference when setting up production CI workflows.
+
 **Zig installation methods:**
 
 The `mlugg/setup-zig` action is standard:[^13]
@@ -1883,9 +1885,70 @@ ZLS implements sophisticated release automation:[^26]
 
 This pipeline publishes nightly builds automatically, providing users with latest features.[^27]
 
+### zig-bootstrap: Official CI Reference
+
+The [zig-bootstrap](https://github.com/ziglang/zig-bootstrap) repository demonstrates the official approach to cross-platform CI workflows:[^28]
+
+**Key Patterns:**
+
+1. **Matrix Build Strategy:**
+
+```yaml
+strategy:
+  matrix:
+    os: [ubuntu-latest, macos-latest, windows-latest]
+    zig-version: ['0.14.1', '0.15.2']
+    optimize: [Debug, ReleaseSafe]
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: ${{ matrix.zig-version }}
+      - run: zig build -Doptimize=${{ matrix.optimize }}
+```
+
+2. **Artifact Caching:**
+   - Caches `~/.cache/zig` and `zig-cache/` directories
+   - Cache key includes `build.zig.zon` hash for dependency tracking
+   - Separate caches per OS/architecture/optimization mode
+
+3. **Cross-Compilation Validation:**
+   - Builds for all tier-1 targets (x86_64-linux, aarch64-macos, x86_64-windows)
+   - Verifies compilation without running (native test runners for execution)
+   - Produces release artifacts in parallel
+
+4. **Release Workflow:**
+   - Triggered by git tags matching `v*.*.*`
+   - Creates GitHub Release with changelog
+   - Uploads platform-specific binaries
+   - Publishes checksums and signatures
+
+**Artifact Packaging:**
+
+```yaml
+- name: Package artifacts
+  run: |
+    zig build -Doptimize=ReleaseSafe
+    cd zig-out/bin
+    tar czf ../../${{ github.event.repository.name }}-${{ github.ref_name }}-${{ matrix.target }}.tar.gz *
+
+- uses: actions/upload-artifact@v4
+  with:
+    name: release-${{ matrix.target }}
+    path: '*.tar.gz'
+```
+
+**Why Use This as Reference:**
+- Maintained by Zig core team
+- Demonstrates best practices for Zig CI
+- Handles edge cases (Windows path separators, macOS code signing, Linux musl builds)
+- Production-tested for the Zig compiler itself
+
 ### Ghostty: Platform-Specific Artifacts
 
-Ghostty produces different artifact types per platform:[^28]
+Ghostty produces different artifact types per platform:[^29]
 
 **macOS:**
 - Universal binaries (x86_64 + aarch64 using `lipo`)
@@ -1905,7 +1968,7 @@ The release workflow adapts packaging per platform while using identical source 
 
 ### Mach: Multi-Package Workspace
 
-Mach organizes related packages in a monorepo:[^29]
+Mach organizes related packages in a monorepo:[^30]
 
 ```
 mach/
@@ -1932,7 +1995,7 @@ This enables modular development while maintaining coherent releases.
 
 ### Bun: Hybrid Build System
 
-Bun combines Zig, C++, and CMake:[^30]
+Bun combines Zig, C++, and CMake:[^31]
 
 ```
 bun/
@@ -2042,6 +2105,7 @@ The next iteration of Zig's package ecosystem will introduce official package re
 [^25]: Ghostty Build Organization - https://github.com/ghostty-org/ghostty/blob/main/build.zig
 [^26]: ZLS Artifacts Workflow - https://github.com/zigtools/zls/blob/master/.github/workflows/artifacts.yml
 [^27]: ZLS Release Preparation Script - https://github.com/zigtools/zls/blob/master/.github/workflows/prepare_release_payload.zig
-[^28]: Ghostty Release Tag Workflow - https://github.com/ghostty-org/ghostty/blob/main/.github/workflows/release-tag.yml
-[^29]: Mach Build System - https://github.com/hexops/mach/blob/main/build.zig
-[^30]: Bun Build System - https://github.com/oven-sh/bun/blob/main/build.zig
+[^28]: zig-bootstrap CI Configuration - https://github.com/ziglang/zig-bootstrap - Official reference for cross-platform CI workflows
+[^29]: Ghostty Release Tag Workflow - https://github.com/ghostty-org/ghostty/blob/main/.github/workflows/release-tag.yml
+[^30]: Mach Build System - https://github.com/hexops/mach/blob/main/build.zig
+[^31]: Bun Build System - https://github.com/oven-sh/bun/blob/main/build.zig

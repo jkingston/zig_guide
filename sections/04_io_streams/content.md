@@ -588,6 +588,47 @@ The Zig Language Server demonstrates I/O patterns for protocol communication.
 - Uses `std.fs.File.stderr().writer(&.{})` for immediate error output
 - Source: [`src/main.zig:98`](https://github.com/zigtools/zls/blob/master/src/main.zig#L98)
 
+### zigimg: Binary Format Parsing
+
+zigimg, an image encoding/decoding library, demonstrates structured I/O patterns for binary format parsing.
+
+**Streaming Decoders with Fixed Buffers**
+- Uses reader interface to parse PNG, JPEG, and other formats incrementally
+- Source: [`src/formats/png.zig`](https://github.com/zigimg/zigimg/blob/master/src/formats/png.zig)
+- Pattern: Stream-based chunk parsing without loading entire file into memory
+- Validates chunk CRCs and structure as data streams in
+
+**Multi-Format I/O Abstraction**
+- Generic `Image.readFrom()` API works across all supported formats
+- Source: [`src/Image.zig`](https://github.com/zigimg/zigimg/blob/master/src/Image.zig)
+- Format detection from file headers/magic bytes
+- Unified error handling across different image format parsers
+
+**Allocator-Aware Pixel Data Management**
+- Explicit allocator threading for pixel buffer allocation
+- Arena allocator pattern for temporary decode buffers
+- Caller-owned pixel data with clear ownership semantics
+
+### zap: HTTP Server Streaming
+
+zap, a high-performance HTTP server framework, shows production-grade request/response streaming patterns.
+
+**Buffered Response Writers**
+- Pre-allocated response buffers for common HTTP scenarios
+- Source: [`src/http.zig`](https://github.com/zigzap/zap/blob/master/src/http.zig)
+- Pattern: Stack-allocated buffers for headers, dynamic allocation for large bodies
+- Explicit flush control for chunked transfer encoding
+
+**Event Loop Integration**
+- Tight integration with epoll/kqueue for async I/O
+- Non-blocking reads with automatic buffer management
+- Connection pooling with buffer reuse to minimize allocations
+
+**Zero-Copy Request Body Handling**
+- Uses slices into connection buffers when possible
+- Avoids unnecessary copies for POST/PUT request bodies
+- Pattern: Parse-in-place for headers, defer allocation until content handling
+
 ## Summary
 
 Zig's I/O abstraction provides explicit control over buffering, resource lifetimes, and formatting. Key decisions:
@@ -626,4 +667,7 @@ The explicit nature of 0.15+ buffering may seem verbose initially, but it provid
 8. Ghostty – Config file patterns ([src/config/file_load.zig:136-166](https://github.com/ghostty-org/ghostty/blob/main/src/config/file_load.zig#L136-L166))
 9. Bun – Buffered I/O with reference counting ([src/shell/IOReader.zig](https://github.com/oven-sh/bun/blob/main/src/shell/IOReader.zig))
 10. ZLS – Fixed buffer logging ([src/main.zig:50-100](https://github.com/zigtools/zls/blob/master/src/main.zig#L50-L100))
-11. zig.guide – Readers and Writers ([standard-library/readers-and-writers](https://zig.guide/standard-library/readers-and-writers))
+11. zigimg – Binary format parsing ([src/formats/png.zig](https://github.com/zigimg/zigimg/blob/master/src/formats/png.zig))
+12. zigimg – Multi-format I/O abstraction ([src/Image.zig](https://github.com/zigimg/zigimg/blob/master/src/Image.zig))
+13. zap – HTTP server streaming patterns ([src/http.zig](https://github.com/zigzap/zap/blob/master/src/http.zig))
+14. zig.guide – Readers and Writers ([standard-library/readers-and-writers](https://zig.guide/standard-library/readers-and-writers))
