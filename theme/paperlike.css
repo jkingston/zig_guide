@@ -257,30 +257,9 @@
     background-color: #F0E8DC;
 }
 
-/* Hide the theme dropdown - we use custom toggle instead */
-.theme-popup {
+/* Theme selector - hide unwanted themes, keep Light and Coal only */
+#rust, #navy, #ayu {
     display: none !important;
-}
-
-/* Custom theme toggle button styling */
-#theme-toggle {
-    position: relative;
-}
-
-/* Hide both icons by default to prevent flash during load */
-#theme-toggle .theme-icon-light,
-#theme-toggle .theme-icon-dark {
-    display: none;
-    transition: opacity 0.2s ease;
-}
-
-/* Show/hide icons based on current theme */
-.light #theme-toggle .theme-icon-dark {
-    display: inline;
-}
-
-.coal #theme-toggle .theme-icon-light {
-    display: inline;
 }
 
 /* Sidebar styling */
