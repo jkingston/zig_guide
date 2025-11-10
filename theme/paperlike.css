@@ -267,8 +267,10 @@
     position: relative;
 }
 
+/* Hide both icons by default to prevent flash during load */
 #theme-toggle .theme-icon-light,
 #theme-toggle .theme-icon-dark {
+    display: none;
     transition: opacity 0.2s ease;
 }
 
@@ -277,16 +279,8 @@
     display: inline;
 }
 
-.light #theme-toggle .theme-icon-light {
-    display: none;
-}
-
 .coal #theme-toggle .theme-icon-light {
     display: inline;
-}
-
-.coal #theme-toggle .theme-icon-dark {
-    display: none;
 }
 
 /* Sidebar styling */
