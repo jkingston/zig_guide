@@ -264,7 +264,28 @@
 
 #theme-toggle .theme-icon-light,
 #theme-toggle .theme-icon-dark {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     transition: opacity 0.2s ease;
+}
+
+/* Show/hide icons based on current theme */
+.light #theme-toggle .theme-icon-dark {
+    display: inline;
+}
+
+.light #theme-toggle .theme-icon-light {
+    display: none;
+}
+
+.coal #theme-toggle .theme-icon-light {
+    display: inline;
+}
+
+.coal #theme-toggle .theme-icon-dark {
+    display: none;
 }
 
 /* Sidebar styling */
