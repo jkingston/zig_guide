@@ -1,4 +1,0 @@
-Search Results
-==============
-Patterns: TODO, FIXME, NOTE
-Matches found: 3
