@@ -124,8 +124,17 @@ def main():
                 print(f"    {first_line}...")
 
     elif path.is_dir():
-        # Analyze all chapters in sections directory
-        chapters = sorted([d for d in path.iterdir() if d.is_dir()])
+        # Analyze all markdown files in directory
+        # Supports both old structure (sections/*/content.md) and new structure (src/*.md)
+
+        # Check if this is the old sections/ structure with subdirectories
+        subdirs = sorted([d for d in path.iterdir() if d.is_dir()])
+        if subdirs and any((d / 'content.md').exists() for d in subdirs):
+            # Old structure: sections/01_chapter/content.md
+            markdown_files = [(d / 'content.md', d.name) for d in subdirs if (d / 'content.md').exists()]
+        else:
+            # New structure: src/ch01_chapter.md
+            markdown_files = [(f, f.stem) for f in sorted(path.glob('ch*.md'))]
 
         total_stats = {
             'total_blocks': 0,
@@ -135,13 +144,25 @@ def main():
 
         results = []
 
-        for chapter in chapters:
-            result = analyze_chapter(chapter)
-            if result:
-                results.append(result)
-                total_stats['total_blocks'] += result['total_blocks']
-                total_stats['runnable'] += result['runnable_blocks']
-                total_stats['snippets'] += result['snippet_blocks']
+        for md_file, chapter_name in markdown_files:
+            content = md_file.read_text()
+            blocks = extract_code_blocks(content, str(md_file))
+            runnable, snippets = categorize_blocks(blocks)
+
+            result = {
+                'chapter': chapter_name,
+                'content_file': str(md_file),
+                'total_blocks': len(blocks),
+                'runnable_blocks': len(runnable),
+                'snippet_blocks': len(snippets),
+                'runnable': runnable,
+                'snippets': snippets
+            }
+
+            results.append(result)
+            total_stats['total_blocks'] += result['total_blocks']
+            total_stats['runnable'] += result['runnable_blocks']
+            total_stats['snippets'] += result['snippet_blocks']
 
         # Print summary
         print("\n=== Code Block Analysis ===\n")
