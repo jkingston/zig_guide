@@ -1,5 +1,13 @@
 # Logging, Diagnostics & Observability
 
+> **TL;DR for production logging:**
+> - **std.log:** Built-in logging with compile-time levels (err, warn, info, debug)
+> - **Compile-time filtering:** Disabled logs have zero runtime cost
+> - **Usage:** `std.log.info("msg {d}", .{val})` or scoped: `const log = std.log.scoped(.network);`
+> - **Custom loggers:** Implement `pub fn log(...)` for custom formatting/output (JSON, metrics)
+> - **Production:** std.log to stderr by default, override for structured logging
+> - **Jump to:** [Basic logging §12.2](#stdlog-usage) | [Scopes §12.3](#log-scopes) | [Custom loggers §12.4](#custom-log-implementations)
+
 ## Overview
 
 Production systems require visibility into their runtime behavior to debug issues, monitor health, and understand performance characteristics. Zig provides `std.log` as its standard logging facility, designed with compile-time optimization and zero-cost abstractions as core principles.

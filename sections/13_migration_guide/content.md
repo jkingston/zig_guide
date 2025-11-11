@@ -1,5 +1,13 @@
 # Migration Guide (0.14.1 → 0.15.2)
 
+> **TL;DR for 0.14 → 0.15 migration:**
+> - **Breaking:** Build system requires explicit `root_module` configuration
+> - **Breaking:** `std.ArrayList(T)` now unmanaged (pass allocator to methods)
+> - **Breaking:** `std.fs.File.stdout()` replaces `std.io.getStdOut()`, explicit buffering required
+> - **Estimated time:** 1-4 hours for typical projects
+> - **[See table below](#breaking-changes-summary) for complete breaking changes**
+> - **Jump to:** [Build migration §13.3](#build-system-migration) | [ArrayList §13.4](#arraylist-migration) | [I/O §13.5](#io-api-migration)
+
 This chapter provides a practical playbook for upgrading existing Zig codebases from version 0.14.1 to 0.15.2, with before/after examples for all notable breaking changes and safe migration patterns.
 
 ---

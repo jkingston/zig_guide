@@ -1,5 +1,13 @@
 # Packages & Dependencies (build.zig.zon)
 
+> **TL;DR for Zig dependencies:**
+> - **Manifest:** `build.zig.zon` defines deps with URL + hash (no separate lock file)
+> - **Fetch:** `zig fetch --save https://github.com/user/pkg/archive/v1.0.tar.gz` adds dependency
+> - **Use:** `b.dependency("pkg_name", .{})` in build.zig, then `@import("pkg_name")` in code
+> - **Security:** Content-addressed with SHA-256 verification (prevents supply-chain attacks)
+> - **Cache:** Global at `~/.cache/zig` (shared across all projects)
+> - **Jump to:** [build.zig.zon §8.2](#buildzigzon-structure) | [Fetch workflow §8.3](#zig-fetch-workflow) | [Publishing §8.6](#publishing-packages)
+
 ## Overview
 
 Zig's package system uses content-addressed dependencies with cryptographic hash verification, eliminating an entire class of supply-chain attacks common in other ecosystems. Unlike npm (package-lock.json), Cargo (Cargo.lock), or Go modules (go.sum), Zig uses a single `build.zig.zon` manifest without separate lock files. Dependencies are resolved deterministically at build time, cached globally by hash, and accessed through a uniform API.

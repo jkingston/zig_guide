@@ -1,5 +1,13 @@
 # I/O, Streams & Formatting
 
+> **TL;DR for I/O in Zig:**
+> - **0.15 breaking:** Use `std.io.getStdOut()` instead of `std.fs.File.stdout()`, explicit buffering now required
+> - **Writers/Readers:** Generic interfaces via vtables (uniform API across files, sockets, buffers)
+> - **Formatting:** `writer.print("Hello {s}\n", .{name})` - compile-time format checking
+> - **Files:** `std.fs.cwd().openFile()`, always `defer file.close()`
+> - **Buffering:** Wrap with `std.io.bufferedWriter()` for performance
+> - **Jump to:** [Writers/Readers §4.2](#writers-and-readers) | [Formatting §4.3](#string-formatting) | [File I/O §4.4](#file-io-patterns)
+
 ## Overview
 
 Zig provides a consistent I/O abstraction through its `Writer` and `Reader` interfaces. These generic interfaces enable uniform I/O operations across different backends—files, network sockets, memory buffers—without sacrificing performance or control. The standard library uses a vtable-based approach, allowing you to write code that works with any I/O source or destination.

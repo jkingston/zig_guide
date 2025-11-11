@@ -1,5 +1,13 @@
 # Collections & Containers
 
+> **TL;DR for Zig collections:**
+> - **0.15 default:** `ArrayList(T)` is unmanaged (pass allocator to methods)
+> - **Managed variant:** `ArrayListManaged(T)` stores allocator (simpler API, +8 bytes overhead)
+> - **Common types:** ArrayList, HashMap, AutoHashMap, StringHashMap
+> - **Always:** Call `.deinit(allocator)` to free memory
+> - **See [comparison table](#managed-vs-unmanaged-containers) below**
+> - **Jump to:** [ArrayList §3.3](#arraylist) | [HashMap §3.4](#hashmap-and-variants) | [Iteration §3.5](#iteration-patterns)
+
 ## Overview
 
 Zig's standard library provides dynamic collection types that integrate with the explicit allocator model (see Ch2). This chapter examines container types including ArrayList, HashMap, and their variants, focusing on the distinction between managed and unmanaged containers, ownership semantics, and cleanup responsibilities.
