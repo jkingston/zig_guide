@@ -1655,6 +1655,199 @@ This section links to production concurrency patterns in real-world Zig projects
 - Platform-specific event loop integration
 - Rendering decoupled from terminal processing for 120+ FPS
 
+### Mach: Game Engine Concurrency Patterns
+
+**Project**: Game engine and multimedia framework ecosystem
+**Concurrency Model**: Lock-free data structures with single-threaded event loop
+**Repository**: [hexops/mach](https://github.com/hexops/mach)
+
+**Key Patterns:**
+
+1. **Lock-Free MPSC Queue (Multi-Producer, Single-Consumer)**[^mach_mpsc1]
+
+Mach implements a production-grade lock-free queue for cross-thread communication without mutexes:
+
+```zig
+// mach/src/mpsc.zig:163-213
+pub fn Queue(comptime Value: type) type {
+    return struct {
+        head: *Node = undefined,      // Producers push here
+        tail: *Node = undefined,      // Consumer pops from here
+        empty: Node,                  // Sentinel value
+        pool: Pool(Node),             // Lock-free memory pool
+
+        /// Push value to queue (lock-free, multiple producers safe)
+        pub fn push(q: *@This(), allocator: std.mem.Allocator, value: Value) !void {
+            const node = try q.pool.acquire(allocator);
+            node.value = value;
+            node.next = null;
+
+            // Atomically exchange current head with new node
+            const prev = @atomicRmw(*Node, &q.head, .Xchg, node, .acq_rel);
+
+            // Link previous node to new node
+            @atomicStore(?*Node, &prev.next, node, .release);
+        }
+    };
+}
+```
+
+**Why lock-free:** Game engines need to pass events (input, audio callbacks) from multiple threads to the main render thread without blocking. Traditional mutexes cause priority inversion and frame drops.
+
+**Memory ordering semantics:**
+- `.acq_rel` (acquire-release): Full barrier ensuring all prior writes visible to other threads
+- `.acquire`: Load operation sees all writes before corresponding `.release` store
+- `.release`: Store operation makes all prior writes visible to `.acquire` loads
+
+2. **Lock-Free Node Pool for Zero-Allocation Hot Path**[^mach_mpsc2]
+
+The queue pre-allocates nodes in chunks, then reuses them atomically:
+
+```zig
+// mach/src/mpsc.zig:57-116
+pub fn acquire(pool: *@This(), allocator: std.mem.Allocator) !*Node {
+    while (true) {
+        // Try to atomically acquire a node from the free list
+        const head = @atomicLoad(?*Node, &pool.head, .acquire);
+        if (head) |head_node| {
+            // Try CAS: if pool.head == head then pool.head = head.next
+            if (@cmpxchgStrong(?*Node, &pool.head, head, head_node.next, .acq_rel, .acquire)) |_|
+                continue;  // CAS failed, retry
+
+            // Successfully acquired node
+            head_node.next = null;
+            return head_node;
+        }
+        break; // Pool empty, need to allocate
+    }
+
+    // Rare path: pool exhausted, allocate new chunk
+    pool.cleanup_mu.lock();  // Only lock for tracking, not hot path
+    defer pool.cleanup_mu.unlock();
+
+    const new_nodes = try allocator.alloc(Node, pool.chunk_size);
+    try pool.cleanup.append(allocator, @ptrCast(new_nodes.ptr));
+
+    // Link new nodes and add to pool atomically
+    // ... (linking code)
+
+    return &new_nodes[0];
+}
+```
+
+**Key insight:** Lock is only held for cleanup tracking (append to list), NOT for node acquisition. The hot path (acquiring from pool) is 100% lock-free.
+
+**Performance benefit:** Once warmed up, the queue operates with zero allocations and zero locks in the critical path.
+
+3. **Compare-And-Swap with Retry Loop**[^mach_mpsc2]
+
+The fundamental lock-free pattern Mach uses throughout:
+
+```zig
+// mach/src/mpsc.zig:120-136
+pub fn release(pool: *@This(), node: *Node) void {
+    while (true) {
+        const head = @atomicLoad(?*Node, &pool.head, .acquire);
+        node.next = head;
+
+        // Try to atomically set pool.head = node iff pool.head still == head
+        if (@cmpxchgStrong(?*Node, &pool.head, head, node, .acq_rel, .acquire)) |_|
+            continue;  // Another thread modified head, retry
+
+        break;  // Success
+    }
+}
+```
+
+**Pattern breakdown:**
+1. **Read**: Load current head atomically
+2. **Modify**: Update node to point to current head
+3. **CAS**: Atomically swap if head unchanged
+4. **Retry**: If CAS failed (head changed), loop and try again
+
+This is the **ABA problem-resistant** pattern: even if head changes value, comes back to the same value, CAS will fail because the generation changed.
+
+4. **Single Consumer Pop with Race Condition Handling**[^mach_mpsc3]
+
+The consumer side handles complex race conditions when popping from the queue:
+
+```zig
+// mach/src/mpsc.zig:216-247
+pub fn pop(q: *@This()) ?Value {
+    while (true) {
+        var tail = q.tail;
+        var next = @atomicLoad(?*Node, &tail.next, .acquire);
+
+        // Fast path: we have a next node
+        if (next) |tail_next| {
+            if (@cmpxchgStrong(*Node, &q.tail, tail, tail_next, .acq_rel, .acquire)) |_|
+                continue;  // Lost race, retry
+
+            const value = tail.value;
+            q.pool.release(tail);  // Return node to pool
+            return value;
+        }
+
+        // Slow path: handle race where producer updated head but not yet next pointer
+        const head = @atomicLoad(*Node, &q.head, .acquire);
+        if (tail != head) {
+            // Producer is mid-push, next pointer not yet visible
+            return null;  // Retry later
+        }
+
+        // Queue might be empty, push empty sentinel to resolve
+        q.pushRaw(&q.empty);
+        // ... (handle empty node cases)
+    }
+}
+```
+
+**Why complex:** The queue must handle the race where a producer has atomically updated `head` but hasn't yet set the `next` pointer. Returning null (no item available) is correct here—the item will appear on the next pop.
+
+5. **ResetEvent for Out-of-Memory Signaling**[^mach_core]
+
+Mach's Core uses `std.Thread.ResetEvent` for cross-thread OOM signaling:
+
+```zig
+// mach/src/Core.zig:120
+oom: std.Thread.ResetEvent = .{},
+```
+
+**ResetEvent pattern:**
+- **set()**: Signal that OOM occurred
+- **wait()**: Block until signal received
+- **reset()**: Clear signal for next use
+
+This enables the renderer thread to signal OOM to the main thread without spinning or polling, with minimal overhead.
+
+6. **Mutex for Thread-Safe ECS Operations**[^mach_objects]
+
+While Mach prefers lock-free structures, it uses mutexes for coarse-grained ECS operations:
+
+```zig
+// mach/src/module.zig:41-43
+internal: struct {
+    mu: std.Thread.Mutex = .{},
+    // ... entity data
+}
+
+pub fn tryLock(objs: *@This()) bool {
+    return objs.internal.mu.tryLock();
+}
+```
+
+**When to use Mutex vs lock-free:**
+- **Lock-free**: Hot path, high-frequency operations (event queues, node pools)
+- **Mutex**: Coarse-grained operations where contention is rare (entity creation/deletion)
+
+**Key Takeaways from Mach:**
+- **Lock-free MPSC** enables cross-thread communication without blocking or priority inversion
+- **Atomic node pools** eliminate allocation overhead in hot paths
+- **Memory ordering** (.acq_rel, .acquire, .release) ensures visibility guarantees
+- **CAS retry loops** are the fundamental lock-free building block
+- **Race condition handling** requires careful reasoning about intermediate states
+- **Choose the right tool**: Lock-free for hot paths, mutexes for coarse operations
+
 ### zap: HTTP Server Framework
 
 **Project**: High-performance HTTP server framework for Zig
@@ -1800,6 +1993,11 @@ Zig's concurrency model rewards careful design but provides the tools for buildi
 [^14]: [Ghostty GitHub Repository](https://github.com/ghostty-org/ghostty)
 
 [^15]: [ZLS tracy.zig (Profiling integration)](https://github.com/zigtools/zls/blob/master/src/tracy.zig)
+[^mach_mpsc1]: [Mach Source: Lock-Free MPSC Queue](https://github.com/hexops/mach/blob/main/src/mpsc.zig#L163-L213) - Multi-producer single-consumer queue with atomic operations
+[^mach_mpsc2]: [Mach Source: Lock-Free Node Pool](https://github.com/hexops/mach/blob/main/src/mpsc.zig#L18-L160) - Atomic node allocation with compare-and-swap
+[^mach_mpsc3]: [Mach Source: MPSC Pop with Race Handling](https://github.com/hexops/mach/blob/main/src/mpsc.zig#L216-L298) - Single consumer dequeue handling concurrent modifications
+[^mach_core]: [Mach Source: ResetEvent for OOM Signaling](https://github.com/hexops/mach/blob/main/src/Core.zig#L120) - Cross-thread signaling without spinning
+[^mach_objects]: [Mach Source: Mutex for ECS Operations](https://github.com/hexops/mach/blob/main/src/module.zig#L41-L43) - Coarse-grained locking for entity operations
 
 ### Additional Resources
 

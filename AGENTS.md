@@ -37,8 +37,11 @@ sections/XX_name/
   ├── prompt.md       # Your instructions for this chapter
   └── content.md      # Generated content goes here
 
-examples/chXX_*/      # Runnable examples (must compile on Zig 0.15.2)
-  └── build.zig       # Per-chapter build files
+examples/           # Runnable examples (must compile on Zig 0.15.2)
+  ├── ch01_introduction/
+  ├── ch01_idioms/
+  ├── ...
+  └── appendix_b_zighttp/  # Each with build.zig files
 
 Key files:
 ├── style_guide.md    # Writing standards (READ THIS)
@@ -153,8 +156,21 @@ const value = parseValue() catch |err| return err;
 
 ### Reference Repositories
 
-The `reference_repos/` directory contains exemplar Zig projects for pattern research:
-- zig, bun, tigerbeetle, ghostty, mach, zls, ziglings, zigmod, awesome-zig
+The `reference_repos/` directory contains exemplar Zig projects for pattern research.
+
+**Primary Exemplar Projects** (deeply integrated with 476+ citations in guide):
+- **TigerBeetle** (164 citations) - Testing, correctness, data integrity patterns
+- **Ghostty** (101 citations) - Cross-platform abstractions, C/Swift interop
+- **Bun** (97 citations) - Async I/O, concurrency, high-performance patterns
+- **ZLS** (87 citations) - Tooling, build integration, testing utilities
+- **Mach** (27+ citations) - Game engine architecture, modular design
+- **zig** (40+ citations) - Compiler and stdlib, canonical idiomatic patterns
+
+**Additional References** (domain-specific examples):
+- zig-gamedev, zap, zigimg, zig-ci-template
+
+**Learning Resources** (not architectural exemplars):
+- ziglings, awesome-zig
 
 Clone/update with: `./scripts/update_reference_repos.sh`
 
@@ -178,20 +194,26 @@ zig_guide/
 │   ├── prepare-mdbook.sh
 │   └── extract_code_blocks.py
 ├── reference_repos/             # Exemplar projects (git-ignored)
-├── examples/                    # 14 chapters + appendix example directories
+├── examples/                    # Runnable code examples for all chapters
 │   ├── appendix_b_zighttp/
 │   ├── ch01_introduction/
 │   ├── ch01_idioms/
+│   ├── ch02_memory/
 │   ├── ...
 │   └── ch14_appendices/
-└── sections/                    # 14 chapter directories + Introduction
-    ├── 01_introduction/
-    ├── 01_language_idioms/
-    │   ├── prompt.md            # Generated section prompt
-    │   └── content.md           # Agent-generated content
-    ├── 01_introduction/
+├── sections/                    # Source content for select chapters (7-13)
+│   ├── 07_build_system/
+│   │   ├── prompt.md            # Section prompt
+│   │   └── content.md           # Chapter content
+│   ├── 08_packages_dependencies/
+│   ├── ...
+│   └── 13_migration_guide/
+└── src/                         # mdBook generated sources (15 chapters)
+    ├── SUMMARY.md               # Table of contents
+    ├── ch01_quick_start.md
+    ├── ch01_language_idioms.md
     ├── ...
-    └── 15_appendices/
+    └── ch14_appendices.md
 ```
 
 ---
@@ -206,4 +228,4 @@ zig_guide/
 
 ---
 
-**Last Updated:** 2025-11-09
+**Last Updated:** 2025-11-11

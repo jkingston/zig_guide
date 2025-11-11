@@ -43,38 +43,50 @@
 
 ---
 
-## 4. Major Projects Written in Zig (Exemplars)
+## 4. Exemplar Projects (Architectural References)
 
-> Each of these serves as a large-scale example of idiomatic Zig use — for FFI, async design, build tooling, and code organization.
+> **These 6 production codebases are deeply integrated throughout the guide** with 476+ cited examples demonstrating architectural patterns, best practices, and production idioms. Each reference includes GitHub links with line numbers and contextual explanations.
 
-| Project                                                          | Description                                                                                                                                              |
-| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **[Bun](https://github.com/oven-sh/bun)**                        | JavaScript runtime, bundler, and package manager implemented largely in Zig. Demonstrates async I/O, concurrency, and FFI idioms.                        |
-| **[TigerBeetle](https://github.com/tigerbeetle/tigerbeetle)**    | Distributed financial transaction database. Exemplifies correctness-first design, testing strategy, and data-integrity patterns.                         |
-| **[Ghostty](https://github.com/ghostty-org/ghostty)**            | GPU-accelerated terminal emulator by Mitchell Hashimoto. Excellent reference for cross-platform abstractions, C/Swift interop, and modular architecture. |
-| **[Mach](https://github.com/hexops/mach)**                       | Game and multimedia framework ecosystem. Demonstrates modular API design and `zig build` idioms.                                                         |
-| **[ZLS – Zig Language Server](https://github.com/zigtools/zls)** | Tooling example showing modular design, build integration, and incremental compilation.                                                                  |
-| **[NCDU 2](https://dev.yorhel.nl/ncdu)**                         | Disk usage analyzer rewritten in Zig. Compact, idiomatic CLI structure.                                                                                  |
-| **[ZigMod](https://github.com/nektro/zigmod)**                   | Package/dependency manager for Zig projects; showcases extensible build scripts and dependency resolution.                                               |
-| **[Ziglings](https://github.com/ratfactor/ziglings)**            | (Also above) – reference for idiomatic syntax and progressive code patterns.                                                                             |
-| **[zig-gamedev](https://github.com/michal-z/zig-gamedev)**       | Graphics and game development libraries. Complex C/C++ interop, sophisticated multi-library build patterns, and cross-platform abstractions.             |
-| **[zig-ci-template](https://github.com/ziglang/zig-bootstrap)**  | Official CI configuration examples. Matrix builds, cross-compilation workflows, and artifact caching strategies.                                          |
-| **[zap](https://github.com/zigzap/zap)**                         | High-performance HTTP server framework. Production event loop patterns, middleware architecture, and efficient request/response handling.                |
-| **[zigimg](https://github.com/zigimg/zigimg)**                   | Image encoding/decoding library. Structured binary I/O, format parsing, streaming decoders, and allocator usage patterns.                                |
-| **[zigup](https://github.com/marler8997/zigup)**                 | Zig version manager. Cross-platform CLI patterns, filesystem operations, HTTP downloads, and version lifecycle management.                               |
+| Project                                                          | Integration Level | Description                                                                                                                                              |
+| ---------------------------------------------------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **[TigerBeetle](https://github.com/tigerbeetle/tigerbeetle)**    | 164 citations     | Distributed financial transaction database. Exemplifies correctness-first design, testing strategy, data-integrity patterns, and deterministic simulation. |
+| **[Ghostty](https://github.com/ghostty-org/ghostty)**            | 101 citations     | GPU-accelerated terminal emulator by Mitchell Hashimoto. Cross-platform abstractions, C/Swift interop, modular architecture, and platform-aware logging.  |
+| **[Bun](https://github.com/oven-sh/bun)**                        | 97 citations      | JavaScript runtime, bundler, and package manager. Demonstrates async I/O, work-stealing thread pools, atomic operations, and high-performance patterns.    |
+| **[ZLS – Zig Language Server](https://github.com/zigtools/zls)** | 87 citations      | Language server tooling showing modular design, build integration, incremental compilation, and probabilistic failure testing.                           |
+| **[Mach](https://github.com/hexops/mach)**                       | 27+ citations     | Game and multimedia framework ecosystem. Modular API design, `zig build` idioms, optional feature patterns, and graphics engine architecture.            |
+| **[Zig Stdlib](https://github.com/ziglang/zig)**                 | 40+ citations     | Zig compiler and standard library source. Canonical reference for idiomatic patterns, memory management, and API design.                                 |
 
 ---
 
-## 5. Curated Project Lists
+## 5. Additional Reference Projects
 
-| Resource                                                   | Description                                                             |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------- |
-| **[Awesome Zig](https://github.com/zigcc/awesome-zig)**    | Curated index of Zig libraries, tools, games, and applications.         |
-| **[Awesome Mach](https://github.com/hexops/awesome-mach)** | Supplementary list focused on the Mach ecosystem (graphics & game dev). |
+> Production Zig codebases demonstrating specialized patterns. While not as extensively cited as exemplar projects, these provide valuable domain-specific examples.
+
+| Project                                                        | Description                                                                                                                                  |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **[zig-gamedev](https://github.com/michal-z/zig-gamedev)**     | Graphics and game development libraries. Complex C/C++ interop, sophisticated multi-library build patterns, and cross-platform abstractions. |
+| **[zap](https://github.com/zigzap/zap)**                       | High-performance HTTP server framework. Production event loop patterns, middleware architecture, and efficient request/response handling.    |
+| **[zigimg](https://github.com/zigimg/zigimg)**                 | Image encoding/decoding library. Structured binary I/O, format parsing, streaming decoders, and allocator usage patterns.                    |
+| **[NCDU 2](https://dev.yorhel.nl/ncdu)**                       | Disk usage analyzer rewritten in Zig. Compact, idiomatic CLI structure.                                                                      |
+| **[zigup](https://github.com/marler8997/zigup)**               | Zig version manager. Cross-platform CLI patterns, filesystem operations, HTTP downloads, and version lifecycle management.                   |
+| **[zig-ci-template](https://github.com/ziglang/zig-bootstrap)** | Official CI configuration examples. Matrix builds, cross-compilation workflows, and artifact caching strategies.                             |
 
 ---
 
-## 6. Version-Specific Release Notes
+## 6. Learning Resources & Ecosystem Discovery
+
+> Resources for learning Zig progressively and discovering community projects. These are not architectural exemplars but valuable for skill development and ecosystem navigation.
+
+| Resource                                                       | Purpose                                                                                     |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **[Ziglings](https://github.com/ratfactor/ziglings)**          | Interactive exercise series inspired by *Rustlings*, teaching idioms by fixing broken code. |
+| **[Awesome Zig](https://github.com/zigcc/awesome-zig)**        | Curated index of Zig libraries, tools, games, and applications for ecosystem discovery.     |
+| **[Awesome Mach](https://github.com/hexops/awesome-mach)**     | Supplementary list focused on the Mach ecosystem (graphics & game dev).                     |
+| **[ZigMod](https://github.com/nektro/zigmod)** *(Historical)* | Pre-0.11 package manager. Now superseded by official package management in Zig 0.11+.       |
+
+---
+
+## 7. Version-Specific Release Notes
 
 > For cross-version best-practice commentary, refer to these release notes when identifying behavioral or standard-library changes between 0.14 and 0.15.
 
@@ -88,28 +100,35 @@
 
 ---
 
-## 7. Suggested Use in the Developer Guide
+## 8. Suggested Use in the Developer Guide
 
 When building the *Zig Developer Guide* itself:
 
 1. **Cite official docs** for any syntax or standard-library feature.
-2. **Pull idioms** and code examples primarily from
-   - Zig by Example
-   - Ziglings
-   - TigerBeetle, Ghostty, and zap codebases
-   - zig-gamedev for complex build patterns
+2. **Pull idioms** and code examples primarily from **Exemplar Projects** (Section 4):
+   - TigerBeetle for testing, correctness, and data integrity patterns
+   - Ghostty for cross-platform abstractions and C/Swift interop
+   - Bun for concurrency, async I/O, and high-performance patterns
+   - ZLS for tooling, build integration, and testing utilities
+   - Mach for game engine architecture and modular design
+   - Zig stdlib for canonical idiomatic patterns
+3. **Use Additional Reference Projects** (Section 5) for domain-specific examples:
+   - zig-gamedev for complex build patterns and C/C++ interop
+   - zap for HTTP server architecture
    - zigimg for binary I/O and format parsing
-3. **Annotate differences** between 0.14.1 and 0.15.2 with direct links to the relevant release notes.
-4. **Reference community discussions** for "why" behind patterns (error handling, ownership, build idioms).
-5. **Cross-link** to real projects in the "Exemplars" section whenever illustrating a best practice.
-6. **Use zig-ci-template** as canonical reference for CI/CD patterns and cross-compilation workflows.
+   - zig-ci-template for CI/CD patterns
+4. **Annotate differences** between 0.14.1 and 0.15.2 with direct links to the relevant release notes.
+5. **Reference community discussions** for "why" behind patterns (error handling, ownership, build idioms).
+6. **Include GitHub links with line numbers** for all exemplar project citations.
 
 ---
 
 ### Summary
 
 This reference list ensures the developer guide remains authoritative, current, and idiomatically grounded.
-By combining official documentation with living examples (TigerBeetle, Ghostty, Bun, Mach, ZLS, zap, zig-gamedev, zigimg),
-the guide will align with community consensus while documenting version-specific differences across Zig 0.14.1 → 0.15.2.
+
+**The 6 Exemplar Projects** (TigerBeetle, Ghostty, Bun, ZLS, Mach, Zig stdlib) are deeply integrated throughout all 15 chapters with 476+ cited examples demonstrating production patterns. These are the primary architectural references for the guide.
+
+**Additional Reference Projects** and **Learning Resources** provide supplementary domain-specific examples and educational materials while maintaining clear separation from the core exemplar set.
 
 ---

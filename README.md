@@ -4,7 +4,7 @@ This repository hosts the in-progress **Zig Developer Guide** focused on idioms 
 
 This is a comprehensive guide to Zig development. Most patterns work across all supported versions; when they differ, we clearly mark version-specific code. See [versioning.md](versioning.md) for version support policy and update workflow.
 
-The guide includes **14 chapters** covering Introduction through Migration Guide, plus comprehensive appendices. The `/sections` directory contains structured folders per chapter.
+The guide includes **15 chapters** covering Quick Start through Appendices (including Migration Guide). The `/sections` directory contains structured folders for select chapters.
 
 ## Quick Start
 
@@ -26,12 +26,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development instructions.
 
 **📖 See [todo.md](todo.md) for detailed task tracking and progress.**
 
-### Current State (November 9, 2025)
+### Current State (November 11, 2025)
 
 **✅ Beta Release Ready!** 🎉
 
 All critical priority items complete:
-- ✅ 14 chapters + comprehensive appendices - ~22,000+ lines
+- ✅ 15 chapters (Quick Start through Appendices) - ~22,000+ lines
 - ✅ Introduction with Quick Start guide
 - ✅ 100 Zig example files (4,430+ lines of code)
 - ✅ 97+ examples, 100% compilation success on Zig 0.15.2
@@ -54,11 +54,11 @@ See [todo.md](todo.md) for the full roadmap. High priority items:
 
 This is the **only comprehensive production-focused Zig resource** for experienced developers:
 
-- **Zero to Hero Coverage:** From first project setup (Chapter 0) through advanced topics
+- **Zero to Hero Coverage:** From Quick Start guide through advanced topics
 - **Real-World Focus:** Examples from major Zig projects (Bun, TigerBeetle, Ghostty, Mach, ZLS)
 - **Production Ready:** 100% validated code examples, comprehensive CI/CD
 - **Version Clarity:** Clear guidance for Zig 0.14.x and 0.15.x with version markers
-- **Complete:** 16 chapters, 22,353+ lines of content, 100 Zig example files
+- **Complete:** 15 chapters, 22,353+ lines of content, 100 Zig example files
 - **Professional:** Testing, benchmarking, CI/CD, project layout, interoperability
 
 ---

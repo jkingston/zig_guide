@@ -54,26 +54,31 @@ zig_guide/
 ├── versioning.md                # Version support policy
 ├── book.toml                    # mdBook configuration
 │
-├── sections/                    # Chapter source content (16 chapters)
-│   ├── 00_professional_setup/
+├── sections/                    # Source content for select chapters (7-13)
+│   ├── 07_build_system/
 │   │   ├── prompt.md            # AI generation prompt
 │   │   └── content.md           # Chapter content
-│   ├── 01_introduction/
+│   ├── 08_packages_dependencies/
 │   ├── ...
-│   └── 15_appendices/
+│   └── 13_migration_guide/
 │
-├── examples/                    # Runnable code examples (14 chapters + appendix)
+├── examples/                    # Runnable code examples for all chapters
 │   ├── appendix_b_zighttp/
 │   │   ├── build.zig
 │   │   └── zighttp/             # Complete example project
 │   ├── ch01_introduction/
 │   ├── ch01_idioms/
+│   ├── ch02_memory/
 │   ├── ...
 │   └── ch14_appendices/
 │
-├── src/                         # mdBook generated sources
+├── src/                         # mdBook generated sources (15 chapters)
 │   ├── SUMMARY.md               # Table of contents
-│   └── README.md                # Book introduction
+│   ├── README.md                # Book introduction
+│   ├── ch01_quick_start.md      # Quick Start chapter
+│   ├── ch01_language_idioms.md
+│   ├── ...
+│   └── ch14_appendices.md
 │
 ├── scripts/
 │   ├── prepare-mdbook.sh        # Prepare mdBook sources
@@ -135,11 +140,14 @@ git checkout -b feature/your-contribution
 
 #### Editing Chapter Content
 
-Chapter source lives in `sections/XX_name/content.md`:
+Most chapter source lives in `src/chXX_*.md`. Some chapters (7-13) also have source content in `sections/XX_name/content.md`:
 
 ```bash
-# Edit chapter content
-vim sections/02_language_idioms/content.md
+# Edit chapter markdown directly
+vim src/ch01_language_idioms.md
+
+# Or edit section content (for chapters 7-13)
+vim sections/07_build_system/content.md
 ```
 
 **Important:**

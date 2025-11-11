@@ -69,9 +69,10 @@ This guide is intended for contributors and research agents working on the Zig D
 ### Source Hierarchy
 When asserting facts, cite the most authoritative available source in this order:
 1. Official Zig documentation or release notes
-2. Official Zig GitHub repositories
+2. Official Zig GitHub repositories (including Zig compiler/stdlib source)
 3. Reputable community sources (Zig.guide, ZigLearn, Zig by Example)
-4. Recognized open-source exemplars (TigerBeetle, Ghostty, Bun, Mach)
+4. Exemplar projects (TigerBeetle, Ghostty, Bun, ZLS, Mach) — production codebases demonstrating architectural patterns
+5. Additional reference projects (zig-gamedev, zap, zigimg) — domain-specific examples
 
 ### Inline Citations
 Use markdown footnotes or link-style references immediately after the relevant statement:

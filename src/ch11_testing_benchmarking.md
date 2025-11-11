@@ -2544,6 +2544,198 @@ test "HashMap: basic usage" {
 
 Pattern: `inline for` over types generates separate tests for each combination.
 
+### Mach: Game Engine Testing Patterns
+
+Mach demonstrates testing patterns for graphics-intensive applications, including custom test utilities, SIMD-aligned data, and stress testing for concurrent data structures.
+
+**1. Custom Type-Aware Equality Assertion**[^mach_test1]
+
+Mach provides a custom `expect()` function with better ergonomics than `std.testing`:
+
+```zig
+// mach/src/testing.zig:204
+pub fn expect(comptime T: type, expected: T) Expect(T) {
+    return Expect(T){ .expected = expected };
+}
+```
+
+**Usage comparison:**
+
+```zig
+// std.testing (verbose, error-prone)
+try std.testing.expectEqual(@as(u32, 1337), actual());
+try std.testing.expectApproxEqAbs(@as(f32, 1.0), actual(), std.math.floatEps(f32));
+
+// mach.testing (concise, type-safe)
+try mach.testing.expect(u32, 1337).eql(actual());
+try mach.testing.expect(f32, 1.0).eql(actual());  // Epsilon equality by default
+```
+
+**Floating-point equality modes:**[^mach_test1]
+
+```zig
+// mach/src/testing.zig:12-24
+pub fn eql(e: *const @This(), actual: T) !void {
+    try e.eqlApprox(actual, math.eps(T));  // Epsilon tolerance
+}
+
+pub fn eqlApprox(e: *const @This(), actual: T, tolerance: T) !void {
+    if (!math.eql(T, e.expected, actual, tolerance)) {
+        std.debug.print("actual float {d}, expected {d} (not within absolute epsilon tolerance {d})\n",
+            .{ actual, e.expected, tolerance });
+        return error.TestExpectEqualEps;
+    }
+}
+
+pub fn eqlBinary(e: *const @This(), actual: T) !void {
+    try testing.expectEqual(e.expected, actual);  // Exact bitwise equality
+}
+```
+
+**Why this matters:** Game engines heavily use floating-point math. Default epsilon equality prevents spurious failures from rounding errors, while `.eqlBinary()` is available for exact checks when needed.
+
+**2. SIMD-Aligned Audio Buffer Testing**[^mach_audio]
+
+Mach's audio tests demonstrate testing SIMD-optimized code with properly aligned buffers:
+
+```zig
+// mach/src/Audio.zig:358-376
+test "mixSamples - basic mono to mono mixing" {
+    var dst_buffer align(alignment) = [_]f32{0} ** 16;
+    const src_buffer align(alignment) = [_]f32{ 1.0, 2.0, 3.0, 4.0 } ** 4;
+
+    const new_index = mixSamples(
+        &dst_buffer,
+        1, // dst_channels
+        &src_buffer,
+        0, // src_index
+        1, // src_channels
+        0.5, // src_volume
+    );
+
+    try testing.expect(usize, 16).eql(new_index);
+    try testing.expect(f32, 0.5).eql(dst_buffer[0]);
+    try testing.expect(f32, 1.0).eql(dst_buffer[1]);
+    try testing.expect(f32, 1.5).eql(dst_buffer[2]);
+    try testing.expect(f32, 2.0).eql(dst_buffer[3]);
+}
+```
+
+**Key pattern:** `align(alignment)` ensures buffers meet SIMD requirements (typically 16-byte aligned for SSE). Without proper alignment, SIMD instructions can crash or silently degrade to scalar operations.
+
+**3. Comprehensive Coverage with Multiple Test Scenarios**[^mach_audio]
+
+Mach tests audio mixing across multiple dimensions:
+
+```zig
+// Six test cases covering the combinatorial space:
+test "mixSamples - basic mono to mono mixing"
+test "mixSamples - stereo to stereo mixing"
+test "mixSamples - mono to stereo mixing (channel duplication)"
+test "mixSamples - partial buffer processing"
+test "mixSamples - mixing with volume adjustment"
+test "mixSamples - accumulation test"
+```
+
+**Pattern:** Systematically test edges of the parameter space (mono/stereo × mono/stereo × volume × partial processing) rather than random inputs. This catches bugs at boundaries.
+
+**4. Stress Testing Concurrent Data Structures**[^mach_mpsc]
+
+Mach's MPSC queue stress test uses `std.Thread.Pool` to verify lock-free correctness:
+
+```zig
+// mach/src/mpsc.zig (test "concurrent producers")
+test "concurrent producers" {
+    const allocator = std.testing.allocator;
+
+    var queue: Queue(u32) = undefined;
+    try queue.init(allocator, 32);
+    defer queue.deinit(allocator);
+
+    const n_jobs = 100;
+    const n_entries: u32 = 10000;
+
+    var pool: std.Thread.Pool = undefined;
+    try std.Thread.Pool.init(&pool, .{ .allocator = allocator, .n_jobs = n_jobs });
+    defer pool.deinit();
+
+    var wg: std.Thread.WaitGroup = .{};
+    for (0..n_jobs) |_| {
+        pool.spawnWg(
+            &wg,
+            struct {
+                pub fn run(q: *Queue(u32)) void {
+                    var i: u32 = 0;
+                    while (i < n_entries) : (i += 1) {
+                        q.push(allocator, i) catch unreachable;
+                    }
+                }
+            }.run,
+            .{&queue},
+        );
+    }
+
+    wg.wait();  // Block until all producers complete
+
+    // Verify all items were enqueued
+    var count: u32 = 0;
+    while (queue.pop()) |_| count += 1;
+
+    try std.testing.expectEqual(n_jobs * n_entries, count);
+}
+```
+
+**Pattern breakdown:**
+- **Thread.Pool**: Manages thread lifecycle automatically
+- **WaitGroup**: Synchronizes completion of all producers
+- **Anonymous struct with run()**: Captures queue pointer without heap allocation
+- **High iteration count**: 100 threads × 10,000 items = 1 million operations stress tests race conditions
+
+**Why this works:** Lock-free data structures can have subtle race conditions that only appear under heavy contention. The test spawns 100 concurrent producers to maximize contention and surface bugs.
+
+**5. Vector and Matrix Testing with Epsilon Tolerance**[^mach_test2]
+
+Mach extends epsilon equality to SIMD vectors:
+
+```zig
+// mach/src/testing.zig:33-54
+fn ExpectVector(comptime T: type) type {
+    const Elem = std.meta.Elem(T);
+    const len = @typeInfo(T).vector.len;
+    return struct {
+        expected: T,
+
+        pub fn eqlApprox(e: *const @This(), actual: T, tolerance: Elem) !void {
+            var i: usize = 0;
+            while (i < len) : (i += 1) {
+                if (!math.eql(Elem, e.expected[i], actual[i], tolerance)) {
+                    std.debug.print("actual vector {d}, expected {d} (tolerance {d})\n",
+                        .{ actual, e.expected, tolerance });
+                    std.debug.print("actual vector[{}] = {d}, expected {d}\n",
+                        .{ i, actual[i], e.expected[i] });
+                    return error.TestExpectEqualEps;
+                }
+            }
+        }
+    };
+}
+```
+
+**Benefit:** When a vector comparison fails, the error message shows:
+1. The full vector (all elements)
+2. The specific failing element index
+3. Expected and actual values for that element
+
+This drastically reduces debugging time for SIMD code.
+
+**Key Takeaways from Mach:**
+- **Type-aware assertions** reduce boilerplate and prevent type annotation errors
+- **Epsilon equality by default** for floats prevents spurious failures from rounding
+- **SIMD alignment** in tests ensures production code path is actually tested
+- **Systematic scenario coverage** catches boundary conditions better than random testing
+- **Stress testing with Thread.Pool** validates concurrent data structures under contention
+- **Enhanced error messages** for vectors show exactly which element failed
+
 ## Summary
 
 Zig's integrated approach to testing, benchmarking, and profiling provides developers with powerful tools for building reliable, performant software. This chapter covered the complete spectrum from basic test blocks to advanced production patterns.
@@ -2671,6 +2863,11 @@ The testing, benchmarking, and profiling capabilities in Zig enable building rob
 43. [Zig Community: Testing Best Practices](https://github.com/ziglang/zig/wiki/Testing-Best-Practices)
 44. [TigerBeetle state_machine_tests.zig](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/state_machine_tests.zig)
 45. [Ghostty freetype test.zig](https://github.com/ghostty-org/ghostty/blob/main/pkg/freetype/test.zig)
+
+[^mach_test1]: [Mach Source: Custom Equality Assertion with Epsilon Tolerance](https://github.com/hexops/mach/blob/main/src/testing.zig) - Type-aware expect() function with default epsilon equality for floats
+[^mach_test2]: [Mach Source: Vector Epsilon Equality](https://github.com/hexops/mach/blob/main/src/testing.zig#L33-L54) - SIMD vector testing with per-element error reporting
+[^mach_audio]: [Mach Source: SIMD-Aligned Audio Tests](https://github.com/hexops/mach/blob/main/src/Audio.zig#L358-L473) - Audio mixing tests with aligned buffers and systematic scenario coverage
+[^mach_mpsc]: [Mach Source: MPSC Stress Test](https://github.com/hexops/mach/blob/main/src/mpsc.zig) - Concurrent producer stress test with Thread.Pool and WaitGroup
 
 [^1]: https://ziglang.org/documentation/master/#Testing
 [^2]: https://github.com/tigerbeetle/tigerbeetle/blob/main/src/stdx/testing/snaptest.zig#L74-L76

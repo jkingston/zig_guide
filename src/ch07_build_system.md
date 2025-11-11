@@ -830,6 +830,249 @@ fn getVersion(b: *Build) std.SemanticVersion {
 
 This eliminates manual version bumping in source files and ensures consistency between releases and development builds.[^19]
 
+### Bun: Cross-Platform JavaScript Runtime Build Patterns
+
+Bun demonstrates sophisticated build patterns for a high-performance cross-platform runtime with C++ interop. As a production runtime targeting Linux, macOS, and Windows, Bun's build.zig showcases advanced techniques for managing platform differences, versioning, and multi-target validation.
+
+**Pattern 1: Platform-Specific Target Refinement**
+
+Bun refines target queries before resolution to ensure compatibility with older but popular systems:[^bun1]
+
+```zig
+// bun/build.zig:119-196
+pub fn getOSVersionMin(os: OperatingSystem) ?Target.Query.OsVersion {
+    return switch (os) {
+        .mac => .{
+            .semver = .{ .major = 13, .minor = 0, .patch = 0 },
+        },
+        // Windows 10 1809 minimum for deleteOpenedFile support
+        .windows => .{
+            .windows = .win10_rs5,
+        },
+        else => null,
+    };
+}
+
+pub fn getCpuModel(os: OperatingSystem, arch: Arch) ?Target.Query.CpuModel {
+    // Explicit CPU targeting for compatibility
+    if (os == .linux and arch == .aarch64) {
+        // Support Raspberry Pi and cloud VMs
+        return .{ .explicit = &Target.aarch64.cpu.cortex_a35 };
+    }
+    if (os == .mac and arch == .aarch64) {
+        // Ensure compatibility with base M1
+        return .{ .explicit = &Target.aarch64.cpu.apple_m1 };
+    }
+    return null;
+}
+
+// Apply refinements before target resolution
+if (getCpuModel(os, arch)) |cpu_model| {
+    target_query.cpu_model = cpu_model;
+}
+target_query.os_version_min = getOSVersionMin(os);
+target_query.glibc_version = if (abi.isGnu()) .{ .major = 2, .minor = 27, .patch = 0 } else null;
+```
+
+**Why this matters:** Prevents accidentally targeting CPU features or OS versions that break compatibility with widely-used systems (Raspberry Pi 4, older cloud VMs, macOS 13). The explicit CPU models ensure binaries run on the *widest* range of hardware, not just the developer's machine.
+
+**Pattern 2: Git SHA with Fallback Strategies**
+
+Bun retrieves version information with multiple fallback sources for robustness:[^bun2]
+
+```zig
+// bun/build.zig:236-270
+.sha = sha: {
+    const sha_buildoption = b.option([]const u8, "sha", "Force the git sha");
+    const sha_github = b.graph.env_map.get("GITHUB_SHA");
+    const sha_env = b.graph.env_map.get("GIT_SHA");
+    const sha = sha_buildoption orelse sha_github orelse sha_env orelse fetch_sha: {
+        const result = std.process.Child.run(.{
+            .allocator = b.allocator,
+            .argv = &.{ "git", "rev-parse", "HEAD" },
+            .cwd = b.pathFromRoot("."),
+            .expand_arg0 = .expand,
+        }) catch |err| {
+            std.log.warn("Failed to execute 'git rev-parse HEAD': {s}", .{@errorName(err)});
+            std.log.warn("Falling back to zero sha", .{});
+            break :sha zero_sha;
+        };
+        break :fetch_sha b.dupe(std.mem.trim(u8, result.stdout, "\n \t"));
+    };
+
+    // Validate SHA format
+    if (sha.len == 0 or sha.len != 40) {
+        std.log.warn("Invalid git sha: {s}", .{sha});
+        break :sha zero_sha;
+    }
+    break :sha sha;
+},
+```
+
+**Fallback order:**
+1. `-Dsha=...` build option (CI override)
+2. `GITHUB_SHA` environment variable (GitHub Actions)
+3. `GIT_SHA` environment variable (custom CI)
+4. `git rev-parse HEAD` command (local development)
+5. Zero SHA placeholder (build succeeds even without git)
+
+This pattern ensures builds succeed in all environments: CI systems, Docker containers without git, and local development.
+
+**Pattern 3: Conditional Code Embedding**
+
+Bun optimizes iteration speed in debug builds by loading generated code at runtime instead of compile-time:[^bun3]
+
+```zig
+// bun/build.zig:203-206, 79-81
+const codegen_embed = b.option(bool, "codegen_embed",
+    "If codegen files should be embedded in the binary") orelse switch (b.release_mode) {
+    .off => false,  // Debug: load at runtime for fast iteration
+    else => true,   // Release: embed for single-binary distribution
+};
+
+pub fn shouldEmbedCode(opts: *const BunBuildOptions) bool {
+    return opts.optimize != .Debug or opts.codegen_embed;
+}
+
+// In source code:
+const runtime_code = if (comptime build_options.shouldEmbedCode())
+    @embedFile("bake/runtime.ts")  // Compile-time embed
+else
+    std.fs.cwd().readFileAlloc(...);  // Runtime load
+```
+
+**Trade-off:**
+- **Debug builds:** Fast recompilation (skip embedding 100+ KB of generated code)
+- **Release builds:** Single portable binary with no external file dependencies
+- **Override:** `-Dcodegen_embed=true` forces embedding for reproducible CI builds
+
+**Pattern 4: Multi-Platform Cross-Compilation Validation**
+
+Bun provides `check-all` steps to validate code compiles on all supported platforms without running builds:[^bun4]
+
+```zig
+// bun/build.zig:360-372
+const step = b.step("check-all", "Check for semantic analysis errors on all supported platforms");
+addMultiCheck(b, step, build_options, &.{
+    .{ .os = .windows, .arch = .x86_64 },
+    .{ .os = .mac, .arch = .x86_64 },
+    .{ .os = .mac, .arch = .aarch64 },
+    .{ .os = .linux, .arch = .x86_64 },
+    .{ .os = .linux, .arch = .aarch64 },
+    .{ .os = .linux, .arch = .x86_64, .musl = true },
+    .{ .os = .linux, .arch = .aarch64, .musl = true },
+}, &.{ .Debug, .ReleaseFast });
+
+// Helper function
+fn addMultiCheck(
+    b: *Build,
+    parent_step: *Build.Step,
+    root_build_options: BunBuildOptions,
+    comptime targets: []const struct { os: OperatingSystem, arch: Arch, musl: bool = false },
+    comptime modes: []const OptimizeMode,
+) void {
+    inline for (targets) |t| {
+        inline for (modes) |mode| {
+            var options = root_build_options;
+            options.optimize = mode;
+            // ... create target query for this combination
+
+            var obj = addBunObject(b, &options);
+            obj.generated_bin = null;  // Skip linking, only semantic analysis
+            parent_step.dependOn(&obj.step);
+        }
+    }
+}
+```
+
+**Usage in CI:**
+```bash
+$ zig build check-all          # All platforms, Debug + ReleaseFast
+$ zig build check-debug         # Common platforms, Debug only (fast)
+$ zig build check-windows       # Windows-specific validation
+```
+
+This catches platform-specific compilation errors (missing imports, wrong APIs) before pushing code, without requiring actual cross-compilation or linking.
+
+**Pattern 5: Translate-C Post-Processing**
+
+Bun post-processes C header translations to fix Windows-specific translation issues:[^bun5]
+
+```zig
+// bun/build.zig:517-570
+fn getTranslateC(b: *Build, initial_target: ResolvedTarget, optimize: OptimizeMode) LazyPath {
+    const translate_c = b.addTranslateC(.{
+        .root_source_file = b.path("src/c-headers-for-zig.h"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+
+    // Define platform macros for conditional compilation
+    inline for ([_](struct { []const u8, bool }){
+        .{ "WINDOWS", translate_c.target.result.os.tag == .windows },
+        .{ "POSIX", translate_c.target.result.os.tag != .windows },
+        .{ "LINUX", translate_c.target.result.os.tag == .linux },
+        .{ "DARWIN", translate_c.target.result.os.tag.isDarwin() },
+    }) |entry| {
+        const str, const value = entry;
+        translate_c.defineCMacroRaw(b.fmt("{s}={d}", .{ str, @intFromBool(value) }));
+    }
+
+    if (target.result.os.tag == .windows) {
+        // translate-c can't handle unsuffixed Windows functions like SetCurrentDirectory
+        // which expand to __MINGW_NAME_AW(SetCurrentDirectory) macros.
+        // Post-process to reference SetCurrentDirectoryW directly.
+        const helper_exe = b.addExecutable(.{
+            .name = "process_windows_translate_c",
+            .root_module = b.createModule(.{
+                .root_source_file = b.path("src/codegen/process_windows_translate_c.zig"),
+                .target = b.graph.host,
+                .optimize = .Debug,
+            }),
+        });
+        const run = b.addRunArtifact(helper_exe);
+        run.addFileArg(translate_c.getOutput());
+        const out = run.addOutputFileArg("c-headers-for-zig.zig");
+        return out;
+    }
+    return translate_c.getOutput();
+}
+```
+
+**Pattern:** When translate-c produces incorrect or incomplete code, run a custom Zig program to post-process the output. This allows fixing systematic translation issues (macro expansion, type remapping) without manually maintaining hundreds of lines of bindings.
+
+**Pattern 6: Environment-Based Build Modes**
+
+Bun supports fast development builds via environment variable:[^bun6]
+
+```zig
+// bun/build.zig:598-601, 594
+fn enableFastBuild(b: *Build) bool {
+    const val = b.graph.env_map.get("BUN_BUILD_FAST") orelse return false;
+    return std.mem.eql(u8, val, "1");
+}
+
+// Applied during configuration
+if (enableFastBuild(b)) obj.root_module.strip = true;
+```
+
+**Usage:**
+```bash
+$ BUN_BUILD_FAST=1 zig build  # Skip expensive optimizations, strip symbols
+$ zig build                    # Full debug build with all checks
+```
+
+This provides an escape hatch for extremely fast iteration without adding a custom build mode or option flag.
+
+**Key Takeaways from Bun:**
+- Target refinement before resolution ensures backward compatibility
+- Layered fallback strategies make builds robust across environments
+- Conditional embedding balances development speed with release requirements
+- Multi-platform checks catch cross-platform issues early without full builds
+- Post-processing translate-c output handles systematic C header issues
+- Environment variables provide quick iteration modes without flag proliferation
+
 ### zig-gamedev: Complex C/C++ Library Integration
 
 zig-gamedev demonstrates sophisticated build patterns for game development with multiple C/C++ dependencies:
@@ -973,5 +1216,11 @@ Understanding these patterns enables building libraries, CLI tools, and complex 
 [^17]: Ghostty modular build organization - https://github.com/ghostty-org/ghostty/blob/main/build.zig#L17-L34
 [^18]: Mach optional features - https://github.com/hexops/mach/blob/main/build.zig#L47-L69
 [^19]: ZLS git-based versioning - https://github.com/zigtools/zls/blob/master/build.zig#L333-L390
+[^bun1]: [Bun Source: Platform-Specific Target Refinement](https://github.com/oven-sh/bun/blob/main/build.zig#L119-L196) - CPU model selection and OS version minimums for cross-platform compatibility
+[^bun2]: [Bun Source: Git SHA Fallback Strategies](https://github.com/oven-sh/bun/blob/main/build.zig#L236-L270) - Multi-source version retrieval with validation and fallbacks
+[^bun3]: [Bun Source: Conditional Code Embedding](https://github.com/oven-sh/bun/blob/main/build.zig#L79-L81) - Runtime loading in debug, compile-time embedding in release
+[^bun4]: [Bun Source: Multi-Platform Check Steps](https://github.com/oven-sh/bun/blob/main/build.zig#L360-L372) - Cross-platform semantic analysis without full compilation
+[^bun5]: [Bun Source: Translate-C Post-Processing](https://github.com/oven-sh/bun/blob/main/build.zig#L517-L570) - Custom processing for Windows C header translations
+[^bun6]: [Bun Source: Environment-Based Build Modes](https://github.com/oven-sh/bun/blob/main/build.zig#L598-L601) - Fast iteration mode via BUN_BUILD_FAST flag
 [^20]: Zig compiler test organization - https://github.com/ziglang/zig/blob/master/build.zig#L381-L621
 [^21]: zig-gamedev build system - https://github.com/michal-z/zig-gamedev - Multi-library C/C++ integration patterns

@@ -994,11 +994,144 @@ decls: std.SegmentedList(Decl, 0) = .{},
 
 `MultiArrayList` uses structure-of-arrays layout for cache efficiency. `SegmentedList` provides stable pointers across resizing, critical for compiler IR where nodes reference each other.
 
-### Mach: Unmanaged Container Aggregation
+### Mach: Game Engine Collection Patterns
 
-The Mach game engine's shader compiler demonstrates a struct containing many unmanaged containers:[^13]
+Mach demonstrates sophisticated collection patterns across its game engine architecture, from memory-efficient string interning to entity component systems.
+
+**Pattern 1: String Interning with Custom HashMap Context**
+
+Mach's `StringTable` implements bidirectional string-to-index mapping using custom hash map contexts:[^mach1]
 
 ```zig
+// mach/src/StringTable.zig:11-16
+const StringTable = @This();
+
+string_bytes: std.ArrayListUnmanaged(u8) = .{},
+string_table: std.HashMapUnmanaged(u32, void, IndexContext, std.hash_map.default_max_load_percentage) = .{},
+```
+
+The key insight: instead of storing strings as keys, store *byte array indices* as keys. The custom context translates between string slices and indices:
+
+```zig
+// mach/src/StringTable.zig:68-80
+const SliceAdapter = struct {
+    string_bytes: *std.ArrayListUnmanaged(u8),
+
+    pub fn eql(adapter: SliceAdapter, a_slice: []const u8, b: u32) bool {
+        const b_slice = std.mem.span(@as([*:0]const u8, @ptrCast(adapter.string_bytes.items.ptr)) + b);
+        return std.mem.eql(u8, a_slice, b_slice);
+    }
+
+    pub fn hash(adapter: SliceAdapter, adapted_key: []const u8) u64 {
+        _ = adapter;
+        return std.hash_map.hashString(adapted_key);
+    }
+};
+```
+
+**Benefits:**
+- **Memory:** One copy of each string, no duplication
+- **Lookups:** O(1) for both string→index and index→string
+- **Cache-friendly:** Contiguous string storage in `string_bytes`
+
+**Pattern 2: Entity Component System with Multiple Unmanaged Collections**
+
+Mach's `Objects` type implements an ECS (Entity Component System) using five unmanaged collections:[^mach2]
+
+```zig
+// mach/src/module.zig:38-76
+pub fn Objects(options: ObjectsOptions, comptime T: type) type {
+    return struct {
+        internal: struct {
+            allocator: std.mem.Allocator,
+            mu: std.Thread.Mutex = .{},
+            type_id: ObjectTypeID,
+
+            // Five unmanaged collections working together:
+            data: std.MultiArrayList(T) = .{},
+            dead: std.bit_set.DynamicBitSetUnmanaged = .{},
+            generation: std.ArrayListUnmanaged(Generation) = .{},
+            recycling_bin: std.ArrayListUnmanaged(Index) = .{},
+            tags: std.AutoHashMapUnmanaged(TaggedObject, ?ObjectID) = .{},
+
+            thrown_on_the_floor: u32 = 0,
+            graph: *Graph,
+            updated: ?std.bit_set.DynamicBitSetUnmanaged = if (options.track_fields) .{} else null,
+        },
+    };
+}
+```
+
+**Why MultiArrayList:** Structure-of-arrays layout for cache efficiency when iterating:
+
+```zig
+// Instead of:  [Entity{x,y,z}, Entity{x,y,z}, ...]  (array-of-structs)
+// Mach uses:   [x,x,x,...], [y,y,y,...], [z,z,z,...]  (struct-of-arrays)
+```
+
+Iterating over just X coordinates accesses contiguous memory, maximizing cache hits.
+
+**Why DynamicBitSetUnmanaged:** Track alive/dead entities with 1 bit per entity instead of 1 byte:
+
+```zig
+// 10,000 entities:
+// std.ArrayList(bool): 10,000 bytes
+// DynamicBitSetUnmanaged: 1,250 bytes (8x smaller)
+```
+
+**Pattern 3: Object Recycling with Generation Counters**
+
+When entities are deleted, Mach recycles their indices using a generation counter to detect use-after-free:[^mach2]
+
+```zig
+// mach/src/module.zig:139-164
+pub fn new(objs: *@This(), value: T) std.mem.Allocator.Error!ObjectID {
+    const data = &objs.internal.data;
+    const dead = &objs.internal.dead;
+    const generation = &objs.internal.generation;
+    const recycling_bin = &objs.internal.recycling_bin;
+
+    // Periodically clean up if 10% of objects are on the floor
+    if (objs.internal.thrown_on_the_floor >= (data.len / 10)) {
+        var iter = dead.iterator(.{ .kind = .set });
+        while (iter.next()) |index| {
+            try recycling_bin.append(allocator, @intCast(index));
+        }
+        objs.internal.thrown_on_the_floor = 0;
+    }
+
+    // Reuse dead object slot if available
+    const index = if (recycling_bin.items.len > 0)
+        recycling_bin.pop()
+    else
+        @as(Index, @intCast(data.len));
+
+    // Increment generation to invalidate old IDs
+    if (index < generation.items.len) {
+        generation.items[index] += 1;
+    }
+}
+```
+
+**ObjectID encoding:** Packs type, generation, and index into u64:
+
+```zig
+// mach/src/module.zig:88-92
+const PackedID = packed struct(u64) {
+    type_id: ObjectTypeID,   // 16 bits: which type of object
+    generation: Generation,  // 16 bits: which version of this slot
+    index: Index,            // 32 bits: which slot in the array
+};
+```
+
+Old references fail gracefully when generation mismatches, catching use-after-free bugs.
+
+**Pattern 4: Unmanaged Container Aggregation**
+
+Mach's shader compiler demonstrates a struct with many unmanaged containers:[^13]
+
+```zig
+// mach sysgpu/shader/AstGen.zig
 allocator: std.mem.Allocator,
 instructions: std.AutoArrayHashMapUnmanaged(Inst, void) = .{},
 refs: std.ArrayListUnmanaged(InstIndex) = .{},
@@ -1009,7 +1142,34 @@ global_var_refs: std.AutoArrayHashMapUnmanaged(InstIndex, void) = .{},
 globals: std.ArrayListUnmanaged(InstIndex) = .{},
 ```
 
-Seven unmanaged containers share a single allocator field. This pattern saves 56 bytes compared to using managed variants (7 containers × 8 bytes per allocator pointer). The memory savings are significant for performance-critical graphics code.
+**Memory savings:** 7 containers × 8 bytes = 56 bytes saved vs managed variants. For graphics code with hundreds of these structs, savings are substantial.
+
+**Pattern 5: Event Queue with Pre-Allocation**
+
+Mach's Core module pre-allocates event queue capacity during initialization:[^mach3]
+
+```zig
+// mach/src/Core.zig:128-129
+var events = EventQueue.init(allocator);
+try events.ensureTotalCapacity(8192);
+```
+
+**Where EventQueue is defined:**
+
+```zig
+// mach/src/Core.zig:11
+const EventQueue = std.fifo.LinearFifo(Event, .Dynamic);
+```
+
+**Why 8192:** Prevents reallocation during gameplay. Input events (keyboard, mouse) occur frequently; pre-allocation ensures zero-allocation event handling in the main loop.
+
+**Key Takeaways from Mach:**
+- **Custom hash contexts** enable memory-efficient string interning and specialized lookups
+- **MultiArrayList** (structure-of-arrays) maximizes cache efficiency for component iteration
+- **BitSetUnmanaged** provides 8x memory savings over bool arrays for entity state
+- **Generation counters** catch use-after-free bugs by encoding version in object IDs
+- **Pre-allocation** eliminates allocation overhead in performance-critical loops
+- **Unmanaged containers** reduce memory overhead when aggregating many collections
 
 ## Summary
 
@@ -1048,3 +1208,6 @@ The transition from managed to unmanaged containers represents a maturation of Z
 [^11]: [Bun test/snapshot.zig:239](https://github.com/oven-sh/bun/blob/main/src/bun.js/test/snapshot.zig#L239)
 [^12]: [ZLS analyser/InternPool.zig](https://github.com/zigtools/zls/blob/master/src/analyser/InternPool.zig)
 [^13]: [Mach sysgpu/shader/AstGen.zig](https://github.com/hexops/mach/blob/main/src/sysgpu/shader/AstGen.zig)
+[^mach1]: [Mach Source: StringTable with Custom HashMap Context](https://github.com/hexops/mach/blob/main/src/StringTable.zig) - Bidirectional string interning using indices as keys
+[^mach2]: [Mach Source: Objects ECS Implementation](https://github.com/hexops/mach/blob/main/src/module.zig#L36-L150) - Entity component system with MultiArrayList, BitSet, and generation counters
+[^mach3]: [Mach Source: Core Event Queue Pre-Allocation](https://github.com/hexops/mach/blob/main/src/Core.zig#L128-L129) - Zero-allocation event handling with pre-allocated capacity

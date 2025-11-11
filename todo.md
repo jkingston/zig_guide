@@ -1,15 +1,15 @@
 # Zig Developer Guide - TODO List
 
-> Last Updated: November 9, 2025
+> Last Updated: November 11, 2025
 
 ## 🚨 Critical Priority (Beta Blockers)
 
 **✅ ALL COMPLETE! Beta Release Ready!** 🎉
 
 - [x] **Create examples directory structure** (✅ COMPLETE - 100%)
-  - ✅ Created `examples/ch{00-15}_*/` directory structure (16 chapters)
+  - ✅ Created examples directory structure for all chapters
   - ✅ Extracted all 97+ runnable examples from all chapters
-  - ✅ Created `build.zig` for all 16 chapters
+  - ✅ Created `build.zig` for all chapters
   - ✅ All examples compile successfully on Zig 0.15.2
   - ✅ 100% compilation success rate achieved
   - ✅ Created stub modules for conceptual examples
@@ -42,14 +42,14 @@
   - ✅ No grammatical errors found
 
 - [x] **Zero to Hero quickstart chapter** (✅ COMPLETE - Nov 2025)
-  - ✅ Created Chapter 0: "Professional Zig Projects"
-  - ✅ Complete HTTP client CLI tool (`zighttp`) walkthrough
+  - ✅ Created Quick Start chapter: "Get started with Zig in under 10 minutes"
+  - ✅ Complete word counter CLI tool walkthrough
   - ✅ Professional project structure from `zig init`
   - ✅ Development tools setup (ZLS, formatting, CI/CD)
   - ✅ Testing strategy (unit + integration)
   - ✅ Cross-compilation configuration
-  - ✅ Full source code in `examples/ch00_professional_setup/`
-  - ✅ Architecture documentation and contribution guide
+  - ✅ Full source code examples in `examples/ch01_introduction/`
+  - ✅ HTTP client example (`zighttp`) in appendix
 
 ---
 
@@ -115,14 +115,14 @@
 ## 📊 Quality Metrics
 
 **Current Status:**
-- ✅ Content: 16 chapters (ch00-ch15), ~22,353 lines
+- ✅ Content: 15 chapters (Quick Start through Appendices), ~22,353 lines
 - ✅ Code Examples: 100 Zig files, 4,430+ lines of code
 - ✅ Structure: Excellent organization (9/10)
 - ✅ Technical Accuracy: 9.5/10
 - ✅ Coverage: Comprehensive - from Zero to Hero through advanced topics
 - ✅ Examples: 97+ examples, 100% validated and compiling on Zig 0.15.2
 - ✅ CI/CD: Automated validation on push/PR (examples + mdBook)
-- ✅ Zero to Hero: Complete professional project setup chapter
+- ✅ Zero to Hero: Complete Quick Start guide with hands-on examples
 - ⚠️  Hands-on: Additional practice projects planned for 1.0
 - ✅ Target Audience: Perfect fit for experienced developers
 
@@ -134,9 +134,23 @@
 
 ## 📝 Progress Notes
 
+### November 11, 2025
+- ✅ Documentation audit complete
+- ✅ Fixed inconsistent chapter counts in README, todo.md, AGENTS.md, CONTRIBUTING.md
+- ✅ Clarified actual book structure: 15 chapters (Quick Start through Appendices)
+- ✅ **Exemplar project integration audit and expansion**
+  - Reorganized references.md: 6 exemplar projects (TigerBeetle, Ghostty, Bun, ZLS, Mach, Zig stdlib) with citation counts
+  - Moved ziglings, zigmod, awesome-zig to "Learning Resources" section
+  - Added 6 Bun build system patterns to ch07 (+266 lines)
+  - Added 5 Mach collection patterns to ch03 (+163 lines)
+  - Added 6 Mach concurrency patterns to ch06 (+198 lines)
+  - Added 5 Mach testing patterns to ch11 (+192 lines)
+  - Total: 19 new footnotes, ~819 lines of production patterns
+  - Mach coverage increased from 27 → 40+ mentions across guide
+
 ### November 9, 2025
-- ✅ Chapter 0 "Zero to Hero: Professional Zig Projects" complete
-- ✅ Added comprehensive zighttp CLI tool walkthrough
+- ✅ Quick Start chapter complete with practical examples
+- ✅ Added comprehensive zighttp CLI tool in appendix
 - ✅ Updated README with current statistics
 - ✅ Created separate TODO.md for better task tracking
 - ✅ Cleaned up references to removed artifact files
@@ -148,7 +162,7 @@
 - ✅ CI/CD fully automated
 
 ### Earlier Milestones
-- ✅ All 16 chapters written (ch00-ch15)
+- ✅ All 15 chapters written (Quick Start through Appendices)
 - ✅ mdBook integration with GitHub Pages
 - ✅ Reference repositories script
 - ✅ Comprehensive validation tooling
@@ -178,8 +192,8 @@
 ## 💎 Unique Value Proposition
 
 This guide is the **only comprehensive production-focused Zig resource** for experienced developers:
-- Complete "Zero to Hero" onboarding with real project
-- 16 chapters covering all aspects of professional Zig development
+- Complete "Zero to Hero" onboarding with Quick Start guide and real projects
+- 15 chapters covering all aspects of professional Zig development
 - Real-world examples from major projects (Bun, TigerBeetle, Ghostty, Mach, ZLS)
 - 100% validated code examples
 - Professional CI/CD and automation
