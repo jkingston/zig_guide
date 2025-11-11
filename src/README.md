@@ -44,4 +44,4 @@ All code examples are runnable and tested. You can find the complete source code
 
 ---
 
-Ready to get started? Head to the [Introduction](ch01_introduction.md) or choose a specific chapter from the navigation menu.
+Ready to get started? Head to **Chapter 1: Quick Start** or choose a specific chapter from the navigation menu.
