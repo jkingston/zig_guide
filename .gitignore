@@ -9,10 +9,9 @@
 .zig-cache/
 zig-out/
 
-# mdBook generated sources (keep SUMMARY.md and README.md which are manually maintained)
-/src/ch*.md
-/src/references.md
-/src/style_guide.md
-
 # mdBook build output
 /book/
+
+# Script outputs
+code_blocks_analysis.json
+code_block_report.txt

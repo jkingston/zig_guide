@@ -6,7 +6,7 @@
 
 # Guide Chapters
 
-- [Introduction](ch01_introduction.md)
+- [Quick Start](ch01_quick_start.md)
 - [Language Idioms & Core Patterns](ch01_language_idioms.md)
 - [Memory & Allocators](ch02_memory_allocators.md)
 - [Collections & Containers](ch03_collections_containers.md)
