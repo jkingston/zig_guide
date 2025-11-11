@@ -70,7 +70,7 @@ jobs:
 
       - name: Run code block analysis
         run: |
-          python3 scripts/extract_code_blocks.py sections > code_block_report.txt
+          python3 scripts/extract_code_blocks.py src > code_block_report.txt
           cat code_block_report.txt
 
       - name: Upload analysis report
@@ -93,9 +93,6 @@ jobs:
         uses: peaceiris/actions-mdbook@v2
         with:
           mdbook-version: 'latest'
-
-      - name: Prepare mdBook sources
-        run: bash scripts/prepare-mdbook.sh
 
       - name: Build mdBook
         run: mdbook build

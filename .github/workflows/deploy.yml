@@ -27,9 +27,6 @@ jobs:
         with:
           mdbook-version: 'latest'
 
-      - name: Prepare mdBook sources
-        run: bash scripts/prepare-mdbook.sh
-
       - name: Build mdBook
         run: mdbook build
 
