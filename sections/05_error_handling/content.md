@@ -966,14 +966,27 @@ TigerBeetle's TIGER_STYLE.md establishes foundational error handling principles 
 
 Research on production failures found that 92% of catastrophic system failures result from incorrect handling of explicitly signaled errors.[^2] TigerBeetle mandates that all errors must be handled — no silent failures.
 
-**Assertions vs Errors**
+**Error Handling Strategies**
 
-TigerBeetle distinguishes between two failure classes:
+Zig provides multiple mechanisms for handling failures, each with specific use cases:
+
+| Mechanism | When to Use | Recoverable? | Production Behavior | Example |
+|-----------|-------------|--------------|---------------------|---------|
+| **Error unions (`!T`)** | Operating errors (I/O, allocation) | ✅ Yes | Propagate to caller | `!File`, `try openFile()` |
+| **`try`** | Propagate error to caller | ✅ Yes | Returns error | `try doOperation()` |
+| **`catch`** | Handle or provide default | ✅ Yes | Executes recovery code | `readFile() catch null` |
+| **`std.debug.assert()`** | Programmer errors (bugs) | ❌ No | Panic in Debug, no-op in Release* | `assert(index < len)` |
+| **`@panic()`** | Unrecoverable errors | ❌ No | Always panics | `@panic("corruption")` |
+| **`unreachable`** | Proven-impossible paths | ❌ No | Undefined in Release* | `else => unreachable` |
+
+**\*** ReleaseSafe/Debug panic, ReleaseFast/ReleaseSmall may optimize out checks (undefined behavior if reached).
+
+**TigerBeetle's failure classes:**
 
 - **Assertions** — Detect programmer errors (bugs). Must crash immediately with `std.debug.assert`.
 - **Errors** — Handle operating errors (expected failures). Must be handled gracefully.
 
-Example from TigerBeetle:
+Example:
 
 ```zig
 // Assertion - programmer error, must never happen
