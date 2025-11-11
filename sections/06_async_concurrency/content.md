@@ -1,5 +1,13 @@
 # Async, Concurrency & Performance
 
+> **TL;DR for experienced systems programmers:**
+> - **Breaking change:** Language-level async/await removed in 0.15 → use library-based solutions
+> - **CPU parallelism:** `std.Thread` for OS threads, `std.Thread.Pool` for work distribution
+> - **I/O concurrency:** Use library event loops (libxev, zap) with io_uring/kqueue/IOCP
+> - **Synchronization:** `std.Thread.Mutex`, `RwLock`, `Condition`, atomic operations
+> - **Memory ordering:** `.seq_cst` (default), `.acquire`, `.release`, `.monotonic`
+> - **Jump to:** [Threading §6.2](#stdthread-explicit-thread-management) | [Atomics §6.3](#atomic-operations) | [Thread pools §6.4](#thread-pools)
+
 This chapter examines Zig's concurrency model, synchronization primitives, and performance measurement tools. Modern systems programming demands efficient handling of both CPU-bound parallelism and I/O-bound concurrency. Zig provides explicit, zero-cost abstractions for both through threading primitives and library-based event loops.
 
 ---
@@ -8,40 +16,26 @@ This chapter examines Zig's concurrency model, synchronization primitives, and p
 
 Zig's approach to concurrency emphasizes explicitness and control. Unlike languages with hidden runtime schedulers or implicit async semantics, Zig makes concurrency visible and manageable at the source level.
 
-### Why Concurrency Matters in Systems Programming
+### Concurrency Mechanisms
 
-Modern applications must handle:
+Zig provides explicit, low-level control over parallelism (CPU-bound) and concurrency (I/O-bound):
 
-- **Parallelism**: Execute multiple computations simultaneously on multi-core processors
-- **Concurrency**: Manage thousands of simultaneous I/O operations efficiently
-- **Performance**: Minimize latency while maximizing throughput
-- **Resource Management**: Control memory and thread allocation explicitly
-
-Systems programming languages require low-level control over these concerns. Zig delivers this through:
-
-1. **std.Thread** for OS-level threading with explicit lifecycle management
-2. **Atomic operations** with configurable memory ordering for lock-free algorithms
-3. **Synchronization primitives** (Mutex, RwLock, Condition) with platform-optimal implementations
-4. **Thread pools** for CPU-bound work distribution
-5. **Library-based event loops** (libxev) for I/O-bound concurrency
+1. **std.Thread** — OS-level threading with explicit lifecycle management
+2. **Atomic operations** — Configurable memory ordering for lock-free algorithms
+3. **Synchronization primitives** — Mutex, RwLock, Condition (platform-optimal)
+4. **Thread pools** — CPU-bound work distribution
+5. **Library-based event loops** — libxev for I/O concurrency (io_uring, kqueue, IOCP)
 
 ### The Async Transition (0.14.x → 0.15.0)
 
-Zig underwent a significant architectural change between versions 0.14.x and 0.15.0. Language-level `async`/`await` keywords were removed in favor of library-based solutions.[^1]
+**Breaking change:** Language-level `async`/`await` keywords removed in 0.15, replaced with library-based solutions (libxev, zap).[^1]
 
-**What Changed:**
-- Removed: Built-in `async`, `await`, `suspend`, `resume` keywords
-- Removed: Compiler-managed async stack frames
-- Added: Enhanced thread pool support
-- Added: Better integration with library event loops (libxev, zap)
+**Removed:** `async`, `await`, `suspend`, `resume` keywords, compiler-managed async frames
+**Added:** Enhanced thread pool support, library event loop integration
 
-**Why the Change:**
-1. **Reduced Complexity**: Removed approximately 15,000 lines of complex compiler code
-2. **Increased Flexibility**: Libraries can evolve faster than language features
-3. **Platform Independence**: Allows platform-specific optimizations (io_uring, kqueue, IOCP)
-4. **Explicit Over Implicit**: Aligns with Zig's philosophy of no hidden control flow
+**Rationale:** Reduced 15K lines of compiler complexity, enabled platform-specific optimizations (io_uring, kqueue, IOCP), aligned with "explicit over implicit" philosophy.[^2]
 
-The future of async in Zig is library-based, not language-based.[^2] This chapter focuses on Zig 0.15+ patterns.
+This chapter focuses on Zig 0.15+ library-based patterns.
 
 ---
 

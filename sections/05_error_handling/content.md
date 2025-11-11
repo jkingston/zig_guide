@@ -1,5 +1,14 @@
 # Error Handling & Resource Cleanup
 
+> **TL;DR for experienced developers:**
+> - **Error unions:** `!T` syntax (e.g., `![]u8` = could return error or slice)
+> - **Propagate errors:** `try operation()` (unwraps or returns error to caller)
+> - **Handle errors:** `operation() catch |err| { ... }` or `catch default_value`
+> - **Cleanup:** `defer cleanup()` runs at scope exit (LIFO order)
+> - **Error-only cleanup:** `errdefer cleanup()` runs only if function returns error
+> - **Definitive resource cleanup chapter** - other chapters reference this
+> - **Jump to:** [Error sets §5.2](#error-sets-and-error-unions) | [try/catch §5.3](#error-propagation-with-try-and-catch) | [defer/errdefer §5.4](#resource-cleanup-with-defer)
+
 ## Overview
 
 Zig approaches error handling and resource cleanup as inseparable concerns. Unlike languages that hide errors behind exceptions or implicit memory management, Zig makes failure modes explicit through compile-time verified error sets and provides deterministic cleanup through `defer` and `errdefer` statements.[^1] This design eliminates entire classes of bugs: uncaught exceptions become compile errors, resource leaks are visible in code review, and error paths are testable like any other code path.
@@ -957,14 +966,27 @@ TigerBeetle's TIGER_STYLE.md establishes foundational error handling principles 
 
 Research on production failures found that 92% of catastrophic system failures result from incorrect handling of explicitly signaled errors.[^2] TigerBeetle mandates that all errors must be handled — no silent failures.
 
-**Assertions vs Errors**
+**Error Handling Strategies**
 
-TigerBeetle distinguishes between two failure classes:
+Zig provides multiple mechanisms for handling failures, each with specific use cases:
+
+| Mechanism | When to Use | Recoverable? | Production Behavior | Example |
+|-----------|-------------|--------------|---------------------|---------|
+| **Error unions (`!T`)** | Operating errors (I/O, allocation) | ✅ Yes | Propagate to caller | `!File`, `try openFile()` |
+| **`try`** | Propagate error to caller | ✅ Yes | Returns error | `try doOperation()` |
+| **`catch`** | Handle or provide default | ✅ Yes | Executes recovery code | `readFile() catch null` |
+| **`std.debug.assert()`** | Programmer errors (bugs) | ❌ No | Panic in Debug, no-op in Release* | `assert(index < len)` |
+| **`@panic()`** | Unrecoverable errors | ❌ No | Always panics | `@panic("corruption")` |
+| **`unreachable`** | Proven-impossible paths | ❌ No | Undefined in Release* | `else => unreachable` |
+
+**\*** ReleaseSafe/Debug panic, ReleaseFast/ReleaseSmall may optimize out checks (undefined behavior if reached).
+
+**TigerBeetle's failure classes:**
 
 - **Assertions** — Detect programmer errors (bugs). Must crash immediately with `std.debug.assert`.
 - **Errors** — Handle operating errors (expected failures). Must be handled gracefully.
 
-Example from TigerBeetle:
+Example:
 
 ```zig
 // Assertion - programmer error, must never happen

@@ -1,5 +1,13 @@
 # Build System (build.zig)
 
+> **TL;DR for build.zig:**
+> - **Entry point:** `pub fn build(b: *std.Build) void` (runs at build time)
+> - **0.15 breaking:** Must use `root_module` with `b.createModule()`, not `root_source_file`
+> - **Common artifacts:** `b.addExecutable()`, `b.addStaticLibrary()`, `b.addTest()`
+> - **Cross-compile:** `zig build -Dtarget=aarch64-linux` (any target from any host)
+> - **Dependencies:** Managed via `build.zig.zon` (fetch from Git/HTTP)
+> - **Jump to:** [Basic structure §7.2](#build-function-entry-point) | [Modules §7.3](#module-system-015) | [Dependencies §7.5](#dependencies-and-packages)
+
 ## Overview
 
 The Zig build system provides deterministic, cross-platform project configuration through executable Zig code. Unlike declarative build tools (Make, CMake) or DSL-based systems (Gradle, Bazel), `build.zig` is a Zig program that runs at build time, compiling artifacts, running tests, and orchestrating multi-step build processes.
@@ -44,17 +52,26 @@ The build function runs every time you invoke `zig build`, configuring what gets
 
 Zig supports cross-compilation from any platform to any target. The build system exposes this through target queries and optimization modes:
 
-**Targets:**
-- `native` — Current machine's architecture and OS
-- `x86_64-linux-gnu` — Specific triple (arch-os-abi)
-- `aarch64-macos` — Apple Silicon macOS
-- `wasm32-wasi` — WebAssembly with WASI
+**Common targets** (format: `arch-os-abi`):
+
+| Target | Architecture | OS | ABI | Use Case |
+|--------|--------------|----|----|----------|
+| `native` | Current machine | Auto-detected | Auto | Development builds |
+| `x86_64-linux-gnu` | x86_64 | Linux | GNU libc | Linux servers, desktop |
+| `x86_64-linux-musl` | x86_64 | Linux | musl libc | Static Linux binaries |
+| `aarch64-macos` | ARM64 | macOS | none | Apple Silicon Macs |
+| `x86_64-windows` | x86_64 | Windows | none | Windows desktop |
+| `wasm32-wasi` | WebAssembly | WASI | none | Server-side WASM |
+| `wasm32-freestanding` | WebAssembly | None | none | Browser WASM |
 
 **Optimization modes:**
-- `Debug` — No optimizations, safety checks enabled, debug info
-- `ReleaseSafe` — Optimizations enabled, safety checks retained
-- `ReleaseFast` — Maximum speed, safety checks disabled
-- `ReleaseSmall` — Optimize for binary size
+
+| Mode | Optimizations | Safety Checks | Debug Info | Best For | Binary Size | Production Use |
+|------|---------------|---------------|------------|----------|-------------|----------------|
+| `Debug` | None | ✅ Enabled | ✅ Full | Development, debugging | Largest | Dev only |
+| `ReleaseSafe` | ✅ -O3 | ✅ Enabled | Minimal | Production (recommended) | Medium | ZLS, Ghostty |
+| `ReleaseFast` | ✅ -O3 | ❌ Disabled | None | Performance-critical | Medium | TigerBeetle |
+| `ReleaseSmall` | ✅ -Os | ❌ Disabled | None | Embedded, WASM | Smallest | Embedded systems |
 
 Users specify targets at build time:
 

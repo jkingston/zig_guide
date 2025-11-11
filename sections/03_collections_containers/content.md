@@ -1,8 +1,16 @@
 # Collections & Containers
 
+> **TL;DR for Zig collections:**
+> - **0.15 default:** `ArrayList(T)` is unmanaged (pass allocator to methods)
+> - **Managed variant:** `ArrayListManaged(T)` stores allocator (simpler API, +8 bytes overhead)
+> - **Common types:** ArrayList, HashMap, AutoHashMap, StringHashMap
+> - **Always:** Call `.deinit(allocator)` to free memory
+> - **See [comparison table](#managed-vs-unmanaged-containers) below**
+> - **Jump to:** [ArrayList §3.3](#arraylist) | [HashMap §3.4](#hashmap-and-variants) | [Iteration §3.5](#iteration-patterns)
+
 ## Overview
 
-Zig's standard library provides dynamic collection types that integrate with the explicit allocator model covered in Chapter 3. This chapter examines container types including ArrayList, HashMap, and their variants, focusing on the distinction between managed and unmanaged containers, ownership semantics, and cleanup responsibilities.
+Zig's standard library provides dynamic collection types that integrate with the explicit allocator model (see Ch2). This chapter examines container types including ArrayList, HashMap, and their variants, focusing on the distinction between managed and unmanaged containers, ownership semantics, and cleanup responsibilities.
 
 Understanding container ownership is critical for correct memory management. Unlike languages with garbage collection or implicit resource management, Zig requires developers to explicitly handle container lifecycles. The choice between managed and unmanaged containers affects memory overhead, API clarity, and program correctness.
 
@@ -12,33 +20,29 @@ As of Zig 0.15, the standard library has shifted toward unmanaged containers as 
 
 ### Managed vs Unmanaged Containers
 
-Zig containers exist in two variants that differ in how they handle allocator storage and memory management.
-
-**Managed containers** store an allocator as a struct field. Methods use this stored allocator implicitly. Prior to Zig 0.15, `std.ArrayList(T)` defaulted to this managed variant. The managed pattern provides a simpler API at the cost of increased memory usage per container instance.
-
-**Unmanaged containers** do not store an allocator. Instead, methods that require allocation accept an allocator parameter explicitly. As of Zig 0.15, `std.ArrayList(T)` defaults to the unmanaged variant.[^1] This pattern reduces memory overhead and makes allocation sites visible in the code.
-
-The memory difference is measurable. On 64-bit systems, each managed container stores an 8-byte allocator pointer. For data structures containing many containers, this overhead accumulates. A struct with ten ArrayLists saves 80 bytes by using unmanaged variants.
-
-Consider a simple comparison:
+| Aspect | Managed (🕐 0.14 default) | Unmanaged (✅ 0.15+ default) |
+|--------|---------------------------|------------------------------|
+| **Allocator storage** | Stored in struct field (+8 bytes/container) | Not stored (passed as parameter) |
+| **API example** | `list.append(item)` | `list.append(allocator, item)` |
+| **Allocation visibility** | Hidden in method | Explicit in call site |
+| **Memory overhead** | 8 bytes per container (64-bit) | Zero overhead |
+| **Use case** | Single containers, simpler API | Structs with many containers |
+| **Type name** | `std.ArrayListManaged(T)` (explicit) | `std.ArrayList(T)` (default in 0.15+) |
+| **10 containers cost** | +80 bytes | +0 bytes |
 
 ```zig
-const std = @import("std");
+// 🕐 0.14.x: Managed (old default)
+var list = std.ArrayList(u8).init(allocator);  // Stores allocator
+try list.append('x');  // Uses stored allocator
+defer list.deinit();
 
-// 🕐 0.14.x - Managed (default)
-const ManagedList = struct {
-    data: std.ArrayList(u32),
-};
-
-// ✅ 0.15+ - Unmanaged (new default)
-const UnmanagedList = struct {
-    data: std.ArrayList(u32),
-};
+// ✅ 0.15+: Unmanaged (new default)
+var list = std.ArrayList(u8){};  // No stored allocator
+try list.append(allocator, 'x');  // Pass allocator explicitly
+defer list.deinit(allocator);
 ```
 
-In Zig 0.14.x, `ManagedList.data` internally stores an allocator field. In Zig 0.15+, `UnmanagedList.data` does not store an allocator, requiring explicit passing to methods like `append()` and `deinit()`.
-
-The shift to unmanaged defaults reflects community consensus that explicit allocator passing improves code clarity.[^2] When a method signature includes an allocator parameter, readers immediately know that allocation may occur. With managed containers, allocation is hidden inside the method implementation.
+**Why the change:** Explicit allocator parameters make allocation sites visible and reduce memory overhead. For data structures with many containers, the savings are significant.[^1][^2]
 
 ### Container Type Taxonomy
 

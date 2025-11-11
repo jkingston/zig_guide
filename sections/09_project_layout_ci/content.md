@@ -1,5 +1,13 @@
 # Project Layout, Cross-Compilation & CI
 
+> **TL;DR for project setup:**
+> - **Standard layout:** `src/` (source), `build.zig` (build script), `build.zig.zon` (deps)
+> - **Cross-compile:** `zig build -Dtarget=aarch64-linux` (any target from any host)
+> - **CI setup:** GitHub Actions with `zig build test` + cross-platform matrix builds
+> - **Common targets:** x86_64-linux, x86_64-windows, aarch64-macos, wasm32-freestanding
+> - **No separate toolchains needed** - Zig includes everything (libc for all platforms)
+> - **Jump to:** [Layout §9.2](#standard-project-structure) | [Cross-compile §9.4](#cross-compilation) | [CI examples §9.6](#continuous-integration)
+
 ## Overview
 
 Zig provides first-class support for cross-compilation, standardized project organization, and deterministic builds. These capabilities enable shipping software across platforms, architectures, and operating systems from a single build host. Unlike traditional toolchains that require separate compilers and SDKs per target, Zig bundles complete cross-compilation support into the compiler itself.[^1]

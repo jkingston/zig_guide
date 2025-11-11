@@ -1,5 +1,13 @@
 # Packages & Dependencies (build.zig.zon)
 
+> **TL;DR for Zig dependencies:**
+> - **Manifest:** `build.zig.zon` defines deps with URL + hash (no separate lock file)
+> - **Fetch:** `zig fetch --save https://github.com/user/pkg/archive/v1.0.tar.gz` adds dependency
+> - **Use:** `b.dependency("pkg_name", .{})` in build.zig, then `@import("pkg_name")` in code
+> - **Security:** Content-addressed with SHA-256 verification (prevents supply-chain attacks)
+> - **Cache:** Global at `~/.cache/zig` (shared across all projects)
+> - **Jump to:** [build.zig.zon §8.2](#buildzigzon-structure) | [Fetch workflow §8.3](#zig-fetch-workflow) | [Publishing §8.6](#publishing-packages)
+
 ## Overview
 
 Zig's package system uses content-addressed dependencies with cryptographic hash verification, eliminating an entire class of supply-chain attacks common in other ecosystems. Unlike npm (package-lock.json), Cargo (Cargo.lock), or Go modules (go.sum), Zig uses a single `build.zig.zon` manifest without separate lock files. Dependencies are resolved deterministically at build time, cached globally by hash, and accessed through a uniform API.
@@ -183,14 +191,20 @@ Development often requires local dependencies before publishing:
 }
 ```
 
-Local dependencies:
+**Comparison: URL vs Path Dependencies**
 
-- No URL or hash required
-- Changes reflected immediately (no cache invalidation needed)
-- Useful for monorepos or in-development libraries
-- Can be converted to remote dependencies when ready to publish
+| Aspect | URL Dependencies | Path Dependencies |
+|--------|------------------|-------------------|
+| **Declaration** | `.url` + `.hash` required | `.path` only (relative to build.zig.zon) |
+| **Cache behavior** | Cached in `~/.cache/zig` by hash | No caching, always uses local files |
+| **Change detection** | Hash must change to update | Changes reflected immediately |
+| **Hash requirement** | ✅ Required (SHA-256) | ❌ Not needed |
+| **Best for** | Published packages, production deps | Monorepos, in-development libraries |
+| **Lazy loading** | `.lazy = true` supported | `.lazy = true` supported |
+| **Conversion** | Can't change to path without hash removal | Can convert to URL when publishing |
+| **Example** | `{.url = "...", .hash = "..."}` | `{.path = "./lib"}` |
 
-Path dependencies can also be `.lazy = true` for conditional loading.[^6]
+Both URL and path dependencies can be marked `.lazy = true` for conditional loading.[^6]
 
 ### Fingerprint Field
 
