@@ -11,3 +11,7 @@ zig-out/
 
 # mdBook build output
 /book/
+
+# Script outputs
+code_blocks_analysis.json
+code_block_report.txt
