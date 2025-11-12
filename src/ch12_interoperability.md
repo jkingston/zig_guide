@@ -2481,27 +2481,27 @@ The zero-overhead nature of Zig's FFI—combined with compile-time safety checks
 
 1. [Zig Language Reference 0.15.2 - @cImport](https://ziglang.org/documentation/0.15.2/#cImport)
 2. [Zig Language Reference 0.15.2 - Build System](https://ziglang.org/documentation/0.15.2/#Build-System)
-3. [Ghostty harfbuzz C imports](https://github.com/ghostty-org/ghostty/blob/main/pkg/harfbuzz/c.zig)
+3. [Ghostty harfbuzz C imports](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/pkg/harfbuzz/c.zig)
 4. [Zig Language Reference 0.15.2 - extern and export](https://ziglang.org/documentation/0.15.2/#extern)
-5. [Zig stdlib std/c.zig weak linkage](https://github.com/ziglang/zig/blob/master/lib/std/c.zig#L41-L47)
+5. [Zig stdlib std/c.zig weak linkage](https://github.com/ziglang/zig/blob/0.15.2/lib/std/c.zig#L41-L47)
 6. [Zig Language Reference 0.15.2 - C Type Primitives](https://ziglang.org/documentation/0.15.2/#C-Type-Primitives)
-7. [Zig stdlib std/c.zig type definitions](https://github.com/ziglang/zig/blob/master/lib/std/c.zig#L74-L141)
-8. [Ghostty build.zig](https://github.com/ghostty-org/ghostty/blob/main/build.zig)
+7. [Zig stdlib std/c.zig type definitions](https://github.com/ziglang/zig/blob/0.15.2/lib/std/c.zig#L74-L141)
+8. [Ghostty build.zig](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig)
 9. [Bun GitHub Repository](https://github.com/oven-sh/bun)
 10. [Zig Language Reference 0.15.2 - WebAssembly](https://ziglang.org/documentation/0.15.2/#WebAssembly)
 11. [MDN WebAssembly Memory](https://developer.mozilla.org/en-US/docs/WebAssembly/JavaScript_interface/Memory)
 12. [WASI Specification](https://github.com/WebAssembly/WASI)
-13. [Zig stdlib std/os/wasi.zig](https://github.com/ziglang/zig/blob/master/lib/std/os/wasi.zig)
-14. [Ghostty passwd.zig](https://github.com/ghostty-org/ghostty/blob/main/src/os/passwd.zig)
-15. [TigerBeetle C client exports](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/clients/c/tb_client_exports.zig)
-16. [TigerBeetle tb_client_exports.zig opaque types](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/clients/c/tb_client_exports.zig#L10-L22)
-17. [Zig stdlib std/c.zig platform types](https://github.com/ziglang/zig/blob/master/lib/std/c.zig#L74-L234)
+13. [Zig stdlib std/os/wasi.zig](https://github.com/ziglang/zig/blob/0.15.2/lib/std/os/wasi.zig)
+14. [Ghostty passwd.zig](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/os/passwd.zig)
+15. [TigerBeetle C client exports](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client_exports.zig)
+16. [TigerBeetle tb_client_exports.zig opaque types](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client_exports.zig#L10-L22)
+17. [Zig stdlib std/c.zig platform types](https://github.com/ziglang/zig/blob/0.15.2/lib/std/c.zig#L74-L234)
 18. [Zig Language Reference 0.15.2](https://ziglang.org/documentation/0.15.2/)
 19. [Zig Standard Library Reference](https://ziglang.org/documentation/0.15.2/std)
 20. [Zig Build System Guide](https://zig.guide/build-system/)
 21. [WebAssembly Specification](https://webassembly.github.io/spec/)
 22. [Wasmtime Documentation](https://docs.wasmtime.dev/)
-23. [WASI Tutorial](https://github.com/bytecodealliance/wasmtime/blob/main/docs/WASI-tutorial.md)
+23. [WASI Tutorial](https://github.com/bytecodealliance/wasmtime/blob/1fcd0933144436a959b261abf4d9234d42db29e4/docs/WASI-tutorial.md)
 24. [C ABI Compatibility - Itanium C++ ABI](https://itanium-cxx-abi.github.io/cxx-abi/)
 25. [SQLite C API](https://www.sqlite.org/c3ref/intro.html)
 26. [Zig stdlib std/fs](https://ziglang.org/documentation/0.15.2/std/#std.fs)
@@ -2514,17 +2514,17 @@ The zero-overhead nature of Zig's FFI—combined with compile-time safety checks
 
 [^1]: https://ziglang.org/documentation/0.15.2/#cImport
 [^2]: https://ziglang.org/documentation/0.15.2/#Build-System
-[^3]: https://github.com/ghostty-org/ghostty/blob/main/pkg/harfbuzz/c.zig
+[^3]: https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/pkg/harfbuzz/c.zig
 [^4]: https://ziglang.org/documentation/0.15.2/#extern
-[^5]: https://github.com/ziglang/zig/blob/master/lib/std/c.zig#L41-L47
+[^5]: https://github.com/ziglang/zig/blob/0.15.2/lib/std/c.zig#L41-L47
 [^6]: https://ziglang.org/documentation/0.15.2/#C-Type-Primitives
-[^7]: https://github.com/ziglang/zig/blob/master/lib/std/c.zig#L74-L141
-[^8]: https://github.com/ghostty-org/ghostty/blob/main/build.zig
+[^7]: https://github.com/ziglang/zig/blob/0.15.2/lib/std/c.zig#L74-L141
+[^8]: https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig
 [^9]: https://github.com/oven-sh/bun
 [^10]: https://ziglang.org/documentation/0.15.2/#WebAssembly
 [^11]: https://developer.mozilla.org/en-US/docs/WebAssembly/JavaScript_interface/Memory
 [^12]: https://github.com/WebAssembly/WASI
-[^13]: https://github.com/ziglang/zig/blob/master/lib/std/os/wasi.zig
-[^14]: https://github.com/ghostty-org/ghostty/blob/main/src/os/passwd.zig
-[^15]: https://github.com/tigerbeetle/tigerbeetle/blob/main/src/clients/c/tb_client_exports.zig
+[^13]: https://github.com/ziglang/zig/blob/0.15.2/lib/std/os/wasi.zig
+[^14]: https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/os/passwd.zig
+[^15]: https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client_exports.zig
 [^16]: https://github.com/michal-z/zig-gamedev - C++ library integration patterns (ImGui, PhysX, WebGPU)

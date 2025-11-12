@@ -170,7 +170,7 @@ const cpu_count = try std.Thread.getCpuCount();
 std.debug.print("CPU cores: {d}\n", .{cpu_count});
 ```
 
-Full implementation available at: [lib/std/Thread.zig](https://github.com/ziglang/zig/blob/master/lib/std/Thread.zig)
+Full implementation available at: [lib/std/Thread.zig](https://github.com/ziglang/zig/blob/0.15.2/lib/std/Thread.zig)
 
 ### Synchronization Primitives
 
@@ -262,7 +262,7 @@ pub fn submit(client: *ClientInterface, packet: *Packet.Extern) Error!void {
 }
 ```
 
-Source: [TigerBeetle context.zig:62-126](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/clients/c/tb_client/context.zig#L62-L126)
+Source: [TigerBeetle context.zig:62-126](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client/context.zig#L62-L126)
 
 #### std.Thread.RwLock
 
@@ -341,7 +341,7 @@ const DocumentStore = struct {
 };
 ```
 
-Source: [ZLS DocumentStore.zig:20-36](https://github.com/zigtools/zls/blob/master/src/DocumentStore.zig#L20-L36)
+Source: [ZLS DocumentStore.zig:20-36](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/DocumentStore.zig#L20-L36)
 
 **When to Use RwLock vs Mutex:**
 
@@ -538,7 +538,7 @@ sync = @bitCast(self.sync.cmpxchgWeak(
 ) orelse { ... });
 ```
 
-Source: [Bun ThreadPool.zig:374-379](https://github.com/oven-sh/bun/blob/main/src/threading/ThreadPool.zig#L374-L379)
+Source: [Bun ThreadPool.zig:374-379](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig#L374-L379)
 
 **Production Example from TigerBeetle:**
 
@@ -567,7 +567,7 @@ pub fn notify(self: *Signal) void {
 }
 ```
 
-Source: [TigerBeetle signal.zig:87-107](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/clients/c/tb_client/signal.zig#L87-L107)
+Source: [TigerBeetle signal.zig:87-107](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client/signal.zig#L87-L107)
 
 **Best Practices:**
 
@@ -646,7 +646,7 @@ pool.waitAndWork(&wait_group);
 std.debug.print("Final count: {d}\n", .{counter.load(.monotonic)});
 ```
 
-Full implementation: [lib/std/Thread/Pool.zig](https://github.com/ziglang/zig/blob/master/lib/std/Thread/Pool.zig)
+Full implementation: [lib/std/Thread/Pool.zig](https://github.com/ziglang/zig/blob/0.15.2/lib/std/Thread/Pool.zig)
 
 #### Production Thread Pool: Bun's Work-Stealing Design
 
@@ -736,7 +736,7 @@ pub fn pop(self: *Thread, thread_pool: *ThreadPool) ?Node.Buffer.Stole {
 }
 ```
 
-Source: [Bun ThreadPool.zig:600-644](https://github.com/oven-sh/bun/blob/main/src/threading/ThreadPool.zig#L600-L644)
+Source: [Bun ThreadPool.zig:600-644](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig#L600-L644)
 
 **Parallel Iteration Helper:**
 
@@ -766,7 +766,7 @@ var ctx = Context{};
 try thread_pool.each(allocator, &ctx, Context.process, items);
 ```
 
-Source: [Bun ThreadPool.zig:156-229](https://github.com/oven-sh/bun/blob/main/src/threading/ThreadPool.zig#L156-L229)
+Source: [Bun ThreadPool.zig:156-229](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig#L156-L229)
 
 **Global Singleton Pattern:**
 
@@ -795,7 +795,7 @@ pub const WorkPool = struct {
 };
 ```
 
-Source: [Bun work_pool.zig:4-30](https://github.com/oven-sh/bun/blob/main/src/work_pool.zig#L4-L30)
+Source: [Bun work_pool.zig:4-30](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/work_pool.zig#L4-L30)
 
 Original design: [kprotty/zap thread_pool.zig](https://github.com/kprotty/zap/blob/blog/src/thread_pool.zig)
 
@@ -1556,12 +1556,12 @@ This section links to production concurrency patterns in real-world Zig projects
 **Key Patterns:**
 
 1. **Thread-Safe Client Interface with Locker**[^4]
-   - File: [context.zig:62-126](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/clients/c/tb_client/context.zig#L62-L126)
+   - File: [context.zig:62-126](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client/context.zig#L62-L126)
    - Pattern: Mutex-protected extern struct for FFI boundary
    - Uses `defer` for automatic unlock
 
 2. **Atomic State Machine for Cross-Thread Signaling**[^8]
-   - File: [signal.zig:87-107](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/clients/c/tb_client/signal.zig#L87-L107)
+   - File: [signal.zig:87-107](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client/signal.zig#L87-L107)
    - Pattern: Lock-free notification using atomic enum
    - Memory ordering: `.release` for publish, `.acquire` for reload
 
@@ -1579,18 +1579,18 @@ This section links to production concurrency patterns in real-world Zig projects
 **Key Patterns:**
 
 1. **Work-Stealing Thread Pool**[^9]
-   - File: [ThreadPool.zig:1-1055](https://github.com/oven-sh/bun/blob/main/src/threading/ThreadPool.zig)
-   - Lines: [600-644](https://github.com/oven-sh/bun/blob/main/src/threading/ThreadPool.zig#L600-L644) (work stealing algorithm)
+   - File: [ThreadPool.zig:1-1055](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig)
+   - Lines: [600-644](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig#L600-L644) (work stealing algorithm)
    - Derived from: [kprotty/zap](https://github.com/kprotty/zap/blob/blog/src/thread_pool.zig)
    - Pattern: MPMC global queue + SPMC per-thread queues + work stealing
 
 2. **Lock-Free Ring Buffer**
-   - File: [ThreadPool.zig:849-1042](https://github.com/oven-sh/bun/blob/main/src/threading/ThreadPool.zig#L849-L1042)
+   - File: [ThreadPool.zig:849-1042](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig#L849-L1042)
    - Pattern: Bounded lock-free queue with atomic head/tail
    - Capacity: 256 tasks per buffer
 
 3. **Thread Pool Singleton**[^12]
-   - File: [work_pool.zig:4-30](https://github.com/oven-sh/bun/blob/main/src/work_pool.zig#L4-L30)
+   - File: [work_pool.zig:4-30](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/work_pool.zig#L4-L30)
    - Pattern: Lazy initialization with `bun.once()`
 
 **Architectural Notes:**
@@ -1607,7 +1607,7 @@ This section links to production concurrency patterns in real-world Zig projects
 **Key Patterns:**
 
 1. **RwLock for Document Store**[^5]
-   - File: [DocumentStore.zig:20-36](https://github.com/zigtools/zls/blob/master/src/DocumentStore.zig#L20-L36)
+   - File: [DocumentStore.zig:20-36](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/DocumentStore.zig#L20-L36)
    - Pattern: Reader-writer lock protecting document handles map
    - Use case: Many concurrent reads (autocomplete), rare writes (file changes)
 
@@ -1620,7 +1620,7 @@ This section links to production concurrency patterns in real-world Zig projects
    - Prevents shutdown until builds complete
 
 4. **Tracy Integration**[^15]
-   - File: [tracy.zig:1-50](https://github.com/zigtools/zls/blob/master/src/tracy.zig)
+   - File: [tracy.zig:1-50](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/tracy.zig)
    - Pattern: Conditional compilation for performance profiling
 
 **Architectural Notes:**
@@ -1910,18 +1910,18 @@ pub fn tryLock(objs: *@This()) bool {
    - Track module dependencies with atomic refcounts
    - Safe concurrent access to shared AST nodes
 
-Source: [main.zig](https://github.com/ziglang/zig/blob/master/src/main.zig)
+Source: [main.zig](https://github.com/ziglang/zig/blob/0.15.2/src/main.zig)
 
 ### Production Patterns Summary
 
 | Project | Concurrency Model | Key Pattern | Deep Link |
 |---------|-------------------|-------------|-----------|
-| TigerBeetle | Single-thread + thread-safe API | Atomic state machine | [signal.zig:87-107](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/clients/c/tb_client/signal.zig#L87-L107) |
-| Bun | Work-stealing thread pool | Lock-free ring buffer | [ThreadPool.zig:849-1042](https://github.com/oven-sh/bun/blob/main/src/threading/ThreadPool.zig#L849-L1042) |
-| ZLS | Thread pool + RwLock | Reader-writer document store | [DocumentStore.zig:20-36](https://github.com/zigtools/zls/blob/master/src/DocumentStore.zig#L20-L36) |
+| TigerBeetle | Single-thread + thread-safe API | Atomic state machine | [signal.zig:87-107](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client/signal.zig#L87-L107) |
+| Bun | Work-stealing thread pool | Lock-free ring buffer | [ThreadPool.zig:849-1042](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig#L849-L1042) |
+| ZLS | Thread pool + RwLock | Reader-writer document store | [DocumentStore.zig:20-36](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/DocumentStore.zig#L20-L36) |
 | Ghostty | Multi-loop libxev | Per-thread event loops | [ghostty repository](https://github.com/ghostty-org/ghostty) |
 | zap | Event loop + worker pool | Connection pooling + zero-copy parsing | [zap repository](https://github.com/zigzap/zap) |
-| Zig Compiler | Parallel compilation | WaitGroup coordination | [main.zig](https://github.com/ziglang/zig/blob/master/src/main.zig) |
+| Zig Compiler | Parallel compilation | WaitGroup coordination | [main.zig](https://github.com/ziglang/zig/blob/0.15.2/src/main.zig) |
 
 ---
 
@@ -1968,43 +1968,43 @@ Zig's concurrency model rewards careful design but provides the tools for buildi
 
 [^2]: [Zig Language Reference 0.15.2](https://ziglang.org/documentation/0.15.2/)
 
-[^3]: [std.Thread.Mutex Implementation](https://github.com/ziglang/zig/blob/master/lib/std/Thread/Mutex.zig)
+[^3]: [std.Thread.Mutex Implementation](https://github.com/ziglang/zig/blob/0.15.2/lib/std/Thread/Mutex.zig)
 
-[^4]: [TigerBeetle context.zig (Locker implementation)](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/clients/c/tb_client/context.zig#L62-L126)
+[^4]: [TigerBeetle context.zig (Locker implementation)](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client/context.zig#L62-L126)
 
-[^5]: [ZLS DocumentStore.zig (RwLock usage)](https://github.com/zigtools/zls/blob/master/src/DocumentStore.zig#L20-L36)
+[^5]: [ZLS DocumentStore.zig (RwLock usage)](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/DocumentStore.zig#L20-L36)
 
-[^6]: [std.atomic.Value Implementation](https://github.com/ziglang/zig/blob/master/lib/std/atomic.zig)
+[^6]: [std.atomic.Value Implementation](https://github.com/ziglang/zig/blob/0.15.2/lib/std/atomic.zig)
 
-[^7]: [Bun ThreadPool.zig (Atomic CAS)](https://github.com/oven-sh/bun/blob/main/src/threading/ThreadPool.zig#L374-L379)
+[^7]: [Bun ThreadPool.zig (Atomic CAS)](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig#L374-L379)
 
-[^8]: [TigerBeetle signal.zig (Atomic state machine)](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/clients/c/tb_client/signal.zig#L87-L107)
+[^8]: [TigerBeetle signal.zig (Atomic state machine)](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client/signal.zig#L87-L107)
 
-[^9]: [Bun ThreadPool.zig (Full implementation)](https://github.com/oven-sh/bun/blob/main/src/threading/ThreadPool.zig)
+[^9]: [Bun ThreadPool.zig (Full implementation)](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig)
 
-[^10]: [Bun ThreadPool.zig (Work stealing algorithm)](https://github.com/oven-sh/bun/blob/main/src/threading/ThreadPool.zig#L600-L644)
+[^10]: [Bun ThreadPool.zig (Work stealing algorithm)](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig#L600-L644)
 
-[^11]: [Bun ThreadPool.zig (Parallel iteration)](https://github.com/oven-sh/bun/blob/main/src/threading/ThreadPool.zig#L156-L229)
+[^11]: [Bun ThreadPool.zig (Parallel iteration)](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig#L156-L229)
 
-[^12]: [Bun work_pool.zig (Singleton pattern)](https://github.com/oven-sh/bun/blob/main/src/work_pool.zig#L4-L30)
+[^12]: [Bun work_pool.zig (Singleton pattern)](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/work_pool.zig#L4-L30)
 
 [^13]: [libxev GitHub Repository](https://github.com/mitchellh/libxev)
 
 [^14]: [Ghostty GitHub Repository](https://github.com/ghostty-org/ghostty)
 
-[^15]: [ZLS tracy.zig (Profiling integration)](https://github.com/zigtools/zls/blob/master/src/tracy.zig)
-[^mach_mpsc1]: [Mach Source: Lock-Free MPSC Queue](https://github.com/hexops/mach/blob/main/src/mpsc.zig#L163-L213) - Multi-producer single-consumer queue with atomic operations
-[^mach_mpsc2]: [Mach Source: Lock-Free Node Pool](https://github.com/hexops/mach/blob/main/src/mpsc.zig#L18-L160) - Atomic node allocation with compare-and-swap
-[^mach_mpsc3]: [Mach Source: MPSC Pop with Race Handling](https://github.com/hexops/mach/blob/main/src/mpsc.zig#L216-L298) - Single consumer dequeue handling concurrent modifications
-[^mach_core]: [Mach Source: ResetEvent for OOM Signaling](https://github.com/hexops/mach/blob/main/src/Core.zig#L120) - Cross-thread signaling without spinning
-[^mach_objects]: [Mach Source: Mutex for ECS Operations](https://github.com/hexops/mach/blob/main/src/module.zig#L41-L43) - Coarse-grained locking for entity operations
+[^15]: [ZLS tracy.zig (Profiling integration)](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/tracy.zig)
+[^mach_mpsc1]: [Mach Source: Lock-Free MPSC Queue](https://github.com/hexops/mach/blob/8ef4227770880f69300e475c7c65f0ba1f2604a5/src/mpsc.zig#L163-L213) - Multi-producer single-consumer queue with atomic operations
+[^mach_mpsc2]: [Mach Source: Lock-Free Node Pool](https://github.com/hexops/mach/blob/8ef4227770880f69300e475c7c65f0ba1f2604a5/src/mpsc.zig#L18-L160) - Atomic node allocation with compare-and-swap
+[^mach_mpsc3]: [Mach Source: MPSC Pop with Race Handling](https://github.com/hexops/mach/blob/8ef4227770880f69300e475c7c65f0ba1f2604a5/src/mpsc.zig#L216-L298) - Single consumer dequeue handling concurrent modifications
+[^mach_core]: [Mach Source: ResetEvent for OOM Signaling](https://github.com/hexops/mach/blob/8ef4227770880f69300e475c7c65f0ba1f2604a5/src/Core.zig#L120) - Cross-thread signaling without spinning
+[^mach_objects]: [Mach Source: Mutex for ECS Operations](https://github.com/hexops/mach/blob/8ef4227770880f69300e475c7c65f0ba1f2604a5/src/module.zig#L41-L43) - Coarse-grained locking for entity operations
 
 ### Additional Resources
 
 **Official Documentation:**
 - [Zig Language Reference: Threads](https://ziglang.org/documentation/master/#Threads)
-- [Zig Standard Library: std.Thread](https://github.com/ziglang/zig/blob/master/lib/std/Thread.zig)
-- [Zig Standard Library: std.atomic](https://github.com/ziglang/zig/blob/master/lib/std/atomic.zig)
+- [Zig Standard Library: std.Thread](https://github.com/ziglang/zig/blob/0.15.2/lib/std/Thread.zig)
+- [Zig Standard Library: std.atomic](https://github.com/ziglang/zig/blob/0.15.2/lib/std/atomic.zig)
 
 **Libraries:**
 - [libxev: Event Loop for Zig](https://github.com/mitchellh/libxev)
@@ -2025,5 +2025,5 @@ Zig's concurrency model rewards careful design but provides the tools for buildi
 - [ThreadSanitizer (TSan)](https://github.com/google/sanitizers)
 
 **Benchmark Code:**
-- [std.crypto.benchmark](https://github.com/ziglang/zig/blob/master/lib/std/crypto/benchmark.zig)
-- [std.hash.benchmark](https://github.com/ziglang/zig/blob/master/lib/std/hash/benchmark.zig)
+- [std.crypto.benchmark](https://github.com/ziglang/zig/blob/0.15.2/lib/std/crypto/benchmark.zig)
+- [std.hash.benchmark](https://github.com/ziglang/zig/blob/0.15.2/lib/std/hash/benchmark.zig)

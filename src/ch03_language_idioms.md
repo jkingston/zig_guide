@@ -556,7 +556,7 @@ fn prepare(self: *Self, op: Operation) !void {
 }
 ```
 
-View source: [vsr.zig](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/vsr.zig)
+View source: [vsr.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/vsr.zig)
 
 ### Ghostty: Conditional Compilation
 
@@ -573,7 +573,7 @@ pub fn main() !void {
 }
 ```
 
-View source: [main.zig](https://github.com/ghostty-org/ghostty/blob/main/src/main.zig)
+View source: [main.zig](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/main.zig)
 
 ### Bun: Advanced comptime
 
@@ -590,7 +590,7 @@ const http_methods = ComptimeStringMapWithKeyType(Method, .{
 });
 ```
 
-View source: [comptime_string_map.zig](https://github.com/oven-sh/bun/blob/main/src/bun.js/bindings/comptime_string_map.zig)
+View source: [comptime_string_map.zig](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/bun.js/bindings/comptime_string_map.zig)
 
 ---
 
@@ -617,13 +617,13 @@ These patterns remain stable across Zig 0.14.0, 0.14.1, 0.15.1, and 0.15.2, with
 [^1]: [Zig Programming Language](https://ziglang.org/)
 [^2]: [Zig Language Reference 0.15.2 - Style Guide](https://ziglang.org/documentation/0.15.2/#Style-Guide)
 [^3]: [Zig Language Reference 0.15.2 - Root Source File](https://ziglang.org/documentation/0.15.2/#Root-Source-File)
-[^4]: [TigerBeetle TIGER_STYLE.md](https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md)
+[^4]: [TigerBeetle TIGER_STYLE.md](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md)
 [^5]: [Zig Language Reference 0.15.2 - defer](https://ziglang.org/documentation/0.15.2/#defer)
 [^6]: [Zig Language Reference 0.15.2 - Error Union Type](https://ziglang.org/documentation/0.15.2/#Error-Union-Type)
 [^7]: [Zig Language Reference 0.15.2 - comptime](https://ziglang.org/documentation/0.15.2/#comptime)
 [^8]: [Zig Language Reference 0.15.2 - import](https://ziglang.org/documentation/0.15.2/#import)
 [^9]: [How to organize large projects in Zig](https://stackoverflow.com/questions/78766103/how-to-organize-large-projects-in-zig-language)
 [^10]: [Zig 0.15.1 Release Notes](https://ziglang.org/download/0.15.1/release-notes.html)
-[^11]: [TigerBeetle vsr.zig](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/vsr.zig)
-[^12]: [Ghostty main.zig](https://github.com/ghostty-org/ghostty/blob/main/src/main.zig)
-[^13]: [Bun comptime_string_map.zig](https://github.com/oven-sh/bun/blob/main/src/bun.js/bindings/comptime_string_map.zig)
+[^11]: [TigerBeetle vsr.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/vsr.zig)
+[^12]: [Ghostty main.zig](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/main.zig)
+[^13]: [Bun comptime_string_map.zig](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/bun.js/bindings/comptime_string_map.zig)

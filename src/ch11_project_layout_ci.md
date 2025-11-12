@@ -2095,25 +2095,25 @@ The next iteration of Zig's package ecosystem will introduce official package re
 [^7]: Mach Workspace Structure - https://github.com/hexops/mach
 [^8]: Zig Target Specification - https://github.com/ziglang/zig/blob/0.15.2/lib/std/Target.zig
 [^9]: std.Target.Query API - https://github.com/ziglang/zig/blob/0.15.2/lib/std/Target.zig#L1-L100
-[^10]: TigerBeetle CPU Requirements - https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md#cpu-requirements
+[^10]: TigerBeetle CPU Requirements - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md#cpu-requirements
 [^11]: Zig ABI Specification - https://github.com/ziglang/zig/blob/0.15.2/lib/std/Target.zig#L800-L850
-[^12]: Ghostty Static Linking Strategy - https://github.com/ghostty-org/ghostty/blob/main/build.zig#L1-L50
+[^12]: Ghostty Static Linking Strategy - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig#L1-L50
 [^13]: setup-zig GitHub Action - https://github.com/mlugg/setup-zig
 [^14]: TigerBeetle Custom Zig Download - https://github.com/tigerbeetle/tigerbeetle/tree/main/zig
 [^15]: GitHub Actions Caching Documentation - https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
 [^16]: GitHub Actions Matrix Strategy - https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
-[^17]: ZLS Optimization Settings - https://github.com/zigtools/zls/blob/master/build.zig#L100-L150
-[^18]: ZLS Checksum Generation - https://github.com/zigtools/zls/blob/master/.github/workflows/artifacts.yml#L70-L82
-[^19]: Ghostty Test Workflow - https://github.com/ghostty-org/ghostty/blob/main/.github/workflows/test.yml
-[^20]: ZLS Release Automation - https://github.com/zigtools/zls/blob/master/.github/workflows/artifacts.yml
+[^17]: ZLS Optimization Settings - https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/build.zig#L100-L150
+[^18]: ZLS Checksum Generation - https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/.github/workflows/artifacts.yml#L70-L82
+[^19]: Ghostty Test Workflow - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/.github/workflows/test.yml
+[^20]: ZLS Release Automation - https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/.github/workflows/artifacts.yml
 [^21]: TigerBeetle Monorepo Organization - https://github.com/tigerbeetle/tigerbeetle/tree/main/src/clients
 [^22]: Zig Compiler Repository - https://github.com/ziglang/zig
-[^23]: TigerBeetle Target Resolution - https://github.com/tigerbeetle/tigerbeetle/blob/main/build.zig#L13-L42
-[^24]: TigerBeetle Style Guide - https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md
-[^25]: Ghostty Build Organization - https://github.com/ghostty-org/ghostty/blob/main/build.zig
-[^26]: ZLS Artifacts Workflow - https://github.com/zigtools/zls/blob/master/.github/workflows/artifacts.yml
-[^27]: ZLS Release Preparation Script - https://github.com/zigtools/zls/blob/master/.github/workflows/prepare_release_payload.zig
+[^23]: TigerBeetle Target Resolution - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/build.zig#L13-L42
+[^24]: TigerBeetle Style Guide - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md
+[^25]: Ghostty Build Organization - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig
+[^26]: ZLS Artifacts Workflow - https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/.github/workflows/artifacts.yml
+[^27]: ZLS Release Preparation Script - https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/.github/workflows/prepare_release_payload.zig
 [^28]: zig-bootstrap CI Configuration - https://github.com/ziglang/zig-bootstrap - Official reference for cross-platform CI workflows
-[^29]: Ghostty Release Tag Workflow - https://github.com/ghostty-org/ghostty/blob/main/.github/workflows/release-tag.yml
-[^30]: Mach Build System - https://github.com/hexops/mach/blob/main/build.zig
-[^31]: Bun Build System - https://github.com/oven-sh/bun/blob/main/build.zig
+[^29]: Ghostty Release Tag Workflow - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/.github/workflows/release-tag.yml
+[^30]: Mach Build System - https://github.com/hexops/mach/blob/8ef4227770880f69300e475c7c65f0ba1f2604a5/build.zig
+[^31]: Bun Build System - https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/build.zig

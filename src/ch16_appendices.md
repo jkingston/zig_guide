@@ -988,7 +988,7 @@ This section consolidates 200+ references from all chapters, organized by catego
 - build.zig Guide: https://ziglang.org/learn/build-system/
 
 **Package Management**
-- Package Management Guide: https://github.com/ziglang/zig/blob/master/doc/build.zig.zon.md
+- Package Management Guide: https://github.com/ziglang/zig/blob/0.15.2/doc/build.zig.zon.md
 
 **Release Notes**
 - Zig 0.11 Release Notes: https://ziglang.org/download/0.11.0/release-notes.html
@@ -1000,7 +1000,7 @@ This section consolidates 200+ references from all chapters, organized by catego
 
 **TigerBeetle (Database)**
 - Repository: https://github.com/tigerbeetle/tigerbeetle
-- TIGER_STYLE Guide: https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md
+- TIGER_STYLE Guide: https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md
 - Notable: Strictest style guide (2+ assertions per function, explicit naming conventions)
 
 **Ghostty (Terminal Emulator)**
@@ -2346,7 +2346,7 @@ This chapter provides comprehensive reference materials for Zig development:
 
 ### Production Codebases
 5. TigerBeetle: https://github.com/tigerbeetle/tigerbeetle
-6. TigerBeetle TIGER_STYLE: https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md
+6. TigerBeetle TIGER_STYLE: https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md
 7. Ghostty: https://github.com/ghostty-org/ghostty
 8. Bun: https://github.com/oven-sh/bun
 9. ZLS: https://github.com/zigtools/zls

@@ -1203,24 +1203,24 @@ Understanding these patterns enables building libraries, CLI tools, and complex 
 [^4]: std.Build API documentation - https://ziglang.org/documentation/master/std/#std.Build
 [^5]: Build Options guide - https://ziglang.org/learn/build-system/#build-options
 [^6]: Custom Build Steps - https://ziglang.org/learn/build-system/#custom-build-steps
-[^7]: Official Zig init template - https://github.com/ziglang/zig/blob/master/lib/init/build.zig
+[^7]: Official Zig init template - https://github.com/ziglang/zig/blob/0.15.2/lib/init/build.zig
 [^8]: Zig module system documentation - https://ziglang.org/documentation/master/#Modules
-[^9]: ZLS build.zig build options pattern - https://github.com/zigtools/zls/blob/master/build.zig#L47-L91
-[^10]: TigerBeetle code generation pattern - https://github.com/tigerbeetle/tigerbeetle/blob/main/build.zig#L1945-L1955
-[^11]: Ghostty multi-platform builds - https://github.com/ghostty-org/ghostty/blob/main/build.zig
-[^12]: TigerBeetle test organization - https://github.com/tigerbeetle/tigerbeetle/blob/main/build.zig#L853-L886
+[^9]: ZLS build.zig build options pattern - https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/build.zig#L47-L91
+[^10]: TigerBeetle code generation pattern - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/build.zig#L1945-L1955
+[^11]: Ghostty multi-platform builds - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig
+[^12]: TigerBeetle test organization - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/build.zig#L853-L886
 [^13]: Zig 0.15 migration guide - https://github.com/ziglang/zig/wiki/0.15.0-Release-Notes
 [^14]: std.Build.path documentation - https://ziglang.org/documentation/master/std/#std.Build.path
 [^15]: Lazy dependencies - Covered in Chapter 10: Packages & Dependencies
-[^16]: TigerBeetle CPU feature enforcement - https://github.com/tigerbeetle/tigerbeetle/blob/main/build.zig#L13-L42
-[^17]: Ghostty modular build organization - https://github.com/ghostty-org/ghostty/blob/main/build.zig#L17-L34
-[^18]: Mach optional features - https://github.com/hexops/mach/blob/main/build.zig#L47-L69
-[^19]: ZLS git-based versioning - https://github.com/zigtools/zls/blob/master/build.zig#L333-L390
-[^bun1]: [Bun Source: Platform-Specific Target Refinement](https://github.com/oven-sh/bun/blob/main/build.zig#L119-L196) - CPU model selection and OS version minimums for cross-platform compatibility
-[^bun2]: [Bun Source: Git SHA Fallback Strategies](https://github.com/oven-sh/bun/blob/main/build.zig#L236-L270) - Multi-source version retrieval with validation and fallbacks
-[^bun3]: [Bun Source: Conditional Code Embedding](https://github.com/oven-sh/bun/blob/main/build.zig#L79-L81) - Runtime loading in debug, compile-time embedding in release
-[^bun4]: [Bun Source: Multi-Platform Check Steps](https://github.com/oven-sh/bun/blob/main/build.zig#L360-L372) - Cross-platform semantic analysis without full compilation
-[^bun5]: [Bun Source: Translate-C Post-Processing](https://github.com/oven-sh/bun/blob/main/build.zig#L517-L570) - Custom processing for Windows C header translations
-[^bun6]: [Bun Source: Environment-Based Build Modes](https://github.com/oven-sh/bun/blob/main/build.zig#L598-L601) - Fast iteration mode via BUN_BUILD_FAST flag
-[^20]: Zig compiler test organization - https://github.com/ziglang/zig/blob/master/build.zig#L381-L621
+[^16]: TigerBeetle CPU feature enforcement - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/build.zig#L13-L42
+[^17]: Ghostty modular build organization - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig#L17-L34
+[^18]: Mach optional features - https://github.com/hexops/mach/blob/8ef4227770880f69300e475c7c65f0ba1f2604a5/build.zig#L47-L69
+[^19]: ZLS git-based versioning - https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/build.zig#L333-L390
+[^bun1]: [Bun Source: Platform-Specific Target Refinement](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/build.zig#L119-L196) - CPU model selection and OS version minimums for cross-platform compatibility
+[^bun2]: [Bun Source: Git SHA Fallback Strategies](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/build.zig#L236-L270) - Multi-source version retrieval with validation and fallbacks
+[^bun3]: [Bun Source: Conditional Code Embedding](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/build.zig#L79-L81) - Runtime loading in debug, compile-time embedding in release
+[^bun4]: [Bun Source: Multi-Platform Check Steps](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/build.zig#L360-L372) - Cross-platform semantic analysis without full compilation
+[^bun5]: [Bun Source: Translate-C Post-Processing](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/build.zig#L517-L570) - Custom processing for Windows C header translations
+[^bun6]: [Bun Source: Environment-Based Build Modes](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/build.zig#L598-L601) - Fast iteration mode via BUN_BUILD_FAST flag
+[^20]: Zig compiler test organization - https://github.com/ziglang/zig/blob/0.15.2/build.zig#L381-L621
 [^21]: zig-gamedev build system - https://github.com/michal-z/zig-gamedev - Multi-library C/C++ integration patterns

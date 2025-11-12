@@ -1241,28 +1241,28 @@ Zig's logging system provides a pragmatic balance between developer observabilit
 
 [^2]: [Zig Language Reference 0.15.2: std.Options](https://ziglang.org/documentation/0.15.2/std/#std.Options) - Documentation for std.Options structure including log configuration.
 
-[^3]: [TigerBeetle Source: Scoped Logging](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/vsr.zig#L5) - Example scoped logger: `const log = std.log.scoped(.vsr);`
+[^3]: [TigerBeetle Source: Scoped Logging](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/vsr.zig#L5) - Example scoped logger: `const log = std.log.scoped(.vsr);`
 
-[^4]: [TigerBeetle Source: Custom Log Handler](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/scripts.zig#L25-L34) - Custom log handler with timestamp support.
+[^4]: [TigerBeetle Source: Custom Log Handler](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/scripts.zig#L25-L34) - Custom log handler with timestamp support.
 
-[^5]: [Ghostty Source: Platform-Aware Log Handler](https://github.com/ghostty-org/ghostty/blob/main/src/main_ghostty.zig#L121-L168) - macOS Unified Logging integration.
+[^5]: [Ghostty Source: Platform-Aware Log Handler](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/main_ghostty.zig#L121-L168) - macOS Unified Logging integration.
 
 [^6]: [Zig std.debug Source](../../zig_versions/zig-0.15.2/lib/std/debug.zig) - Standard library debug utilities.
 
-[^7]: [TigerBeetle Source: Trace System](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/trace.zig#L100) - Event tracing with StatsD integration.
+[^7]: [TigerBeetle Source: Trace System](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/trace.zig#L100) - Event tracing with StatsD integration.
 
-[^8]: [Bun Source: Log Configuration](https://github.com/oven-sh/bun/blob/main/src/main.zig#L2) - Minimal std.log usage for performance.
+[^8]: [Bun Source: Log Configuration](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/main.zig#L2) - Minimal std.log usage for performance.
 
-[^9]: [ZLS Source: Log Configuration](https://github.com/zigtools/zls/blob/main/src/main.zig#L35) - Language server logging setup.
+[^9]: [ZLS Source: Log Configuration](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/main.zig#L35) - Language server logging setup.
 
 [^10]: [Zig std.log Source](../../zig_versions/zig-0.15.2/lib/std/log.zig) - Local Zig 0.15.2 stdlib logging implementation.
 
-[^11]: [TigerBeetle: Superblock Logging](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/vsr/superblock.zig#L39) - Superblock operations with `.superblock` scope.
+[^11]: [TigerBeetle: Superblock Logging](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/vsr/superblock.zig#L39) - Superblock operations with `.superblock` scope.
 
-[^12]: [TigerBeetle: Journal Logging](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/vsr/journal.zig#L14) - Write-ahead log with `.journal` scope.
+[^12]: [TigerBeetle: Journal Logging](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/vsr/journal.zig#L14) - Write-ahead log with `.journal` scope.
 
-[^13]: [TigerBeetle: Compaction Logging](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/lsm/compaction.zig#L38) - LSM compaction with `.compaction` scope.
+[^13]: [TigerBeetle: Compaction Logging](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/lsm/compaction.zig#L38) - LSM compaction with `.compaction` scope.
 
-[^14]: [TigerBeetle: IO Logging](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/io/linux.zig#L9) - Platform-specific I/O with `.io` scope.
+[^14]: [TigerBeetle: IO Logging](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/io/linux.zig#L9) - Platform-specific I/O with `.io` scope.
 
-[^15]: [Ghostty: Log Level Configuration](https://github.com/ghostty-org/ghostty/blob/main/src/main_ghostty.zig#L170-L178) - Build-mode dependent log levels.
+[^15]: [Ghostty: Log Level Configuration](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/main_ghostty.zig#L170-L178) - Build-mode dependent log levels.

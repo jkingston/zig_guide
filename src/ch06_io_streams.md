@@ -532,18 +532,18 @@ TigerBeetle, a distributed financial database, demonstrates I/O patterns priorit
 
 **Fixed Buffer Streams for Metrics**
 - Uses `std.io.fixedBufferStream()` for zero-allocation StatsD metrics formatting
-- Source: [`src/trace/statsd.zig:59-85`](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/trace/statsd.zig#L59-L85)
+- Source: [`src/trace/statsd.zig:59-85`](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/trace/statsd.zig#L332-365)
 - Pattern: Compile-time buffer sizing for worst-case metric strings
 
 **Direct I/O with Sector Alignment**
 - Opens journal files with `O_DIRECT` flag to bypass page cache
-- Source: [`src/io/linux.zig:1433-1570`](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/io/linux.zig#L1433-L1570)
+- Source: [`src/io/linux.zig:1433-1570`](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/io/linux.zig#L1433-L1570)
 - Graceful fallback when Direct I/O unavailable
 - Block device vs regular file handling
 
 **Latent Sector Error (LSE) Recovery**
 - Binary search subdivision to isolate failed sectors on read errors
-- Source: [`src/storage.zig:279-384`](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/storage.zig#L279-L384)
+- Source: [`src/storage.zig:279-384`](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/storage.zig#L279-L384)
 - Zeros unreadable sectors for graceful degradation
 - AIMD-based recovery throttling
 
@@ -553,17 +553,17 @@ Ghostty, a terminal emulator, shows modern async I/O patterns with the xev libra
 
 **PTY Stream Management**
 - Uses `xev.Stream.initFd()` for async pseudo-terminal I/O
-- Source: [`src/termio/Exec.zig:128-129`](https://github.com/ghostty-org/ghostty/blob/main/src/termio/Exec.zig#L128-L129), [`src/termio/Exec.zig:502-516`](https://github.com/ghostty-org/ghostty/blob/main/src/termio/Exec.zig#L502-L516)
+- Source: [`src/termio/Exec.zig:128-129`](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/termio/Exec.zig#L128-L129), [`src/termio/Exec.zig:502-516`](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/termio/Exec.zig#L502-L516)
 - Write queue with buffer pooling to reduce allocation overhead
 
 **Config File Reading**
 - XDG-compliant path resolution with fallbacks
-- Source: [`src/config/file_load.zig:136-166`](https://github.com/ghostty-org/ghostty/blob/main/src/config/file_load.zig#L136-L166)
+- Source: [`src/config/file_load.zig:136-166`](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/config/file_load.zig#L136-L166)
 - Comprehensive validation: file type, size checks before reading
 
 **Fixed Buffer Writers for String Conversion**
 - Stack-allocated buffers for config value serialization
-- Source: [`src/config/io.zig:99`](https://github.com/ghostty-org/ghostty/blob/main/src/config/io.zig#L99)
+- Source: [`src/config/io.zig:99`](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/config/io.zig#L99)
 - Pattern: `var writer: std.Io.Writer = .fixed(&buf);`
 
 ### Bun: High-Performance Buffered I/O
@@ -572,7 +572,7 @@ Bun, a JavaScript runtime, demonstrates performance-optimized I/O for module loa
 
 **Reference-Counted I/O Readers**
 - Buffered readers with async deinit queues
-- Source: [`src/shell/IOReader.zig:1-150`](https://github.com/oven-sh/bun/blob/main/src/shell/IOReader.zig#L1-L150)
+- Source: [`src/shell/IOReader.zig:1-150`](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/shell/IOReader.zig#L1-L150)
 - Pattern: Ref-counting prevents premature resource cleanup in async contexts
 
 **Dynamic Buffers with ArrayListUnmanaged**
@@ -585,13 +585,13 @@ The Zig Language Server demonstrates I/O patterns for protocol communication.
 
 **Fixed Buffer Logging**
 - 4KB stack buffer for log message formatting with overflow handling
-- Source: [`src/main.zig:50-100`](https://github.com/zigtools/zls/blob/master/src/main.zig#L50-L100)
+- Source: [`src/main.zig:50-100`](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/main.zig#L50-L100)
 - Gracefully handles buffer overflow with "..." suffix
 - Pattern: `var writer: std.Io.Writer = .fixed(&buffer);`
 
 **Unbuffered stderr for Critical Messages**
 - Uses `std.fs.File.stderr().writer(&.{})` for immediate error output
-- Source: [`src/main.zig:98`](https://github.com/zigtools/zls/blob/master/src/main.zig#L98)
+- Source: [`src/main.zig:98`](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/main.zig#L98)
 
 ### zigimg: Binary Format Parsing
 
@@ -620,7 +620,7 @@ pub fn loadImage(path: []const u8, allocator: std.mem.Allocator) !zigimg.Image {
 
 **Key Patterns:**
 - Stream-based chunk parsing without loading entire file into memory
-- Source: [`src/formats/png.zig`](https://github.com/zigimg/zigimg/blob/master/src/formats/png.zig)
+- Source: [`src/formats/png.zig`](https://github.com/zigimg/zigimg/blob/f5783e87627cbd9e0b45fad112e9f73503914f36/src/formats/png.zig)
 - Validates chunk CRCs and structure as data streams in
 
 **Multi-Format I/O Abstraction:**
@@ -683,7 +683,7 @@ pub fn main() !void {
 
 **Key Patterns:**
 - Pre-allocated response buffers for common HTTP scenarios
-- Source: [`src/http.zig`](https://github.com/zigzap/zap/blob/master/src/http.zig)
+- Source: [`src/http.zig`](https://github.com/zigzap/zap/blob/76679f308c702cd8880201e6e93914e1d836a54b/src/http.zig)
 - Stack-allocated buffers for headers, dynamic allocation for large bodies
 - Explicit flush control for chunked transfer encoding
 
@@ -742,14 +742,14 @@ The explicit nature of 0.15+ buffering may seem verbose initially, but it provid
 1. Zig Standard Library – Io.zig ([0.15.2](https://github.com/ziglang/zig/blob/0.15.2/lib/std/Io.zig))
 2. Zig Standard Library – fmt.zig ([0.15.2](https://github.com/ziglang/zig/blob/0.15.2/lib/std/fmt.zig))
 3. Zig Standard Library – fs/File.zig ([0.15.2](https://github.com/ziglang/zig/blob/0.15.2/lib/std/fs/File.zig))
-4. TigerBeetle – Fixed buffer metrics formatting ([src/trace/statsd.zig:59-85](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/trace/statsd.zig#L59-L85))
-5. TigerBeetle – Direct I/O implementation ([src/io/linux.zig:1433-1570](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/io/linux.zig#L1433-L1570))
-6. TigerBeetle – LSE error recovery ([src/storage.zig:279-384](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/storage.zig#L279-L384))
-7. Ghostty – Event loop stream management ([src/termio/Exec.zig](https://github.com/ghostty-org/ghostty/blob/main/src/termio/Exec.zig))
-8. Ghostty – Config file patterns ([src/config/file_load.zig:136-166](https://github.com/ghostty-org/ghostty/blob/main/src/config/file_load.zig#L136-L166))
-9. Bun – Buffered I/O with reference counting ([src/shell/IOReader.zig](https://github.com/oven-sh/bun/blob/main/src/shell/IOReader.zig))
-10. ZLS – Fixed buffer logging ([src/main.zig:50-100](https://github.com/zigtools/zls/blob/master/src/main.zig#L50-L100))
-11. zigimg – Binary format parsing ([src/formats/png.zig](https://github.com/zigimg/zigimg/blob/master/src/formats/png.zig))
-12. zigimg – Multi-format I/O abstraction ([src/Image.zig](https://github.com/zigimg/zigimg/blob/master/src/Image.zig))
-13. zap – HTTP server streaming patterns ([src/http.zig](https://github.com/zigzap/zap/blob/master/src/http.zig))
+4. TigerBeetle – Fixed buffer metrics formatting ([src/trace/statsd.zig:59-85](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/trace/statsd.zig#L332-365))
+5. TigerBeetle – Direct I/O implementation ([src/io/linux.zig:1433-1570](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/io/linux.zig#L1433-L1570))
+6. TigerBeetle – LSE error recovery ([src/storage.zig:279-384](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/storage.zig#L279-L384))
+7. Ghostty – Event loop stream management ([src/termio/Exec.zig](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/termio/Exec.zig))
+8. Ghostty – Config file patterns ([src/config/file_load.zig:136-166](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/config/file_load.zig#L136-L166))
+9. Bun – Buffered I/O with reference counting ([src/shell/IOReader.zig](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/shell/IOReader.zig))
+10. ZLS – Fixed buffer logging ([src/main.zig:50-100](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/main.zig#L50-L100))
+11. zigimg – Binary format parsing ([src/formats/png.zig](https://github.com/zigimg/zigimg/blob/f5783e87627cbd9e0b45fad112e9f73503914f36/src/formats/png.zig))
+12. zigimg – Multi-format I/O abstraction ([src/Image.zig](https://github.com/zigimg/zigimg/blob/f5783e87627cbd9e0b45fad112e9f73503914f36/src/Image.zig))
+13. zap – HTTP server streaming patterns ([src/http.zig](https://github.com/zigzap/zap/blob/76679f308c702cd8880201e6e93914e1d836a54b/src/http.zig))
 14. zig.guide – Readers and Writers ([standard-library/readers-and-writers](https://zig.guide/standard-library/readers-and-writers))

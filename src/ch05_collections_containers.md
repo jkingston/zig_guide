@@ -1197,17 +1197,17 @@ The transition from managed to unmanaged containers represents a maturation of Z
 
 [^1]: [Zig 0.15.1 Release Notes](https://ziglang.org/download/0.15.1/release-notes.html)
 [^2]: [Ziggit: Embracing Unmanaged](https://ziggit.dev/t/embracing-unmanaged-plans-with-eg-autohashmap/11934)
-[^3]: [Zig Standard Library - array_list.zig](https://github.com/ziglang/zig/blob/master/lib/std/array_list.zig)
+[^3]: [Zig Standard Library - array_list.zig](https://github.com/ziglang/zig/blob/0.15.2/lib/std/array_list.zig)
 [^4]: [Hexops - Zig Hashmaps Explained](https://devlog.hexops.com/2022/zig-hashmaps-explained/)
 [^5]: [OpenMyMind - Zig's HashMap Part 2](https://www.openmymind.net/Zigs-HashMap-Part-2/)
-[^6]: [TigerBeetle lsm/cache_map.zig](https://github.com/tigerbeetle/tigerbeetle/blob/main/src/lsm/cache_map.zig)
-[^7]: [Bun test/snapshot.zig](https://github.com/oven-sh/bun/blob/main/src/bun.js/test/snapshot.zig)
-[^8]: [Ghostty termio/Exec.zig](https://github.com/ghostty-org/ghostty/blob/main/src/termio/Exec.zig)
+[^6]: [TigerBeetle lsm/cache_map.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/lsm/cache_map.zig)
+[^7]: [Bun test/snapshot.zig](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/bun.js/test/snapshot.zig)
+[^8]: [Ghostty termio/Exec.zig](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/termio/Exec.zig)
 [^9]: [Krut's Blog: Memory Leak in Zig](https://iamkroot.github.io/blog/zig-memleak)
-[^10]: [TigerBeetle TIGER_STYLE.md](https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md)
-[^11]: [Bun test/snapshot.zig:239](https://github.com/oven-sh/bun/blob/main/src/bun.js/test/snapshot.zig#L239)
-[^12]: [ZLS analyser/InternPool.zig](https://github.com/zigtools/zls/blob/master/src/analyser/InternPool.zig)
-[^13]: [Mach sysgpu/shader/AstGen.zig](https://github.com/hexops/mach/blob/main/src/sysgpu/shader/AstGen.zig)
-[^mach1]: [Mach Source: StringTable with Custom HashMap Context](https://github.com/hexops/mach/blob/main/src/StringTable.zig) - Bidirectional string interning using indices as keys
-[^mach2]: [Mach Source: Objects ECS Implementation](https://github.com/hexops/mach/blob/main/src/module.zig#L36-L150) - Entity component system with MultiArrayList, BitSet, and generation counters
-[^mach3]: [Mach Source: Core Event Queue Pre-Allocation](https://github.com/hexops/mach/blob/main/src/Core.zig#L128-L129) - Zero-allocation event handling with pre-allocated capacity
+[^10]: [TigerBeetle TIGER_STYLE.md](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md)
+[^11]: [Bun test/snapshot.zig:239](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/bun.js/test/snapshot.zig#L239)
+[^12]: [ZLS analyser/InternPool.zig](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/analyser/InternPool.zig)
+[^13]: [Mach sysgpu/shader/AstGen.zig](https://github.com/hexops/mach/blob/8ef4227770880f69300e475c7c65f0ba1f2604a5/src/sysgpu/shader/AstGen.zig)
+[^mach1]: [Mach Source: StringTable with Custom HashMap Context](https://github.com/hexops/mach/blob/8ef4227770880f69300e475c7c65f0ba1f2604a5/src/StringTable.zig) - Bidirectional string interning using indices as keys
+[^mach2]: [Mach Source: Objects ECS Implementation](https://github.com/hexops/mach/blob/8ef4227770880f69300e475c7c65f0ba1f2604a5/src/module.zig#L36-L150) - Entity component system with MultiArrayList, BitSet, and generation counters
+[^mach3]: [Mach Source: Core Event Queue Pre-Allocation](https://github.com/hexops/mach/blob/8ef4227770880f69300e475c7c65f0ba1f2604a5/src/Core.zig#L128-L129) - Zero-allocation event handling with pre-allocated capacity
