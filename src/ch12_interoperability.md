@@ -19,7 +19,7 @@ Zig treats C as a first-class citizen, providing direct, zero-overhead integrati
 
 This eliminates the impedance mismatch common in FFI systems, enabling gradual C migration and library integration (SQLite, Vulkan, system APIs).
 
-**Memory safety at boundaries:** Responsibility for allocation/deallocation must be explicit. Use `defer` for cleanup (see Ch5). Mixing allocators or mismatched types causes platform-specific bugs.
+**Memory safety at boundaries:** Responsibility for allocation/deallocation must be explicit. Use `defer` for cleanup (see Ch7). Mixing allocators or mismatched types causes platform-specific bugs.
 
 **WebAssembly:** wasm32-freestanding (browser + JS FFI) and wasm32-wasi (POSIX-like). Linear memory model: pointers become 32-bit offsets.
 
@@ -2300,7 +2300,7 @@ test "ImGui context lifecycle" {
 
 This pattern enables Zig projects to leverage mature C++ game development libraries (ImGui, PhysX, Dear ImPlot) while maintaining Zig's safety guarantees and explicit allocator model.
 
-> **See also:** Chapter 7 (Build System) for zig-gamedev's build organization and multi-library dependency management.
+> **See also:** Chapter 9 (Build System) for zig-gamedev's build organization and multi-library dependency management.
 
 ### Memory Safety with defer and errdefer
 

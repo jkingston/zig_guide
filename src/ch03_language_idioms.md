@@ -3,7 +3,7 @@
 > **TL;DR for Zig idioms:**
 > - **Naming:** `snake_case` (vars/functions), `PascalCase` (types), `SCREAMING_SNAKE_CASE` (constants)
 > - **Cleanup:** `defer cleanup()` (runs at scope exit in LIFO order), `errdefer` (only on error paths)
-> - **Errors:** `!T` for error unions, `try` propagates, `catch` handles, see [Ch5 for details](#/05_error_handling)
+> - **Errors:** `!T` for error unions, `try` propagates, `catch` handles, see [Ch7 for details](#/07_error_handling)
 > - **Optionals:** `?T` for nullable values, `.?` unwraps or panics, `orelse` provides default
 > - **comptime:** Compile-time execution for generics and zero-cost abstractions
 > - **Jump to:** [Naming §1.2](#naming-conventions) | [defer §1.3](#defer-and-errdefer) | [comptime §1.5](#comptime-execution)
@@ -91,7 +91,7 @@ fn process(gpa: Allocator, arena: Allocator) !void {
 
 ### defer and errdefer
 
-Zig's `defer` executes code when leaving the current scope (via return, break, or block end). `errdefer` executes only when leaving via error return.[^5] See Ch5 for comprehensive coverage of resource cleanup patterns.
+Zig's `defer` executes code when leaving the current scope (via return, break, or block end). `errdefer` executes only when leaving via error return.[^5] See Ch7 for comprehensive coverage of resource cleanup patterns.
 
 **Execution order is LIFO:**
 

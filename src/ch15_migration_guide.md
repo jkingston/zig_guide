@@ -263,7 +263,7 @@ try list.append(allocator, item);  // Clear: may allocate
 const item = list.pop();  // Clear: won't allocate (no allocator parameter)
 ```
 
-**Better composition**: Multiple containers can share one allocator field, as shown above. This pattern was recommended in Chapter 4 and is now the default[^10].
+**Better composition**: Multiple containers can share one allocator field, as shown above. This pattern was recommended in Chapter 5 and is now the default[^10].
 
 #### Migration Strategies
 
@@ -1197,9 +1197,9 @@ END: Migration complete
 **Example code**: All examples in this chapter are available in the `examples/` directory with working code for both Zig 0.14.1 and 0.15.2.
 
 **Related chapters**:
-- Chapter 1: Collections & Containers - Deep dive on managed vs unmanaged
-- Chapter 1: I/O, Streams & Formatting - Comprehensive I/O patterns
-- Chapter 1: Build System - Advanced build.zig patterns
+- Chapter 5: Collections & Containers - Deep dive on managed vs unmanaged
+- Chapter 6: I/O, Streams & Formatting - Comprehensive I/O patterns
+- Chapter 9: Build System - Advanced build.zig patterns
 
 **Community resources**:
 - Ziggit forum: Migration questions and experiences
@@ -1240,6 +1240,6 @@ END: Migration complete
 
 ---
 
-**Chapter 14 Complete**
+**Chapter 15 Complete**
 
 This migration guide provides before/after examples for all breaking changes in Zig 0.15.2, common pitfalls with solutions, and real-world patterns from production codebases. For detailed examples, see the `examples/` directory. For questions or issues during migration, refer to the related chapters or community resources listed above.

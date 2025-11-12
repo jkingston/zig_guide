@@ -7,13 +7,13 @@
 > - **Cleanup:** `defer cleanup()` runs at scope exit (LIFO order)
 > - **Error-only cleanup:** `errdefer cleanup()` runs only if function returns error
 > - **Definitive resource cleanup chapter** - other chapters reference this
-> - **Jump to:** [Error sets §5.2](#error-sets-and-error-unions) | [try/catch §5.3](#error-propagation-with-try-and-catch) | [defer/errdefer §5.4](#resource-cleanup-with-defer)
+> - **Jump to:** [Error sets §7.2](#error-sets-and-error-unions) | [try/catch §7.3](#error-propagation-with-try-and-catch) | [defer/errdefer §7.4](#resource-cleanup-with-defer)
 
 ## Overview
 
 Zig approaches error handling and resource cleanup as inseparable concerns. Unlike languages that hide errors behind exceptions or implicit memory management, Zig makes failure modes explicit through compile-time verified error sets and provides deterministic cleanup through `defer` and `errdefer` statements.[^1] This design eliminates entire classes of bugs: uncaught exceptions become compile errors, resource leaks are visible in code review, and error paths are testable like any other code path.
 
-This chapter demonstrates how Zig's error handling mechanisms integrate with resource management to create robust, maintainable systems. The patterns shown here build on Chapter 3's allocator concepts and appear throughout production codebases like TigerBeetle, Ghostty, and Bun.
+This chapter demonstrates how Zig's error handling mechanisms integrate with resource management to create robust, maintainable systems. The patterns shown here build on Chapter 4's allocator concepts and appear throughout production codebases like TigerBeetle, Ghostty, and Bun.
 
 Error handling in Zig serves three critical purposes:
 
@@ -248,7 +248,7 @@ This pattern is appropriate for internal error aggregation where the specific er
 
 ### Allocator Error Handling
 
-Building on Chapter 3's allocator patterns, all allocator operations can fail with `error.OutOfMemory`:
+Building on Chapter 4's allocator patterns, all allocator operations can fail with `error.OutOfMemory`:
 
 ```zig
 const buffer = allocator.alloc(u8, size) catch |err| {

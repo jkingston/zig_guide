@@ -67,11 +67,11 @@ pub fn main() !void {
 ```
 
 **What this demonstrates:**
-- **Memory allocation** (Chapter 2) - `GeneralPurposeAllocator` with leak detection
-- **Error handling** (Chapter 5) - `!void` return type, `try` keyword
-- **Resource cleanup** (Chapter 5) - `defer` ensures cleanup on all exit paths
-- **I/O operations** (Chapter 4) - File reading with proper error handling
-- **String processing** (Chapter 2) - Splitting and iteration
+- **Memory allocation** (Chapter 4) - `GeneralPurposeAllocator` with leak detection
+- **Error handling** (Chapter 7) - `!void` return type, `try` keyword
+- **Resource cleanup** (Chapter 7) - `defer` ensures cleanup on all exit paths
+- **I/O operations** (Chapter 6) - File reading with proper error handling
+- **String processing** (Chapter 4) - Splitting and iteration
 
 **Build and run:**
 
@@ -112,8 +112,8 @@ zig build -Dtarget=aarch64-macos -Doptimize=ReleaseFast
 
 ```
 myproject/
-├── build.zig          # Build configuration (see Chapter 7)
-├── build.zig.zon      # Package manifest (see Chapter 8)
+├── build.zig          # Build configuration (see Chapter 9)
+├── build.zig.zon      # Package manifest (see Chapter 10)
 ├── src/
 │   ├── main.zig       # Executable entry point
 │   └── root.zig       # Library exports
@@ -148,18 +148,18 @@ The `comptime` annotation forces evaluation during compilation. The result is a 
 
 **Choose your learning path:**
 
-- **New to Zig idioms?** → Chapter 2 (Language Idioms & Core Patterns)
-- **Coming from C/Rust?** → Chapter 2, then Chapter 3 (Memory & Allocators)
+- **New to Zig idioms?** → Chapter 3 (Language Idioms & Core Patterns)
+- **Coming from C/Rust?** → Chapter 3, then Chapter 4 (Memory & Allocators)
 - **Want complete project tutorial?** → Appendix B (zighttp architectural analysis)
 - **Need troubleshooting?** → Appendix D (Troubleshooting Guide)
 
 **Key chapters for common tasks:**
-- **Memory management** → Chapter 3 (Memory & Allocators)
-- **Error handling** → Chapter 6 (Error Handling & Resource Cleanup)
-- **File I/O** → Chapter 5 (I/O, Streams & Formatting)
-- **Building projects** → Chapter 8 (Build System)
-- **Testing** → Chapter 12 (Testing, Benchmarking & Profiling)
-- **Project setup** → Chapter 10 (Project Layout, Cross-Compilation & CI)
+- **Memory management** → Chapter 4 (Memory & Allocators)
+- **Error handling** → Chapter 7 (Error Handling & Resource Cleanup)
+- **File I/O** → Chapter 6 (I/O, Streams & Formatting)
+- **Building projects** → Chapter 9 (Build System)
+- **Testing** → Chapter 13 (Testing, Benchmarking & Profiling)
+- **Project setup** → Chapter 11 (Project Layout, Cross-Compilation & CI)
 
 ---
 
@@ -171,7 +171,7 @@ You've installed Zig, built your first working program, and seen key Zig concept
 - Resource cleanup with `defer`
 - Compile-time execution with `comptime`
 
-This Quick Start has given you a working foundation. Proceed to **Chapter 2: Language Idioms & Core Patterns** to explore Zig's unique patterns and mental models in depth.
+This Quick Start has given you a working foundation. Proceed to **Chapter 3: Language Idioms & Core Patterns** to explore Zig's unique patterns and mental models in depth.
 
 ---
 

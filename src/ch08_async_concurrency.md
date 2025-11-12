@@ -1888,7 +1888,7 @@ pub fn tryLock(objs: *@This()) bool {
 - libxev: General-purpose event loop (files, sockets, timers, signals)
 - Both demonstrate Zig's library-based async approach (no language keywords)
 
-> **See also:** Chapter 4 (I/O Streams) for zap's buffered response writers and zero-copy request parsing patterns.
+> **See also:** Chapter 6 (I/O Streams) for zap's buffered response writers and zero-copy request parsing patterns.
 
 ### Zig Compiler Self-Hosting
 

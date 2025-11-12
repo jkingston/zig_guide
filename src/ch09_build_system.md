@@ -761,7 +761,7 @@ if (b.lazyDependency("heavy-lib", .{})) |dep| {
 }
 ```
 
-Lazy dependencies are covered in depth in Chapter 9, but the pattern is important for optional features in build.zig.[^15]
+Lazy dependencies are covered in depth in Chapter 10, but the pattern is important for optional features in build.zig.[^15]
 
 ## In Practice
 
@@ -1146,7 +1146,7 @@ This pattern demonstrates production-grade build systems for complex projects wi
 - Platform-specific graphics APIs (D3D12, Vulkan, Metal)
 - Cross-compilation to Windows, Linux, macOS from any host
 
-> **See also:** Chapter 10 (Interoperability) for zig-gamedev's C++ library integration patterns with ImGui, PhysX, and WebGPU.
+> **See also:** Chapter 12 (Interoperability) for zig-gamedev's C++ library integration patterns with ImGui, PhysX, and WebGPU.
 
 ### Zig Compiler: Comprehensive Testing
 
@@ -1211,7 +1211,7 @@ Understanding these patterns enables building libraries, CLI tools, and complex 
 [^12]: TigerBeetle test organization - https://github.com/tigerbeetle/tigerbeetle/blob/main/build.zig#L853-L886
 [^13]: Zig 0.15 migration guide - https://github.com/ziglang/zig/wiki/0.15.0-Release-Notes
 [^14]: std.Build.path documentation - https://ziglang.org/documentation/master/std/#std.Build.path
-[^15]: Lazy dependencies - Covered in Chapter 1: Packages & Dependencies
+[^15]: Lazy dependencies - Covered in Chapter 10: Packages & Dependencies
 [^16]: TigerBeetle CPU feature enforcement - https://github.com/tigerbeetle/tigerbeetle/blob/main/build.zig#L13-L42
 [^17]: Ghostty modular build organization - https://github.com/ghostty-org/ghostty/blob/main/build.zig#L17-L34
 [^18]: Mach optional features - https://github.com/hexops/mach/blob/main/build.zig#L47-L69

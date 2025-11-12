@@ -648,7 +648,7 @@ pub fn processImage(reader: anytype, allocator: std.mem.Allocator) !void {
 - Arena allocator pattern for temporary decode buffers
 - Caller-owned pixel data with clear ownership semantics
 
-> **See also:** Chapter 2 (Memory & Allocators) for allocator patterns used in image decoding.
+> **See also:** Chapter 4 (Memory & Allocators) for allocator patterns used in image decoding.
 
 ### zap: HTTP Server Streaming
 
@@ -709,7 +709,7 @@ fn handleUpload(req: *zap.Request, res: *zap.Response) !void {
 - Non-blocking reads with automatic buffer management
 - Connection pooling with buffer reuse to minimize allocations
 
-> **See also:** Chapter 6 (Async & Concurrency) for zap's event loop architecture and concurrency patterns.
+> **See also:** Chapter 8 (Async & Concurrency) for zap's event loop architecture and concurrency patterns.
 
 ## Summary
 
