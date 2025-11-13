@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Async, Concurrency & Performance
 **Objective:** Document Zig's async model, concurrency primitives, and performance-oriented idioms.

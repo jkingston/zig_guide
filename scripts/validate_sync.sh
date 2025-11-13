@@ -19,7 +19,7 @@ NC='\033[0m' # No Color
 ERRORS=0
 WARNINGS=0
 
-echo "=== Zig Developer Guide - Sync Validation ==="
+echo "=== Zig: Zero to Hero - Sync Validation ==="
 echo
 
 # Function to normalize Zig code for comparison

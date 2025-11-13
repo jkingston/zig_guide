@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Project Layout, Cross-Compilation & CI
 **Objective:** Describe idiomatic project organization and cross-compilation patterns.

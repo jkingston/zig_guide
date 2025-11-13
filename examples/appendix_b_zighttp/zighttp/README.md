@@ -170,7 +170,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Learn More
 
-This project demonstrates professional Zig development practices covered in the [Zig Developer Guide](https://github.com/jkingston/zig_guide), specifically Chapter 0: Professional Project Setup.
+This project demonstrates professional Zig development practices covered in [Zig: Zero to Hero](https://github.com/jkingston/zig_guide), specifically Chapter 0: Professional Project Setup.
 
 ### Key Patterns Demonstrated
 

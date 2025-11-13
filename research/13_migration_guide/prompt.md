@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Migration Guide (0.14.1 → 0.15.2)
 **Objective:** Provide before/after examples for notable changes and safe migration patterns.

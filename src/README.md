@@ -1,6 +1,6 @@
-# Zig Developer Guide
+# Zig: Zero to Hero
 
-A comprehensive guide to Zig development focused on idioms and best practices for **Zig 0.14.x and 0.15.x**.
+From Fundamentals to Production — A comprehensive guide to Zig development focused on idioms and best practices for **Zig 0.14.x and 0.15.x**.
 
 ## About This Guide
 

@@ -1,6 +1,6 @@
 # Chapter 2: Language Idioms & Core Patterns - Examples
 
-This directory contains runnable examples from Chapter 2 of the Zig Developer Guide.
+This directory contains runnable examples from Chapter 2 of Zig: Zero to Hero.
 
 ## Building Examples
 

@@ -1,6 +1,6 @@
-# Zig Developer Guide — Workspace Scaffold
+# Zig: Zero to Hero — Workspace Scaffold
 
-This repository hosts the in-progress **Zig Developer Guide** focused on idioms and best practices for Zig 0.14.0, 0.14.1, 0.15.1, and 0.15.2.
+This repository hosts the in-progress **Zig: Zero to Hero** guide focused on idioms and best practices for Zig 0.14.0, 0.14.1, 0.15.1, and 0.15.2.
 
 This is a comprehensive guide to Zig development. Most patterns work across all supported versions; when they differ, we clearly mark version-specific code. See [versioning.md](versioning.md) for version support policy and update workflow.
 

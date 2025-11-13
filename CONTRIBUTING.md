@@ -1,4 +1,4 @@
-# Contributing to Zig Developer Guide
+# Contributing to Zig: Zero to Hero
 
 Thank you for your interest in contributing! This guide is a community effort to provide comprehensive, production-focused Zig documentation.
 
@@ -365,4 +365,4 @@ By contributing, you agree that your contributions will be licensed under the sa
 
 ---
 
-**Thank you for contributing to the Zig Developer Guide!** 🎉
+**Thank you for contributing to Zig: Zero to Hero!** 🎉

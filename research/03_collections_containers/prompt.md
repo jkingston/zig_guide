@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Collections & Containers
 **Objective:** Contrast managed and unmanaged container types and their ownership boundaries.

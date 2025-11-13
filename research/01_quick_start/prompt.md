@@ -1,7 +1,7 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Introduction
-**Objective:** Introduce the Zig Developer Guide, its purpose, audience assumptions, and how to use the book.
+**Objective:** Introduce the Zig: Zero to Hero, its purpose, audience assumptions, and how to use the book.
 
 ## Context within the Guide
 Sets expectations for scope and how version markers are used across the guide. Explains how to read code examples and where to find references.

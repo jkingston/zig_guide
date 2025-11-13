@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Extract Zig code blocks from markdown files for the Zig Developer Guide.
+Extract Zig code blocks from markdown files for Zig: Zero to Hero.
 
 This script parses markdown files and extracts code blocks marked with ```zig,
 creating a mapping that can be used for validation or extraction.

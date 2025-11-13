@@ -1,6 +1,6 @@
 # Chapter 3: Memory & Allocators - Examples
 
-This directory contains runnable examples from Chapter 3 of the Zig Developer Guide.
+This directory contains runnable examples from Chapter 3 of Zig: Zero to Hero.
 
 ## Building Examples
 

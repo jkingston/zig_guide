@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Interoperability (C/C++/WASI/WASM)
 **Objective:** Explain maintainable interoperation with C, C++, and WASI/WASM.

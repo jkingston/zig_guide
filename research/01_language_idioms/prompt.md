@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Language Idioms & Core Patterns
 **Objective:** Document idiomatic Zig syntax, naming conventions, and core language patterns.
