@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Logging, Diagnostics & Observability
 **Objective:** Show how to instrument Zig programs for development and production diagnostics.

@@ -1,4 +1,4 @@
-# Zig Developer Guide
+# Zig: Zero to Hero
 
 AI-assisted technical writing project for comprehensive Zig 0.14.x-0.15.x guide targeting experienced developers.
 

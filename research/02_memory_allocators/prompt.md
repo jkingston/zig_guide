@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Memory & Allocators
 **Objective:** Explain Zig's allocator interfaces, ownership models, and deterministic cleanup idioms.

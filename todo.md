@@ -1,4 +1,4 @@
-# Zig Developer Guide - TODO List
+# Zig: Zero to Hero - TODO List
 
 > Last Updated: November 11, 2025
 

@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Error Handling & Resource Cleanup
 **Objective:** Describe Zig’s error philosophy and its practical pairing with resource cleanup.

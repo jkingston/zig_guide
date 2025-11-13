@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** I/O, Streams & Formatting
 **Objective:** Teach modern Zig I/O patterns and formatting APIs.

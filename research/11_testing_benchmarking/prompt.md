@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Testing, Benchmarking & Profiling
 **Objective:** Present Zig’s testing framework and basic performance workflows.

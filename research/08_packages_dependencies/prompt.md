@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Packages & Dependencies (build.zig.zon)
 **Objective:** Explain Zig’s package and dependency management using build.zig.zon.

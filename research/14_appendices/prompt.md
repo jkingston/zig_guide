@@ -1,4 +1,4 @@
-# Zig Developer Guide — Section Deep Research Prompt (v3)
+# Zig: Zero to Hero — Section Deep Research Prompt (v3)
 
 **Section:** Appendices & Reference Material
 **Objective:** Provide glossary, style checklist, and consolidated references.

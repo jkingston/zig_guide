@@ -1,4 +1,4 @@
-# Zig Developer Guide — Internal Style Guide
+# Zig: Zero to Hero — Internal Style Guide
 
 > Defines writing, formatting, and referencing conventions for all contributors and research agents.
 
@@ -6,7 +6,7 @@
 
 ## 0. Audience & Scope
 
-This guide is intended for contributors and research agents working on the Zig Developer Guide. It assumes readers have intermediate-to-advanced knowledge of systems programming and familiarity with Zig. The guide focuses on internal consistency, clarity, and technical accuracy rather than introductory explanations.
+This guide is intended for contributors and research agents working on Zig: Zero to Hero. It assumes readers have intermediate-to-advanced knowledge of systems programming and familiarity with Zig. The guide focuses on internal consistency, clarity, and technical accuracy rather than introductory explanations.
 
 ---
 
@@ -189,4 +189,4 @@ Contributors may include an optional footer with notes or acknowledgments at the
 ---
 
 This style guide is mandatory for all research agents and human contributors.
-Adhering to it ensures the Zig Developer Guide remains consistent, verifiable, and idiomatically accurate.
+Adhering to it ensures Zig: Zero to Hero remains consistent, verifiable, and idiomatically accurate.

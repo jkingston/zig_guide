@@ -1,7 +1,7 @@
 [book]
-title = "Zig Developer Guide"
-description = "A comprehensive guide to Zig development focused on idioms and best practices for Zig 0.14.x and 0.15.x"
-authors = ["Zig Developer Guide Contributors"]
+title = "Zig: Zero to Hero"
+description = "From Fundamentals to Production — A comprehensive guide to Zig development focused on idioms and best practices for Zig 0.14.x and 0.15.x"
+authors = ["Zig: Zero to Hero Contributors"]
 language = "en"
 multilingual = false
 src = "src"

@@ -1,4 +1,4 @@
-# Zig Developer Guide - Version Management Strategy
+# Zig: Zero to Hero - Version Management Strategy
 
 > Defines version support policy, update workflows, and research documentation standards for maintaining the guide across Zig releases.
 

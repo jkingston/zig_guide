@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Script to checkout/update Zig reference repositories for the Zig Developer Guide
+# Script to checkout/update Zig reference repositories for Zig: Zero to Hero
 # These repos serve as exemplars of idiomatic Zig code and best practices
 
 # Colors for output
@@ -178,7 +178,7 @@ if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
     cat << EOF
 Usage: $0 [OPTIONS]
 
-Checkout and update Zig reference repositories for the Zig Developer Guide.
+Checkout and update Zig reference repositories for Zig: Zero to Hero.
 
 Options:
   -h, --help     Show this help message

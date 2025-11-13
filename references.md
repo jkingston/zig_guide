@@ -1,4 +1,4 @@
-# Zig Developer Guide — Reference & Exemplars
+# Zig: Zero to Hero — Reference & Exemplars
 
 > Comprehensive reference list of official documentation, guides, idioms, and exemplar projects
 > covering **Zig 0.14.0, 0.14.1, 0.15.1, and 0.15.2**, the validated production versions for this guide.
@@ -100,9 +100,9 @@
 
 ---
 
-## 8. Suggested Use in the Developer Guide
+## 8. Suggested Use in the Guide
 
-When building the *Zig Developer Guide* itself:
+When building *Zig: Zero to Hero* itself:
 
 1. **Cite official docs** for any syntax or standard-library feature.
 2. **Pull idioms** and code examples primarily from **Exemplar Projects** (Section 4):
