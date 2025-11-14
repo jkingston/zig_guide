@@ -520,21 +520,21 @@ fn createArray(comptime T: type, allocator: std.mem.Allocator, size: usize) ![]T
 }
 ```
 
-### Pitfall 4: Version-Specific Breaking Changes
+### Pitfall 4: Using Explicit Re-exports
 
-**🕐 0.14.x — usingnamespace (deprecated):**
+**❌ Incorrect — usingnamespace (removed):**
 ```zig
 const utils = @import("utils.zig");
-pub usingnamespace utils;  // Implicitly re-exports everything
+pub usingnamespace utils;  // REMOVED: Implicitly re-exports everything
 ```
 
-**✅ 0.15.1+ — Explicit re-exports:**
+**✅ Correct — Explicit re-exports:**
 ```zig
 const utils = @import("utils.zig");
 pub const helper = utils.helper;  // Explicit control over API surface
 ```
 
-The `usingnamespace` keyword was removed in 0.15 to improve clarity around public API boundaries.[^10]
+The `usingnamespace` keyword was removed to improve clarity around public API boundaries.[^10]
 
 ---
 

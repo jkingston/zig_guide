@@ -60,7 +60,7 @@ The key difference in 0.15+ is explicit buffering: you pass a buffer slice to `f
 const std = @import("std");
 
 pub fn main() !void {
-    const stdout = std.fs.File.stdout();  // ✅ 0.15+
+    const stdout = std.fs.File.stdout();
     var buf: [256]u8 = undefined;
     var writer = stdout.writer(&buf);
 
@@ -94,7 +94,7 @@ pub fn writeToFile(path: []const u8, data: []const u8) !void {
     const file = try std.fs.cwd().createFile(path, .{});
     defer file.close();
 
-    // ✅ 0.15+: Buffered writing
+    // Buffered writing (recommended for files)
     var buf: [4096]u8 = undefined;
     var file_writer = file.writer(&buf);
     try file_writer.interface.writeAll(data);
@@ -447,8 +447,8 @@ std.debug.print("Status: {}\n", .{status});
 
 ```zig
 // ✅ Production-ready
-const stderr = std.fs.File.stderr();  // ✅ 0.15+
-var writer = stderr.writer(&.{});
+const stderr = std.fs.File.stderr();
+var writer = stderr.writer(&.{});  // Empty slice = unbuffered
 try writer.interface.print("Status: {}\n", .{status});
 ```
 
@@ -503,12 +503,12 @@ fn writeData(file: std.fs.File, data: []const u8) !void {
 }
 ```
 
-### 6. Version-Specific: Missing Buffer Parameter (✅ 0.15+)
+### 6. Missing Buffer Parameter
 
-**Problem:** In 0.15+, writers require an explicit buffer parameter.
+**Problem:** Writers require an explicit buffer parameter.
 
 ```zig
-// ❌ 0.15+ compilation error
+// ❌ Compilation error
 const stdout = std.fs.File.stdout();
 var writer = stdout.writer();  // Missing buffer parameter!
 ```
@@ -516,7 +516,7 @@ var writer = stdout.writer();  // Missing buffer parameter!
 **Solution:** Always pass a buffer (empty slice for unbuffered):
 
 ```zig
-// ✅ 0.15+ correct
+// ✅ Correct
 var buf: [4096]u8 = undefined;
 var writer = stdout.writer(&buf);  // Buffered
 
