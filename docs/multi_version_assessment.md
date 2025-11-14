@@ -722,6 +722,164 @@ Version strategy is secondary to these differentiators.
 
 ---
 
+## Real-World Scenario: Onboarding to a 0.14.1 Codebase
+
+**Question:** "I'm joining a team with an existing 0.14.1 Zig codebase. How would I use this book?"
+
+### Current Approach (Status Quo)
+
+**Reading workflow:**
+1. Open chapter on Collections & Containers
+2. See primary example: `var list = std.ArrayList(u8){};` with marker "✅ 0.15+"
+3. Think: *"This won't work in my codebase"*
+4. Scroll to find: `🕐 0.14.x: var list = std.ArrayList(u8).init(allocator);`
+5. Copy the 0.14.x pattern instead
+
+**Example usage:**
+```
+❌ Can't run examples from examples/ directory (all 0.15.2 API)
+✅ Can read Migration Guide in reverse ("Before" column = what I need)
+⚠️  Must mentally filter "is this for my version?" throughout
+⚠️  40 scattered version markers to track
+```
+
+**Effectiveness:** ⭐⭐ Poor
+- Book is optimized for 0.15.2, not 0.14.1
+- Examples won't compile
+- Reading experience is "translate as you go"
+- Migration guide helps but requires reverse reading
+
+**Recommendation for 0.14.1 users:** *"This book assumes you'll upgrade soon. If stuck on 0.14.1 long-term, use Zig 0.14.1 official docs instead."*
+
+### Option 2: Latest Only
+
+**Reading workflow:**
+1. Book states clearly: "This is for Zig 0.15.2+"
+2. Reader decides: Upgrade to 0.15.2 or use different resource
+3. No version markers, no confusion
+
+**Effectiveness:** ⭐ Very Poor
+- Explicitly doesn't support 0.14.1
+- No migration guidance
+- Must upgrade or find alternative resource
+
+**Recommendation for 0.14.1 users:** *"Upgrade to 0.15.2 first, then use this book. Migration time: 2-4 hours for typical projects."*
+
+### Option 3: Versioned Editions
+
+**Reading workflow:**
+1. Landing page: "Choose your edition"
+2. Select "Zig 0.14 Edition"
+3. Read entire book in 0.14.1 idioms
+4. All examples compile on 0.14.1
+5. When team upgrades: Switch to "Zig 0.15 Edition"
+
+**Effectiveness:** ⭐⭐⭐⭐⭐ Excellent
+- Perfect match for their version
+- Zero version confusion
+- All examples work out of the box
+- Clear upgrade path (switch editions)
+
+**Recommendation for 0.14.1 users:** *"Use the 0.14 Edition - it's designed exactly for your use case."*
+
+### Option 4: Hybrid (Recommended)
+
+**Reading workflow:**
+1. README states: "Zig 0.15.2+, with migration appendix for 0.14 users"
+2. Read main chapters (all 0.15.2 idioms)
+3. Check Appendix A: "Working with Zig 0.14"
+
+**Appendix A would contain:**
+```markdown
+## Quick Reference: Zig 0.14.1 Patterns
+
+If you're working with an existing 0.14.1 codebase, here are the key differences:
+
+### Collections (See Chapter 5)
+**0.14.1:**
+var list = std.ArrayList(u8).init(allocator);
+try list.append('x');
+defer list.deinit();
+
+**0.15.2 (book uses this):**
+var list = std.ArrayList(u8){};
+try list.append(allocator, 'x');
+defer list.deinit(allocator);
+
+**What to know:** 0.14 stores allocator, 0.15 requires passing it.
+
+[Full migration guide in Appendix B]
+```
+
+**Effectiveness:** ⭐⭐⭐ Moderate
+- Better than Status Quo (guidance consolidated)
+- Worse than Versioned Editions (not optimized for 0.14)
+- Clear signaling: "This book is for 0.15, but here's help if you're on 0.14"
+
+**Recommendation for 0.14.1 users:** *"Use this book to learn modern patterns, reference the appendix for 0.14 equivalents. Budget 2-4 hours to upgrade your codebase to match the book."*
+
+### Comparison Table: 0.14.1 User Experience
+
+| Option | Examples Work? | Reading Flow | Migration Help | Overall |
+|--------|---------------|--------------|----------------|---------|
+| **Status Quo** | ❌ No | ⚠️ Scattered markers | ✅ Comprehensive guide | ⭐⭐ |
+| **Latest Only** | ❌ No | ✅ Clean (wrong version) | ❌ None | ⭐ |
+| **Versioned Editions** | ✅ Yes | ✅ Perfect match | ✅ Edition switch | ⭐⭐⭐⭐⭐ |
+| **Hybrid** | ❌ No | ✅ Clean + appendix | ✅ Quick reference | ⭐⭐⭐ |
+
+### Key Insight
+
+**The current approach (Status Quo) doesn't actually serve 0.14.1 users well despite claiming to support them.**
+
+Evidence:
+- All runnable examples target 0.15.2 only
+- Main content shows 0.15.2 patterns first
+- 0.14.x patterns relegated to scattered markers
+- CI only tests 0.15.2
+
+**The book's actions (examples, CI) say "0.15.2 only" while its words (README, version markers) say "supports 0.14-0.15."**
+
+This misalignment means:
+- 0.14.1 users get frustrated (examples don't work)
+- 0.15.2 users get cluttered experience (markers they don't need)
+- Maintainers pay for multi-version complexity without delivering multi-version value
+
+### Honest Recommendations by Use Case
+
+**"I'm onboarding to a 0.14.1 codebase that will upgrade soon (1-3 months):"**
+→ **Hybrid or Status Quo** - Learn 0.15 patterns, reference migration guide
+
+**"I'm onboarding to a 0.14.1 codebase stuck on 0.14 long-term (6+ months):"**
+→ **Use Zig 0.14.1 official docs instead** - This book won't serve you well
+
+**"I'm onboarding to a 0.14.1 codebase and can influence upgrade timeline:"**
+→ **Upgrade to 0.15.2 first (2-4h), then use this book** - Best investment
+
+**"I'm starting a new Zig project:"**
+→ **Any approach works** - Use latest version (0.15.2)
+
+### Recommendation Impact on 0.14 Support
+
+If implementing **Hybrid approach**, add this to README:
+
+```markdown
+## Version Support
+
+**This book teaches Zig 0.15.2** - the latest stable version at time of writing.
+
+**Working with Zig 0.14.1?**
+- See Appendix A for quick-reference patterns
+- See Appendix B for full migration guide (0.14 → 0.15)
+- **Recommended:** Upgrade to 0.15.2 first (2-4h migration time)
+
+All runnable examples target Zig 0.15.2. For 0.14.1-specific examples,
+see the official Zig 0.14.1 documentation.
+```
+
+This sets honest expectations: "We support 0.15.2. If you're on 0.14, we'll help you migrate, but the book is designed for 0.15+."
+
+---
+
 ## Conclusion
 
 **Recommended path forward: Implement Hybrid approach (Option 4)**
