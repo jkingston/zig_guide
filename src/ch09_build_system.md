@@ -626,20 +626,20 @@ This pattern is common in TigerBeetle (multiple test categories), ZLS (fast unit
 
 The module system introduced in 0.15 replaced several setter methods:
 
-**AVOID:**
+**AVOID (deprecated API):**
 
 ```zig
-// 🕐 0.14.x (DEPRECATED)
+// DEPRECATED - Don't use
 const exe = b.addExecutable("myapp", "src/main.zig");
 exe.setTarget(target);
 exe.setBuildMode(mode);
 exe.addPackagePath("mylib", "lib/mylib.zig");
 ```
 
-**USE:**
+**USE (modern API):**
 
 ```zig
-// ✅ 0.15+
+// ✅ Correct - Modern API
 const exe = b.addExecutable(.{
     .name = "myapp",
     .root_module = b.createModule(.{
@@ -653,7 +653,7 @@ const exe = b.addExecutable(.{
 });
 ```
 
-The new API provides better type safety, clearer ownership, and explicit dependency declarations.[^13]
+The modern API provides better type safety, clearer ownership, and explicit dependency declarations.[^13]
 
 ### Forgetting Target and Optimize in Modules
 

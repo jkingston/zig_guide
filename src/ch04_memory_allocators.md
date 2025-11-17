@@ -412,7 +412,7 @@ Key principles:
 - **Choose allocators by use case**—arena for request scoping, fixed-buffer for bounded performance, GPA for safety
 - **Ownership is documented**—caller-owns, callee-returns-owned, or init/deinit pairs
 - **Cleanup is deterministic**—defer for guaranteed cleanup, errdefer for error paths
-- **Memory is either managed or unmanaged** (✅ 0.15+)—unmanaged containers require explicit allocator passing
+- **Memory is either managed or unmanaged**—unmanaged containers require explicit allocator passing
 
 Understanding these patterns provides the foundation for containers, I/O, and concurrency covered in subsequent chapters.
 

@@ -20,29 +20,29 @@ As of Zig 0.15, the standard library has shifted toward unmanaged containers as 
 
 ### Managed vs Unmanaged Containers
 
-| Aspect | Managed (🕐 0.14 default) | Unmanaged (✅ 0.15+ default) |
-|--------|---------------------------|------------------------------|
+| Aspect | Managed | Unmanaged (Default) |
+|--------|---------|---------------------|
 | **Allocator storage** | Stored in struct field (+8 bytes/container) | Not stored (passed as parameter) |
 | **API example** | `list.append(item)` | `list.append(allocator, item)` |
 | **Allocation visibility** | Hidden in method | Explicit in call site |
 | **Memory overhead** | 8 bytes per container (64-bit) | Zero overhead |
-| **Use case** | Single containers, simpler API | Structs with many containers |
-| **Type name** | `std.ArrayListManaged(T)` (explicit) | `std.ArrayList(T)` (default in 0.15+) |
+| **Use case** | Single containers, simpler API | Structs with many containers (recommended) |
+| **Type name** | `std.ArrayListManaged(T)` | `std.ArrayList(T)` (default) |
 | **10 containers cost** | +80 bytes | +0 bytes |
 
 ```zig
-// 🕐 0.14.x: Managed (old default)
-var list = std.ArrayList(u8).init(allocator);  // Stores allocator
-try list.append('x');  // Uses stored allocator
-defer list.deinit();
-
-// ✅ 0.15+: Unmanaged (new default)
+// Unmanaged (default, recommended)
 var list = std.ArrayList(u8){};  // No stored allocator
 try list.append(allocator, 'x');  // Pass allocator explicitly
 defer list.deinit(allocator);
+
+// Managed (alternative for simple cases)
+var list = std.ArrayListManaged(u8).init(allocator);  // Stores allocator
+try list.append('x');  // Uses stored allocator
+defer list.deinit();
 ```
 
-**Why the change:** Explicit allocator parameters make allocation sites visible and reduce memory overhead. For data structures with many containers, the savings are significant.[^1][^2]
+**Why unmanaged is default:** Explicit allocator parameters make allocation sites visible and reduce memory overhead. For data structures with many containers, the savings are significant.[^1][^2]
 
 ### Container Type Taxonomy
 
@@ -336,7 +336,7 @@ pub fn main() !void {
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
-    // ✅ 0.15+ Unmanaged ArrayList (default)
+    // Unmanaged ArrayList (default)
     std.debug.print("=== Unmanaged ArrayList ===\n", .{});
     var unmanaged_list = std.ArrayList(u32).init(allocator);
     defer unmanaged_list.deinit(allocator);  // Allocator required
@@ -909,7 +909,7 @@ Search the codebase for container method calls and add allocator parameters:
 Add allocator parameters to all methods:
 
 ```zig
-// ✅ 0.15+ (unmanaged)
+// Correct (unmanaged)
 var list = std.ArrayList(u32).init(allocator);
 defer list.deinit(allocator);  // Pass allocator
 try list.append(allocator, 42);  // Pass allocator

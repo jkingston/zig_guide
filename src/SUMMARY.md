@@ -20,5 +20,11 @@
 - [Interoperability (C/C++/WASI/WASM)](ch12_interoperability.md)
 - [Testing, Benchmarking & Profiling](ch13_testing_benchmarking.md)
 - [Logging, Diagnostics & Observability](ch14_logging_diagnostics.md)
-- [Migration Guide (0.14.1 → 0.15.2)](ch15_migration_guide.md)
-- [Appendices & Reference Material](ch16_appendices.md)
+
+---
+
+# Appendices
+
+- [Appendix A: Working with Zig 0.14.1](appendix_a_working_with_014.md)
+- [Appendix B: Migration Guide (0.14 → 0.15)](appendix_b_migration_014_015.md)
+- [Appendix C: Reference Material](ch16_appendices.md)

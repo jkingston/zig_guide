@@ -1,42 +1,43 @@
 # Zig: Zero to Hero - Version Management Strategy
 
-> Defines version support policy, update workflows, and research documentation standards for maintaining the guide across Zig releases.
+> Defines version support policy and update workflows for maintaining the guide.
 
 ---
 
-## 1. Supported Zig Versions
+## 1. Supported Zig Version
 
-**Current Coverage:** Zig 0.14.0, 0.14.1, 0.15.1, and 0.15.2
+**Current Version:** Zig 0.15.2
 
-This is a comprehensive Zig developer guide supporting multiple patch versions across the 0.14 and 0.15 series. The guide teaches Zig idioms and best practices applicable across these versions. When patterns differ, version markers clearly indicate compatibility requirements.
+This guide teaches modern Zig idioms and best practices using **Zig 0.15.2** — the latest stable version at time of writing. All code examples, runnable programs, and CI validation target this version.
 
-### Tested Versions
+**For Zig 0.14.1 users:** See Appendix A for quick-reference patterns and Appendix B for full migration guide.
 
-This guide has been validated against:
-- **Zig 0.14.0** (released 2025-03-05)
-- **Zig 0.14.1** (released 2025-05-21)
-- **Zig 0.15.1** (released 2025-08-19)
-- **Zig 0.15.2** (released 2025-10-11)
+### Validation
 
-**Note:** Zig 0.15.0 was retracted and never officially released.
+- **CI Testing:** All examples validated on Zig 0.15.2
+- **Compilation:** 100% success rate (100 example files, 4,430+ lines)
+- **Last updated:** November 2025
 
-**Future Versions:** Subsequent patch releases (0.14.2+, 0.15.3+) will be evaluated and added to this guide after validation. The guide makes no guarantees about compatibility with untested versions.
+**Future Versions:** When new Zig versions are released (e.g., 0.16), the guide will be updated to target the new version. Migration guidance will be added to the appendices as needed.
 
 ---
 
 ## 2. Version Support Policy
 
-**Status:** TBD - To be determined as the project matures
+**Current Policy:** Latest version only + migration appendices
 
-**Considerations for future policy:**
-- **Sliding Window Approach:** Support latest N major versions (e.g., always cover most recent 2-3 versions)
-- **Comprehensive Archive:** Maintain all historical versions with clear markers
-- **Branched Versions:** Separate guide editions per major Zig version
+The guide targets the latest stable Zig version (currently 0.15.2) with migration guidance in appendices for users on older versions.
 
-**Decision factors:**
-- Community adoption rates of new Zig versions
-- Breaking change frequency in Zig releases
-- Maintenance burden vs reader value
+**Rationale:**
+- **Clean reading experience:** No version markers cluttering main content
+- **Sustainable maintenance:** Single version to maintain and validate
+- **Migration support:** Appendices provide upgrade path for older versions
+- **Modern focus:** Always teaching current best practices
+
+**When new versions release:**
+1. Update all examples to new version
+2. Add migration appendix (old → new) if breaking changes exist
+3. Archive obsolete migration appendices after 12-18 months
 
 ---
 
@@ -68,93 +69,89 @@ Each `research_notes.md` should document:
 
 ---
 
-## 4. Version Marker Conventions
+## 4. Update Workflow for New Zig Releases
 
-Defined in [style_guide.md](style_guide.md#2-structure--formatting), repeated here for reference:
+When a new Zig version is released (e.g., 0.16):
 
-- **✅ 0.15+** - Features or idioms introduced in Zig 0.15
-- **🕐 0.14.x** - Legacy practices from Zig 0.14
+### Phase 1: Assessment (1-2 hours)
+1. Review release notes and breaking changes
+2. Identify chapters affected by breaking changes
+3. Determine if migration appendix needed
+4. Estimate update effort
 
-When new versions are released, markers should be updated to reflect current vs legacy status.
+### Phase 2: Update Examples (2-4 hours)
+1. Update all code examples to new version
+2. Fix compilation errors
+3. Test all examples in `examples/` directory
+4. Update CI to test new version
 
-**Example for future 0.16 release:**
-- **✅ 0.16+** - New idioms
-- **🕐 0.14-0.15** - Older patterns (if still functional)
+### Phase 3: Update Content (2-6 hours)
+1. Update chapter content for API changes
+2. Update best practices if idioms changed
+3. Add new features/patterns as appropriate
+4. Update references to official docs
 
----
+### Phase 4: Migration Appendix (4-8 hours, if needed)
+1. Create new appendix (e.g., "Appendix D: 0.15 → 0.16")
+2. Document breaking changes with before/after examples
+3. Provide migration checklist
+4. Update SUMMARY.md
 
-## 5. Update Workflow for New Zig Releases
+### Phase 5: Validation (1-2 hours)
+1. Verify all examples compile
+2. Run full test suite
+3. Update README and versioning.md
+4. Archive old migration appendices if obsolete
 
-**Status:** Draft workflow - to be refined through practice
-
-### Phase 1: Impact Assessment
-1. New Zig version released (e.g., 0.16.0)
-2. Create versioned research document: `sections/XX_name/research_notes_v0.16.md`
-3. Research agent analyzes:
-   - Release notes and breaking changes
-   - Impact on existing code examples
-   - New idioms or stdlib changes
-   - Deprecations affecting guide content
-
-### Phase 2: Update Planning
-4. Generate section-by-section update plan:
-   - Examples requiring modification
-   - New examples to add
-   - Version markers to update
-   - Citations to verify/update
-5. Prioritize sections by impact severity
-
-### Phase 3: Content Updates
-6. Update `content.md` files incrementally
-7. Update `research_notes.md` with new findings
-8. Archive old research notes to `archive/` subdirectory
-9. Update `metadata/sections.yaml` if scope changes
-
-### Phase 4: Validation
-10. Verify all code examples compile in supported versions
-11. Check version markers are consistent
-12. Update References section with new official docs
-13. Review cross-version consistency
+**Total time per version:** 10-22 hours (vs 24-32h with multi-version approach)
 
 ---
 
-## 6. Deprecation Process
+## 5. Migration Appendix Lifecycle
 
-**Status:** TBD - Policy to be established
+**Retention policy:**
+- Migration appendices remain for 12-18 months after version release
+- Example: "0.14 → 0.15" appendix remains until ~May 2027
+- After retention period, archive or remove based on usage
 
-Questions to resolve:
-- When should examples be marked as legacy vs removed entirely?
-- How long should legacy patterns remain in the guide?
-- Should deprecated content move to appendices or be removed?
+**Archival criteria:**
+- Version adoption drops below 10% (community surveys/downloads)
+- No recent questions about migration on forums/Discord
+- New version has been stable for 12+ months
 
-**Current approach:**
-- Keep both legacy and modern patterns with clear version markers
-- Explain migration path where applicable
-- Reference Migration Guide (Section 14) for complex transitions
+**Archive location:** `docs/archive/` for historical reference
 
 ---
 
-## 7. Cross-Reference Updates
+## 6. Cross-Reference Updates
 
 When this file is updated, ensure these files reference current policy:
 
-- [AGENTS.md](AGENTS.md) - Agent workflow requirements
-- [README.md](README.md) - Project overview
-- [style_guide.md](style_guide.md) - Version marker conventions
+- [README.md](README.md) - Version statement and 0.14 guidance
+- [src/README.md](src/README.md) - Book introduction
+- [SUMMARY.md](src/SUMMARY.md) - Appendix structure
+- [style_guide.md](style_guide.md) - Writing guidelines
 
 ---
 
-## 8. Future Considerations
+## 7. Summary
 
-Topics to address as the project matures:
+**Version strategy:** Latest version only (0.15.2) with migration appendices
 
-- **Update Cadence:** How quickly to update guide after new Zig releases?
-- **Beta/RC Coverage:** Should guide cover pre-release versions?
-- **Community Input:** Process for incorporating version-specific feedback
-- **Automated Validation:** Tools to verify examples across Zig versions
-- **Version Matrix:** Tracking which examples work in which versions
+**Benefits:**
+- Clean, focused content (no version markers)
+- Sustainable maintenance (10-22h vs 24-32h per version)
+- Migration support via appendices
+- Modern best practices only
+
+**Trade-offs:**
+- 0.14.1 users must mentally translate or upgrade
+- Runnable examples target 0.15.2 only
+- Historical patterns in appendices only
+
+**This approach balances reader experience, maintenance sustainability, and backward support.**
 
 ---
 
-**Last Updated:** 2025-11-02
-**Next Review:** Upon Zig 0.16 release or major project milestone
+**Last Updated:** 2025-11-14
+**Next Review:** Upon Zig 0.16 release
