@@ -52,20 +52,9 @@ pub fn main() !void {
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
-    // Parse command-line arguments
-    const args = try std.process.argsAlloc(allocator);
-    defer std.process.argsFree(allocator, args);
-
-    if (args.len < 2) {
-        std.debug.print("Usage: wordcount <file>\n", .{});
-        return;
-    }
-
-    // Read file with automatic cleanup
-    const file = try std.fs.cwd().openFile(args[1], .{});
-    defer file.close();
-
-    const content = try file.readToEndAlloc(allocator, 1024 * 1024);
+    // Read from stdin
+    const stdin = std.io.getStdIn();
+    const content = try stdin.readToEndAlloc(allocator, 1024 * 1024);
     defer allocator.free(content);
 
     // Count words
@@ -81,8 +70,8 @@ pub fn main() !void {
 - **Memory allocation** (Chapter 4) - `GeneralPurposeAllocator` with leak detection
 - **Error handling** (Chapter 7) - `!void` return type, `try` keyword
 - **Resource cleanup** (Chapter 7) - `defer` ensures cleanup on all exit paths
-- **I/O operations** (Chapter 6) - File reading with proper error handling
-- **String processing** (Chapter 4) - Splitting and iteration
+- **I/O operations** (Chapter 6) - Reading from stdin with proper error handling
+- **String processing** (Chapter 5) - Splitting and iteration
 
 **Build and run:**
 
@@ -90,12 +79,16 @@ pub fn main() !void {
 # Build the executable (creates zig-out/bin/wordcount)
 zig build
 
-# Run it directly
-zig-out/bin/wordcount README.md
-# Output: Words: 42
+# Pipe text to the program
+echo "hello world from Zig" | zig-out/bin/wordcount
+# Output: Words: 4
 
-# Or build and run in one command
-zig build run -- README.md
+# Or use zig build run
+echo "hello world from Zig" | zig build run
+# Output: Words: 4
+
+# Count words from a file
+cat README.md | zig build run
 ```
 
 The `zig init` command creates a `build.zig` file that configures your project. The `.name = "wordcount"` field in that file controls the executable name. Chapter 9 covers the build system in depth.
