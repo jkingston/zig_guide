@@ -30,6 +30,17 @@ mkdir wordcount && cd wordcount
 zig init
 ```
 
+In `build.zig`, change the executable name from `"myproject"` to `"wordcount"`:
+
+```zig
+const exe = b.addExecutable(.{
+    .name = "wordcount",  // Change this line
+    .root_module = b.createModule(.{
+        // ... rest stays the same
+    }),
+});
+```
+
 Replace `src/main.zig` with:
 
 ```zig
@@ -76,10 +87,18 @@ pub fn main() !void {
 **Build and run:**
 
 ```bash
-zig build-exe src/main.zig
-./wordcount README.md
+# Build the executable (creates zig-out/bin/wordcount)
+zig build
+
+# Run it directly
+zig-out/bin/wordcount README.md
 # Output: Words: 42
+
+# Or build and run in one command
+zig build run -- README.md
 ```
+
+The `zig init` command creates a `build.zig` file that configures your project. The `.name = "wordcount"` field in that file controls the executable name. Chapter 9 covers the build system in depth.
 
 ---
 
