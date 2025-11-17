@@ -86,9 +86,6 @@ echo "hello world from Zig" | zig-out/bin/wordcount
 # Or use zig build run
 echo "hello world from Zig" | zig build run
 # Output: Words: 4
-
-# Count words from a file
-cat README.md | zig build run
 ```
 
 The `zig init` command creates a `build.zig` file that configures your project. The `.name = "wordcount"` field in that file controls the executable name. Chapter 9 covers the build system in depth.
