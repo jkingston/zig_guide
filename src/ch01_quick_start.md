@@ -30,16 +30,7 @@ mkdir wordcount && cd wordcount
 zig init
 ```
 
-In `build.zig`, change the executable name from `"myproject"` to `"wordcount"`:
-
-```zig
-const exe = b.addExecutable(.{
-    .name = "wordcount",  // Change this line
-    .root_module = b.createModule(.{
-        // ... rest stays the same
-    }),
-});
-```
+The `zig init` command creates a project structure with `build.zig` already configured to use the directory name (`"wordcount"`) as the executable name.
 
 Replace `src/main.zig` with:
 
