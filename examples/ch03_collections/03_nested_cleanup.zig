@@ -10,7 +10,7 @@ const Database = struct {
     };
 
     pub fn init(allocator: std.mem.Allocator, table_names: []const []const u8) !Database {
-        var tables = std.ArrayList(Table){};
+        var tables = std.ArrayList(Table).empty;
         errdefer {
             // Clean up any successfully initialized tables on error
             for (tables.items) |*table| {
@@ -27,7 +27,7 @@ const Database = struct {
             const table_name = try allocator.dupe(u8, name);
             errdefer allocator.free(table_name);  // If rows allocation fails
 
-            var rows = std.ArrayList([]u8){};
+            var rows = std.ArrayList([]u8).empty;
             errdefer rows.deinit(allocator);  // If append to tables fails
 
             try tables.append(allocator, .{

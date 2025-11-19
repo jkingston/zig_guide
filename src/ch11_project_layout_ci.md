@@ -1382,13 +1382,17 @@ const std = @import("std");
 const core = @import("core");
 
 pub fn main() !void {
-    const stdout = std.io.getStdOut().writer();
+    const stdout_file = std.fs.File.stdout();
+    var buf: [256]u8 = undefined;
+    var stdout_writer = stdout_file.writer(&buf);
+    const stdout = &stdout_writer.interface;
 
     try stdout.print("Workspace App v{}\n", .{core.version});
     try core.greet(stdout, "Workspace");
 
     const result = core.calculate(10, 5);
     try stdout.print("Calculate(10, 5) = {d}\n", .{result});
+    try stdout.flush();
 }
 
 test "app uses core correctly" {

@@ -7,7 +7,7 @@ const std = @import("std");
 
 fn handleRequest(allocator: std.mem.Allocator, req_id: u32, data: []const u8) ![]u8 {
     _ = data;
-    var parts = std.ArrayList([]const u8){};
+    var parts = std.ArrayList([]const u8).empty;
     defer parts.deinit(allocator);
 
     try parts.append(allocator, "Processing request ");

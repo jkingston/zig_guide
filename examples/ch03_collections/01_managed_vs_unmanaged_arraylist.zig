@@ -12,7 +12,7 @@ pub fn main() !void {
 
     // ✅ 0.15+ Unmanaged ArrayList (default)
     std.debug.print("=== Unmanaged ArrayList ===\n", .{});
-    var unmanaged_list = std.ArrayList(u32){};
+    var unmanaged_list = std.ArrayList(u32).empty;
     defer unmanaged_list.deinit(allocator);  // Allocator required
 
     try unmanaged_list.append(allocator, 10);  // Allocator required
@@ -31,7 +31,7 @@ pub fn main() !void {
 
     // Pre-allocation pattern
     std.debug.print("=== Pre-allocation Pattern ===\n", .{});
-    var preallocated = std.ArrayList(u32){};
+    var preallocated = std.ArrayList(u32).empty;
     defer preallocated.deinit(allocator);
 
     // Allocate exact capacity upfront (no reallocation needed)

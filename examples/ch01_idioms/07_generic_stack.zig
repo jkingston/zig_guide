@@ -14,7 +14,7 @@ fn Stack(comptime T: type) type {
 
         pub fn init(allocator: std.mem.Allocator) Self {
             return .{
-                .items = std.ArrayList(T){},
+                .items = std.ArrayList(T).empty,
                 .allocator = allocator,
             };
         }
