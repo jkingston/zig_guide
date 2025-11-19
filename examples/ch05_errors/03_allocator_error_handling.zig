@@ -28,7 +28,7 @@ const Container = struct {
     allocator: std.mem.Allocator,
 
     fn init(allocator: std.mem.Allocator) !Container {
-        var items = std.ArrayList([]const u8){};
+        var items = std.ArrayList([]const u8).empty;
         errdefer items.deinit(allocator);
 
         const scratch = try allocator.alloc(u8, 1024);

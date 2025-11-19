@@ -6,7 +6,7 @@
 const std = @import("std");
 
 fn buildMessage(allocator: std.mem.Allocator, parts: []const []const u8) ![]const u8 {
-    var list = std.ArrayList(u8){};
+    var list = std.ArrayList(u8).empty;
     // Note: No defer here - ownership transferred via toOwnedSlice
 
     for (parts, 0..) |part, i| {
@@ -21,7 +21,7 @@ fn buildMessage(allocator: std.mem.Allocator, parts: []const []const u8) ![]cons
 }
 
 fn processData(allocator: std.mem.Allocator, input: []const u8) !std.ArrayList(u32) {
-    var numbers = std.ArrayList(u32){};
+    var numbers = std.ArrayList(u32).empty;
     errdefer numbers.deinit(allocator);  // Clean up on error
 
     for (input) |byte| {

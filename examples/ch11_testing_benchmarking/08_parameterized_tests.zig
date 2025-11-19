@@ -50,7 +50,7 @@ test "ArrayList: generic type testing" {
     const types = [_]type{ u8, u16, u32, u64, i8, i16, i32, i64 };
 
     inline for (types) |T| {
-        var list = std.ArrayList(T){};
+        var list = std.ArrayList(T).empty;
         defer list.deinit(testing.allocator);
 
         const test_value: T = 42;

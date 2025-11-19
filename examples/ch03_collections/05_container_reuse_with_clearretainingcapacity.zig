@@ -12,7 +12,7 @@ pub fn main() !void {
 
     std.debug.print("=== Reusing Containers Across Iterations ===\n\n", .{});
 
-    var buffer = std.ArrayList(u8){};
+    var buffer = std.ArrayList(u8).empty;
     defer buffer.deinit(allocator);
 
     // Pre-allocate reasonable capacity

@@ -10,7 +10,7 @@ pub fn main() !void {
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
-    var list = std.ArrayList(u32){};
+    var list = std.ArrayList(u32).empty;
     defer list.deinit(allocator);
 
     try list.append(allocator, 10);

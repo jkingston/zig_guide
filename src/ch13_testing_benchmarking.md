@@ -1725,7 +1725,11 @@ fn sumFormula(n: u64) u64 {
 }
 
 pub fn main() !void {
-    const stdout = std.io.getStdOut().writer();
+    const stdout_file = std.fs.File.stdout();
+    var buf: [256]u8 = undefined;
+    var stdout_writer = stdout_file.writer(&buf);
+    const stdout = &stdout_writer.interface;
+
     const iterations = 1_000_000;
     const n = 1000;
 
@@ -1755,6 +1759,7 @@ pub fn main() !void {
         "Iterative",
         iterative_result,
     );
+    try stdout.flush();
 }
 ```
 

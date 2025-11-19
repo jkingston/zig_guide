@@ -1602,7 +1602,10 @@ const std = @import("std");
 
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
-    const stdout = std.io.getStdOut().writer();
+    const stdout_file = std.fs.File.stdout();
+    var buf: [256]u8 = undefined;
+    var stdout_writer = stdout_file.writer(&buf);
+    const stdout = &stdout_writer.interface;
 
     // Command-line arguments
     try stdout.print("=== Command-line arguments ===\n", .{});
@@ -1649,6 +1652,7 @@ pub fn main() !void {
     // Create directory
     try cwd.makeDir("wasi_dir");
     try stdout.print("Created directory: wasi_dir\n", .{});
+    try stdout.flush();
 }
 ```
 
