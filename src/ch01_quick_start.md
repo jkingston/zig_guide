@@ -44,7 +44,7 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     // Read from stdin
-    const stdin = std.io.getStdIn();
+    const stdin = std.fs.File.stdin();
     const content = try stdin.readToEndAlloc(allocator, 1024 * 1024);
     defer allocator.free(content);
 
