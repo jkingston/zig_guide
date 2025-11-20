@@ -7,6 +7,7 @@
 > - **Cleanup:** `defer allocator.free(ptr)` immediately after allocation
 > - **Error handling:** `errdefer` for multi-step initialization cleanup
 > - **See [comparison table](#allocator-types-and-selection) below for full allocator guide**
+> - **Jump to:** [Allocator Interface](#the-allocator-interface) | [Allocator Types](#allocator-types-and-selection) | [Ownership Patterns](#ownership-and-cleanup-responsibilities)
 
 ## Overview
 
