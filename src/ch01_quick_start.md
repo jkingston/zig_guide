@@ -1,5 +1,13 @@
 # Quick Start
 
+> **TL;DR for getting started:**
+> - **Installation:** Download from [ziglang.org](https://ziglang.org/download/), install matching ZLS for IDE support
+> - **First project:** `zig init` creates structure, `zig build` compiles, `zig build run` executes
+> - **Memory management:** `GeneralPurposeAllocator` with `defer` for automatic leak detection
+> - **Error handling:** `!void` return type, `try` propagates errors, `defer` ensures cleanup on all paths
+> - **Cross-compilation:** `zig build -Dtarget=x86_64-linux` — compile for any target from any host
+> - **Jump to:** [Installation](#installation) | [First Project](#your-first-project) | [Development Workflow](#development-workflow)
+
 Get started with Zig in under 10 minutes. This chapter walks through installation, your first project, and essential development workflows.
 
 ---
