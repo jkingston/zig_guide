@@ -1,4 +1,4 @@
-name: Deploy mdBook to GitHub Pages
+name: Build and Deploy Quarto Book
 
 on:
   push:
@@ -10,7 +10,6 @@ permissions:
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -19,16 +18,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup mdBook
-        uses: peaceiris/actions-mdbook@v2
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
         with:
-          mdbook-version: 'latest'
+          tinytex: true
 
-      - name: Build mdBook
-        run: mdbook build
+      - name: Render book
+        run: quarto render
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -36,7 +35,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./book
+          path: _book
 
   deploy:
     environment:

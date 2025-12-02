@@ -1,12 +1,15 @@
 # Language Idioms & Core Patterns
 
-> **TL;DR for Zig idioms:**
-> - **Naming:** `snake_case` (vars/functions), `PascalCase` (types), `SCREAMING_SNAKE_CASE` (constants)
-> - **Cleanup:** `defer cleanup()` (runs at scope exit in LIFO order), `errdefer` (only on error paths)
-> - **Errors:** `!T` for error unions, `try` propagates, `catch` handles, see [Ch7 for details](#/07_error_handling)
-> - **Optionals:** `?T` for nullable values, `.?` unwraps or panics, `orelse` provides default
-> - **comptime:** Compile-time execution for generics and zero-cost abstractions
-> - **Jump to:** [Naming §1.2](#naming-conventions) | [defer §1.3](#defer-and-errdefer) | [comptime §1.5](#comptime-execution)
+::: {.callout-tip}
+## TL;DR for Zig idioms
+
+- **Naming:** `snake_case` (vars/functions), `PascalCase` (types), `SCREAMING_SNAKE_CASE` (constants)
+- **Cleanup:** `defer cleanup()` (runs at scope exit in LIFO order), `errdefer` (only on error paths)
+- **Errors:** `!T` for error unions, `try` propagates, `catch` handles, see [Ch7 for details](#/07_error_handling)
+- **Optionals:** `?T` for nullable values, `.?` unwraps or panics, `orelse` provides default
+- **comptime:** Compile-time execution for generics and zero-cost abstractions
+- **Jump to:** [Naming §1.2](#naming-conventions) | [defer §1.3](#defer-and-errdefer) | [comptime §1.5](#comptime-execution)
+:::
 
 This chapter establishes the idiomatic baseline for Zig development. These patterns form the foundation for all subsequent chapters, covering naming conventions, resource cleanup, error handling fundamentals, compile-time execution, and module organization. Most patterns work identically across Zig 0.14.0, 0.14.1, 0.15.1, and 0.15.2.
 

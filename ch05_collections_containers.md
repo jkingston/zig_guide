@@ -1,12 +1,15 @@
 # Collections & Containers
 
-> **TL;DR for Zig collections:**
-> - **0.15 default:** `ArrayList(T)` is unmanaged (pass allocator to methods)
-> - **Managed variant:** `ArrayListManaged(T)` stores allocator (simpler API, +8 bytes overhead)
-> - **Common types:** ArrayList, HashMap, AutoHashMap, StringHashMap
-> - **Always:** Call `.deinit(allocator)` to free memory
-> - **See [comparison table](#managed-vs-unmanaged-containers) below**
-> - **Jump to:** [ArrayList §3.3](#arraylist) | [HashMap §3.4](#hashmap-and-variants) | [Iteration §3.5](#iteration-patterns)
+::: {.callout-tip}
+## TL;DR for Zig collections
+
+- **0.15 default:** `ArrayList(T)` is unmanaged (pass allocator to methods)
+- **Managed variant:** `ArrayListManaged(T)` stores allocator (simpler API, +8 bytes overhead)
+- **Common types:** ArrayList, HashMap, AutoHashMap, StringHashMap
+- **Always:** Call `.deinit(allocator)` to free memory
+- **See [comparison table](#managed-vs-unmanaged-containers) below**
+- **Jump to:** [ArrayList §3.3](#arraylist) | [HashMap §3.4](#hashmap-and-variants) | [Iteration §3.5](#iteration-patterns)
+:::
 
 ## Overview
 

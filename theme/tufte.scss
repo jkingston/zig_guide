@@ -1,0 +1,146 @@
+/*-- scss:defaults --*/
+
+// Tufte color palette
+$body-bg: #fffff8;
+$body-color: #111111;
+$link-color: #8B4513;
+$code-bg: #f7f7f0;
+
+// Typography - ETBook (Tufte's font)
+$font-family-serif: "ETBook", "Palatino Linotype", Palatino, Georgia, serif;
+$font-family-monospace: "JetBrains Mono", "SF Mono", Consolas, monospace;
+$font-family-base: $font-family-serif;
+$font-size-root: 1.1rem;
+$line-height-base: 1.8;
+$headings-font-weight: 400;
+
+/*-- scss:rules --*/
+
+// ETBook font faces
+@font-face {
+  font-family: "ETBook";
+  src: url("https://cdn.jsdelivr.net/gh/edwardtufte/tufte-css@latest/et-book/et-book-roman-line-figures/et-book-roman-line-figures.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ETBook";
+  src: url("https://cdn.jsdelivr.net/gh/edwardtufte/tufte-css@latest/et-book/et-book-bold-line-figures/et-book-bold-line-figures.woff") format("woff");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "ETBook";
+  src: url("https://cdn.jsdelivr.net/gh/edwardtufte/tufte-css@latest/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.woff") format("woff");
+  font-style: italic;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-family-serif;
+  font-weight: 400;
+}
+
+h2 { font-style: italic; }
+
+// Sidenotes styling
+.column-margin, .margin-note, aside, .footnote {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #555;
+}
+
+// Code blocks
+pre {
+  background-color: $code-bg;
+  border-left: 3px solid $link-color;
+}
+
+// Links
+a {
+  color: $link-color;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+// Blockquotes
+blockquote {
+  font-style: italic;
+  border-left: 3px solid #ccc;
+  padding-left: 1.5rem;
+  color: #555;
+}
+
+// Callouts - Tufte-inspired minimal style
+.callout {
+  border-radius: 0;
+  border-left-width: 3px;
+  background-color: rgba(0, 0, 0, 0.02);
+  margin: 1.5rem 0;
+}
+
+.callout-title {
+  font-family: $font-family-serif;
+  font-weight: 600;
+}
+
+.callout-note {
+  border-left-color: #4a7298;
+}
+
+.callout-tip {
+  border-left-color: #5a8a5a;
+}
+
+.callout-warning {
+  border-left-color: #b8860b;
+}
+
+.callout-important {
+  border-left-color: $link-color;
+}
+
+.callout-caution {
+  border-left-color: #a94442;
+}
+
+// Code annotations
+.code-annotation-anchor {
+  color: $link-color;
+  font-weight: 600;
+}
+
+.code-annotation-gutter-bg {
+  background-color: $code-bg;
+}
+
+// Tables
+.table {
+  font-size: 0.95rem;
+  margin: 1.5rem 0;
+}
+
+.table thead th {
+  border-bottom: 2px solid #aaa;
+  font-weight: 600;
+}
+
+.table tbody td {
+  border-bottom: 1px solid #ddd;
+}
+
+// Back to top button
+#quarto-back-to-top {
+  color: $link-color;
+  background-color: $body-bg;
+  border: 1px solid #ccc;
+}
+
+// Reader mode adjustments
+.quarto-reader #quarto-content {
+  max-width: 800px;
+}

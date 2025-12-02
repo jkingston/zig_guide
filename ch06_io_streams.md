@@ -1,12 +1,15 @@
 # I/O, Streams & Formatting
 
-> **TL;DR for I/O in Zig:**
-> - **0.15 breaking:** Use `std.fs.File.stdout()` instead of `std.io.getStdOut()`, explicit buffering now required
-> - **Writers/Readers:** Generic interfaces via vtables (uniform API across files, sockets, buffers)
-> - **Formatting:** `writer.print("Hello {s}\n", .{name})` - compile-time format checking
-> - **Files:** `std.fs.cwd().openFile()`, always `defer file.close()`
-> - **Buffering:** Wrap with `std.io.bufferedWriter()` for performance
-> - **Jump to:** [Writers/Readers §4.2](#writers-and-readers) | [Formatting §4.3](#string-formatting) | [File I/O §4.4](#file-io-patterns)
+::: {.callout-tip}
+## TL;DR for I/O in Zig
+
+- **0.15 breaking:** Use `std.fs.File.stdout()` instead of `std.io.getStdOut()`, explicit buffering now required
+- **Writers/Readers:** Generic interfaces via vtables (uniform API across files, sockets, buffers)
+- **Formatting:** `writer.print("Hello {s}\n", .{name})` - compile-time format checking
+- **Files:** `std.fs.cwd().openFile()`, always `defer file.close()`
+- **Buffering:** Wrap with `std.io.bufferedWriter()` for performance
+- **Jump to:** [Writers/Readers §4.2](#writers-and-readers) | [Formatting §4.3](#string-formatting) | [File I/O §4.4](#file-io-patterns)
+:::
 
 ## Overview
 

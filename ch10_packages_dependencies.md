@@ -1,12 +1,15 @@
 # Packages & Dependencies (build.zig.zon)
 
-> **TL;DR for Zig dependencies:**
-> - **Manifest:** `build.zig.zon` defines deps with URL + hash (no separate lock file)
-> - **Fetch:** `zig fetch --save https://github.com/user/pkg/archive/v1.0.tar.gz` adds dependency
-> - **Use:** `b.dependency("pkg_name", .{})` in build.zig, then `@import("pkg_name")` in code
-> - **Security:** Content-addressed with SHA-256 verification (prevents supply-chain attacks)
-> - **Cache:** Global at `~/.cache/zig` (shared across all projects)
-> - **Jump to:** [build.zig.zon §8.2](#buildzigzon-structure) | [Fetch workflow §8.3](#zig-fetch-workflow) | [Publishing §8.6](#publishing-packages)
+::: {.callout-tip}
+## TL;DR for Zig dependencies
+
+- **Manifest:** `build.zig.zon` defines deps with URL + hash (no separate lock file)
+- **Fetch:** `zig fetch --save https://github.com/user/pkg/archive/v1.0.tar.gz` adds dependency
+- **Use:** `b.dependency("pkg_name", .{})` in build.zig, then `@import("pkg_name")` in code
+- **Security:** Content-addressed with SHA-256 verification (prevents supply-chain attacks)
+- **Cache:** Global at `~/.cache/zig` (shared across all projects)
+- **Jump to:** [build.zig.zon §8.2](#buildzigzon-structure) | [Fetch workflow §8.3](#zig-fetch-workflow) | [Publishing §8.6](#publishing-packages)
+:::
 
 ## Overview
 

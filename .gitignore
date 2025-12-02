@@ -9,8 +9,9 @@
 .zig-cache/
 zig-out/
 
-# mdBook build output
-/book/
+# Quarto build output
+/_book/
+/.quarto/
 
 # Script outputs
 code_blocks_analysis.json

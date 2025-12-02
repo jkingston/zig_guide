@@ -1,13 +1,16 @@
 # Interoperability (C/C++/WASI/WASM)
 
-> **TL;DR for experienced C/C++ developers:**
-> - **Import C headers:** `const c = @cImport(@cInclude("header.h"));`
-> - **Call C function:** `extern "c" fn function_name(...) return_type;`
-> - **Expose to C:** `export fn zig_function(...) return_type`
-> - **Function pointers:** Add `callconv(.C)` for ABI compatibility
-> - **Link libc:** `exe.linkLibC()` in build.zig
-> - **See [Quick Reference](#quick-reference-c-interop-mechanisms) below for decision tree**
-> - **Jump to:** [C headers](#cimport-and-c-header-translation) | [Extern/Export](#extern-and-export-declarations) | [WASM](#webassembly-targets)
+::: {.callout-tip}
+## TL;DR for experienced C/C++ developers
+
+- **Import C headers:** `const c = @cImport(@cInclude("header.h"));`
+- **Call C function:** `extern "c" fn function_name(...) return_type;`
+- **Expose to C:** `export fn zig_function(...) return_type`
+- **Function pointers:** Add `callconv(.C)` for ABI compatibility
+- **Link libc:** `exe.linkLibC()` in build.zig
+- **See [Quick Reference](#quick-reference-c-interop-mechanisms) below for decision tree**
+- **Jump to:** [C headers](#cimport-and-c-header-translation) | [Extern/Export](#extern-and-export-declarations) | [WASM](#webassembly-targets)
+:::
 
 ## Overview
 

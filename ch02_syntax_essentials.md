@@ -1,14 +1,17 @@
 # Zig Syntax Essentials
 
-> **TL;DR for experienced developers:**
-> - **Types:** `i32`/`u64` (integers), `f64` (floats), `bool`, `void`
-> - **Pointers:** `*T` (single), `[]T` (slice), `[*]T` (many-item), `?T` (optional), `!T` (error union)
-> - **Composite:** `struct`, `enum`, `union` (tagged/untagged), `packed struct` (bit-level control)
-> - **Variables:** `const` (immutable), `var` (mutable). Prefer `const`.
-> - **Control flow:** `if`/`while`/`for`/`switch` (switch must be exhaustive)
-> - **Functions:** Return types required. Use `comptime` for generics.
-> - **Builtins:** `@intCast`, `@TypeOf`, `@sizeOf` for type operations
-> - **Jump to:** [Types §2.1](#types-and-declarations) | [Pointers §2.2](#pointers-arrays-and-slices) | [Composite §2.3](#composite-types) | [Control Flow §2.5](#control-flow)
+::: {.callout-tip}
+## TL;DR for experienced developers
+
+- **Types:** `i32`/`u64` (integers), `f64` (floats), `bool`, `void`
+- **Pointers:** `*T` (single), `[]T` (slice), `[*]T` (many-item), `?T` (optional), `!T` (error union)
+- **Composite:** `struct`, `enum`, `union` (tagged/untagged), `packed struct` (bit-level control)
+- **Variables:** `const` (immutable), `var` (mutable). Prefer `const`.
+- **Control flow:** `if`/`while`/`for`/`switch` (switch must be exhaustive)
+- **Functions:** Return types required. Use `comptime` for generics.
+- **Builtins:** `@intCast`, `@TypeOf`, `@sizeOf` for type operations
+- **Jump to:** [Types §2.1](#types-and-declarations) | [Pointers §2.2](#pointers-arrays-and-slices) | [Composite §2.3](#composite-types) | [Control Flow §2.5](#control-flow)
+:::
 
 Zig's syntax prioritizes explicitness and compile-time verification. This chapter covers essential syntax needed before exploring idioms in Chapter 3. Skip if already familiar with Zig syntax.
 

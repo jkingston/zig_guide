@@ -1,0 +1,94 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Zig: Zero to Hero"
+  subtitle: "From Fundamentals to Production"
+  author: "Zig: Zero to Hero Contributors"
+  date: last-modified
+
+  repo-url: https://github.com/jkingston/zig_guide
+  repo-actions: [edit, issue]
+  repo-branch: main
+
+  search: true
+  page-navigation: true
+  reader-mode: true
+
+  downloads: [pdf]
+  sharing: [twitter, linkedin]
+
+  page-footer:
+    left: "Copyright 2024, Zig: Zero to Hero Contributors"
+    right: "Built with [Quarto](https://quarto.org/)"
+
+  chapters:
+    - index.md
+    - part: "Getting Started"
+      chapters:
+        - ch01_quick_start.md
+        - ch02_syntax_essentials.md
+        - ch03_language_idioms.md
+    - part: "Core Concepts"
+      chapters:
+        - ch04_memory_allocators.md
+        - ch05_collections_containers.md
+        - ch06_io_streams.md
+        - ch07_error_handling.md
+        - ch08_async_concurrency.md
+    - part: "Build & Ecosystem"
+      chapters:
+        - ch09_build_system.md
+        - ch10_packages_dependencies.md
+        - ch11_project_layout_ci.md
+        - ch12_interoperability.md
+    - part: "Quality & Operations"
+      chapters:
+        - ch13_testing_benchmarking.md
+        - ch14_logging_diagnostics.md
+
+  appendices:
+    - appendix_a_working_with_014.md
+    - appendix_b_migration_014_015.md
+    - ch16_appendices.md
+
+# Tufte-style: footnotes become sidenotes
+reference-location: margin
+citation-location: margin
+
+# Zig syntax highlighting
+syntax-definitions:
+  - zig.xml
+highlight-style: github
+
+format:
+  html:
+    theme:
+      light: [cosmo, theme/tufte.scss]
+      dark: [darkly, theme/tufte-dark.scss]
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    number-depth: 2
+    code-copy: true
+    code-line-numbers: true
+    code-overflow: wrap
+    code-annotations: hover
+    smooth-scroll: true
+    back-to-top: true
+    lightbox: auto
+    anchor-sections: true
+    grid:
+      sidebar-width: 250px
+      body-width: 700px
+      margin-width: 350px
+      gutter-width: 1.5rem
+
+  pdf:
+    documentclass: scrbook
+    papersize: letter
+    number-sections: true
+    colorlinks: true
+    code-line-numbers: true
+    toc-depth: 2

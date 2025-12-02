@@ -1,12 +1,15 @@
 # Build System (build.zig)
 
-> **TL;DR for build.zig:**
-> - **Entry point:** `pub fn build(b: *std.Build) void` (runs at build time)
-> - **0.15 breaking:** Must use `root_module` with `b.createModule()`, not `root_source_file`
-> - **Common artifacts:** `b.addExecutable()`, `b.addStaticLibrary()`, `b.addTest()`
-> - **Cross-compile:** `zig build -Dtarget=aarch64-linux` (any target from any host)
-> - **Dependencies:** Managed via `build.zig.zon` (fetch from Git/HTTP)
-> - **Jump to:** [Basic structure §7.2](#build-function-entry-point) | [Modules §7.3](#module-system-015) | [Dependencies §7.5](#dependencies-and-packages)
+::: {.callout-tip}
+## TL;DR for build.zig
+
+- **Entry point:** `pub fn build(b: *std.Build) void` (runs at build time)
+- **0.15 breaking:** Must use `root_module` with `b.createModule()`, not `root_source_file`
+- **Common artifacts:** `b.addExecutable()`, `b.addStaticLibrary()`, `b.addTest()`
+- **Cross-compile:** `zig build -Dtarget=aarch64-linux` (any target from any host)
+- **Dependencies:** Managed via `build.zig.zon` (fetch from Git/HTTP)
+- **Jump to:** [Basic structure §7.2](#build-function-entry-point) | [Modules §7.3](#module-system-015) | [Dependencies §7.5](#dependencies-and-packages)
+:::
 
 ## Overview
 

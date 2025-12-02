@@ -1,5 +1,3 @@
-# Zig: Zero to Hero
-
 From Fundamentals to Production — A comprehensive guide to Zig development focused on idioms and best practices for **Zig 0.15.2**.
 
 ## About This Guide

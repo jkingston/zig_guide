@@ -1,0 +1,84 @@
+/*-- scss:defaults --*/
+
+$body-bg: #1a1612;
+$body-color: #e8dcc8;
+$link-color: #d4a574;
+$code-bg: #252018;
+
+$font-family-serif: "ETBook", "Palatino Linotype", Palatino, Georgia, serif;
+$font-family-monospace: "JetBrains Mono", "SF Mono", Consolas, monospace;
+$font-family-base: $font-family-serif;
+$font-size-root: 1.1rem;
+$line-height-base: 1.8;
+
+/*-- scss:rules --*/
+
+@font-face {
+  font-family: "ETBook";
+  src: url("https://cdn.jsdelivr.net/gh/edwardtufte/tufte-css@latest/et-book/et-book-roman-line-figures/et-book-roman-line-figures.woff") format("woff");
+  font-weight: normal;
+}
+
+.column-margin, .margin-note, aside, .footnote {
+  color: #a89880;
+}
+
+pre {
+  background-color: $code-bg;
+  border-left: 3px solid $link-color;
+}
+
+blockquote {
+  border-left-color: #4a3f35;
+  color: #c4b5a0;
+}
+
+// Callouts - dark theme
+.callout {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.callout-note {
+  border-left-color: #6a92b8;
+}
+
+.callout-tip {
+  border-left-color: #7aaa7a;
+}
+
+.callout-warning {
+  border-left-color: #d8a62b;
+}
+
+.callout-important {
+  border-left-color: $link-color;
+}
+
+.callout-caution {
+  border-left-color: #c96462;
+}
+
+// Code annotations
+.code-annotation-anchor {
+  color: $link-color;
+}
+
+.code-annotation-gutter-bg {
+  background-color: $code-bg;
+}
+
+// Tables
+.table thead th {
+  border-bottom-color: #4a3f35;
+}
+
+.table tbody td {
+  border-bottom-color: #2a2520;
+}
+
+// Back to top button
+#quarto-back-to-top {
+  color: $link-color;
+  background-color: $body-bg;
+  border: 1px solid #4a3f35;
+}

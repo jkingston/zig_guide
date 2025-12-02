@@ -1,13 +1,16 @@
 # Error Handling & Resource Cleanup
 
-> **TL;DR for experienced developers:**
-> - **Error unions:** `!T` syntax (e.g., `![]u8` = could return error or slice)
-> - **Propagate errors:** `try operation()` (unwraps or returns error to caller)
-> - **Handle errors:** `operation() catch |err| { ... }` or `catch default_value`
-> - **Cleanup:** `defer cleanup()` runs at scope exit (LIFO order)
-> - **Error-only cleanup:** `errdefer cleanup()` runs only if function returns error
-> - **Definitive resource cleanup chapter** - other chapters reference this
-> - **Jump to:** [Error sets §7.2](#error-sets-and-error-unions) | [try/catch §7.3](#error-propagation-with-try-and-catch) | [defer/errdefer §7.4](#resource-cleanup-with-defer)
+::: {.callout-tip}
+## TL;DR for experienced developers
+
+- **Error unions:** `!T` syntax (e.g., `![]u8` = could return error or slice)
+- **Propagate errors:** `try operation()` (unwraps or returns error to caller)
+- **Handle errors:** `operation() catch |err| { ... }` or `catch default_value`
+- **Cleanup:** `defer cleanup()` runs at scope exit (LIFO order)
+- **Error-only cleanup:** `errdefer cleanup()` runs only if function returns error
+- **Definitive resource cleanup chapter** - other chapters reference this
+- **Jump to:** [Error sets §7.2](#error-sets-and-error-unions) | [try/catch §7.3](#error-propagation-with-try-and-catch) | [defer/errdefer §7.4](#resource-cleanup-with-defer)
+:::
 
 ## Overview
 
