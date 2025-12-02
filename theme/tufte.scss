@@ -58,7 +58,7 @@ h2 { font-style: italic; }
 pre {
   background-color: $code-bg;
   border-left: 3px solid $link-color;
-  padding: 1rem;
+  padding: 0.5rem 0.75rem;
   overflow-x: auto;
 }
 
@@ -66,6 +66,7 @@ pre code {
   white-space: pre;
   word-wrap: normal;
   overflow-wrap: normal;
+  padding-left: 0;
 }
 
 // Fix wrapped code lines - disable wrap to use scroll instead
@@ -76,6 +77,15 @@ div.sourceCode {
 div.sourceCode pre {
   overflow-x: auto;
   white-space: pre;
+}
+
+// Reduce line number gutter width
+.code-with-copy .sourceCode {
+  padding-left: 0;
+}
+
+pre > code.sourceCode > span {
+  padding-left: 0;
 }
 
 // Links
