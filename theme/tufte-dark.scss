@@ -46,12 +46,30 @@ div.sourceCode pre {
   white-space: pre;
 }
 
-.code-with-copy .sourceCode {
-  padding-left: 0;
+// Compact line numbers
+pre > code.sourceCode {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
 }
 
 pre > code.sourceCode > span {
-  padding-left: 0;
+  padding-left: 0.5em !important;
+  text-indent: -0.5em;
+  margin-left: 0.5em;
+}
+
+pre > code.sourceCode > span > a:first-child::before {
+  text-align: right;
+  display: inline-block;
+  width: 2.5em;
+  padding-right: 0.5em;
+  margin-right: 0.5em;
+  border-right: 1px solid #4a3f35;
+}
+
+div.sourceCode {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
 
 blockquote {
