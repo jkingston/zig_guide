@@ -58,6 +58,24 @@ h2 { font-style: italic; }
 pre {
   background-color: $code-bg;
   border-left: 3px solid $link-color;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+pre code {
+  white-space: pre;
+  word-wrap: normal;
+  overflow-wrap: normal;
+}
+
+// Fix wrapped code lines - disable wrap to use scroll instead
+div.sourceCode {
+  overflow-x: auto;
+}
+
+div.sourceCode pre {
+  overflow-x: auto;
+  white-space: pre;
 }
 
 // Links

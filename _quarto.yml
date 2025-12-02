@@ -73,7 +73,7 @@ format:
     number-depth: 2
     code-copy: true
     code-line-numbers: true
-    code-overflow: wrap
+    code-overflow: scroll
     code-annotations: hover
     smooth-scroll: true
     back-to-top: true

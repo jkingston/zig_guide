@@ -26,6 +26,23 @@ $line-height-base: 1.8;
 pre {
   background-color: $code-bg;
   border-left: 3px solid $link-color;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+pre code {
+  white-space: pre;
+  word-wrap: normal;
+  overflow-wrap: normal;
+}
+
+div.sourceCode {
+  overflow-x: auto;
+}
+
+div.sourceCode pre {
+  overflow-x: auto;
+  white-space: pre;
 }
 
 blockquote {
