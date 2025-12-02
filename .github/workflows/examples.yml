@@ -70,7 +70,7 @@ jobs:
 
       - name: Run code block analysis
         run: |
-          python3 scripts/extract_code_blocks.py src > code_block_report.txt
+          python3 scripts/extract_code_blocks.py . > code_block_report.txt
           cat code_block_report.txt
 
       - name: Upload analysis report
@@ -81,24 +81,3 @@ jobs:
             code_block_report.txt
             code_blocks_analysis.json
 
-  build-book:
-    name: Build mdBook
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup mdBook
-        uses: peaceiris/actions-mdbook@v2
-        with:
-          mdbook-version: 'latest'
-
-      - name: Build mdBook
-        run: mdbook build
-
-      - name: Upload book artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: book
-          path: ./book

@@ -16,7 +16,7 @@ book:
   page-navigation: true
   reader-mode: true
 
-  downloads: [pdf]
+  # downloads: [pdf]  # Disabled until PDF LaTeX issues are fixed
   sharing: [twitter, linkedin]
 
   page-footer:
