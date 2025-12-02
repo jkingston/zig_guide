@@ -26,7 +26,7 @@ $line-height-base: 1.8;
 pre {
   background-color: $code-bg;
   border-left: 3px solid $link-color;
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem;
   overflow-x: auto;
 }
 
@@ -34,7 +34,6 @@ pre code {
   white-space: pre;
   word-wrap: normal;
   overflow-wrap: normal;
-  padding-left: 0;
 }
 
 div.sourceCode {
@@ -46,30 +45,23 @@ div.sourceCode pre {
   white-space: pre;
 }
 
-// Compact line numbers
+// Compact line numbers - minimal spacing
 pre > code.sourceCode {
   padding-left: 0 !important;
   margin-left: 0 !important;
 }
 
 pre > code.sourceCode > span {
-  padding-left: 0.5em !important;
-  text-indent: -0.5em;
-  margin-left: 0.5em;
+  padding-left: 2em !important;
 }
 
 pre > code.sourceCode > span > a:first-child::before {
   text-align: right;
   display: inline-block;
-  width: 2.5em;
-  padding-right: 0.5em;
-  margin-right: 0.5em;
-  border-right: 1px solid #4a3f35;
-}
-
-div.sourceCode {
-  margin-left: 0 !important;
-  padding-left: 0 !important;
+  width: 1.5em;
+  padding-right: 0.3em;
+  margin-left: -2em;
+  color: #777;
 }
 
 blockquote {
