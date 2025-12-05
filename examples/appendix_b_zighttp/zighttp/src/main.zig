@@ -47,7 +47,7 @@ fn printError(err: anyerror) void {
 pub fn main() !void {
     // Set up allocator
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
+    defer std.debug.assert(gpa.deinit() == .ok);
     const allocator = gpa.allocator();
 
     // Parse arguments

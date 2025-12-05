@@ -146,7 +146,7 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 **defer**
 - **Definition**: Executes code at scope exit (similar to Go's defer)
 - **Pattern**: Place immediately after resource acquisition
-- **Usage**: `var gpa = GPA{}; defer _ = gpa.deinit();`
+- **Usage**: `var gpa = GPA{}; defer std.debug.assert(gpa.deinit() == .ok);`
 - **Chapter**: 3 (Memory & Allocators), 6 (Error Handling)
 - **Version**: All versions
 
@@ -710,7 +710,7 @@ pub fn readConfig(path: []const u8) anyerror!Config { }
 ```zig
 // ✅ GOOD: defer right after acquisition
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-defer _ = gpa.deinit();
+defer std.debug.assert(gpa.deinit() == .ok);
 
 const file = try std.fs.cwd().openFile("data.txt", .{});
 defer file.close();
@@ -1588,7 +1588,7 @@ while (iter.next()) |token| { }
 ```zig
 // GeneralPurposeAllocator (production)
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-defer _ = gpa.deinit();
+defer std.debug.assert(gpa.deinit() == .ok);
 const allocator = gpa.allocator();
 
 // ArenaAllocator (batch free)
@@ -1988,7 +1988,7 @@ _ = gpa.deinit(); // Easy to forget!
 ```zig
 // ✅ GOOD: defer right after acquisition
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-defer _ = gpa.deinit(); // Cleanup guaranteed
+defer std.debug.assert(gpa.deinit() == .ok); // Cleanup guaranteed + leak detection
 const allocator = gpa.allocator();
 ```
 

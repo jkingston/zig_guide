@@ -56,7 +56,7 @@ fn processWithGPA() !void {
 
 pub fn main() !void {
     var gpa_main = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa_main.deinit();
+    defer std.debug.assert(gpa_main.deinit() == .ok);
 
     try processWithArena(gpa_main.allocator());
     try processWithFixedBuffer();

@@ -31,7 +31,7 @@ fn processData(allocator: std.mem.Allocator, input: []const u8) !std.ArrayList(u
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
+    defer std.debug.assert(gpa.deinit() == .ok);
     const allocator = gpa.allocator();
 
     std.debug.print("=== Ownership Transfer Patterns ===\n\n", .{});
@@ -68,4 +68,3 @@ pub fn main() !void {
     try list_from_slice.append(allocator, 'F');  // Can grow
     std.debug.print("From slice: {s}\n", .{list_from_slice.items});
 }
-```

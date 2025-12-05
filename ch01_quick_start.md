@@ -51,7 +51,7 @@ const std = @import("std");
 pub fn main() !void {
     // Memory allocation with leak detection
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
+    defer std.debug.assert(gpa.deinit() == .ok);
     const allocator = gpa.allocator();
 
     // Read from stdin

@@ -20,7 +20,7 @@ const User = struct {
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
+    defer std.debug.assert(gpa.deinit() == .ok);
     const allocator = gpa.allocator();
 
     // Pattern 1: Direct value storage
@@ -74,4 +74,3 @@ pub fn main() !void {
     std.debug.print("Contains 42? {}\n", .{seen_ids.contains(42)});
     std.debug.print("Contains 99? {}\n", .{seen_ids.contains(99)});
 }
-```

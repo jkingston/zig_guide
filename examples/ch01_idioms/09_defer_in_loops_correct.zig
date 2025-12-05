@@ -21,7 +21,7 @@ fn processFilesCorrect(paths: []const []const u8) !void {
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
+    defer std.debug.assert(gpa.deinit() == .ok);
     const allocator = gpa.allocator();
 
     const paths = [_][]const u8{ "file1.txt", "file2.txt", "file3.txt" };

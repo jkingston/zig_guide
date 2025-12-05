@@ -31,7 +31,7 @@ fn handleRequest(allocator: std.mem.Allocator, req_id: u32, data: []const u8) ![
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
+    defer std.debug.assert(gpa.deinit() == .ok);
 
     var arena = std.heap.ArenaAllocator.init(gpa.allocator());
     defer arena.deinit();
