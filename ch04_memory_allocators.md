@@ -8,6 +8,7 @@
 - **Choose allocator:** GPA (dev), c_allocator (prod), Arena (request-scoped), testing.allocator (tests)
 - **Cleanup:** `defer allocator.free(ptr)` immediately after allocation
 - **Error handling:** `errdefer` for multi-step initialization cleanup
+- **Zero-length allocations work** — `alloc(T, 0)` returns a valid empty slice; `free()` on it is a no-op (unlike C's undefined `malloc(0)`)
 - **See [comparison table](#allocator-types-and-selection) below for full allocator guide**
 - **Jump to:** [Allocator Interface](#the-allocator-interface) | [Allocator Types](#allocator-types-and-selection) | [Ownership Patterns](#ownership-and-cleanup-responsibilities)
 :::
@@ -31,7 +32,7 @@ The interface defines four primary operations:
 - **`create(T)`** — Allocates a single item of type `T`, returning `*T`
 - **`destroy(pointer)`** — Deallocates a single item
 
-All allocation methods return error unions (`![]T` or `!*T`), with `error.OutOfMemory` as the primary failure mode. For performance-critical scenarios, `alignedAlloc()` ensures specific alignment requirements, such as cache-line alignment for buffers.[^1]
+All allocation methods return error unions (`![]T` or `!*T`), with `error.OutOfMemory` as the primary failure mode. For performance-critical scenarios, `alignedAlloc()` ensures specific alignment requirements, such as cache-line alignment for buffers.[^1] Zero-length allocations are valid: `alloc(T, 0)` returns a usable empty slice with `len == 0`, and `free()` on such slices is a safe no-op. This eliminates the need for defensive length checks before allocating or freeing, unlike C where `malloc(0)` has implementation-defined behavior.
 
 ```zig
 const std = @import("std");
