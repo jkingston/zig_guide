@@ -64,7 +64,7 @@ const cstr: [*:0]const u8 = "C string";
 
 ```zig
 const UserId = u64;
-const Result = ![]const u8;  // Error union alias
+const Result = anyerror![]const u8;  // Error union alias
 ```
 
 ---
@@ -187,7 +187,7 @@ const Color = enum {
     blue,
 
     pub fn isWarm(self: Color) bool {
-        return self == .red or self == .orange;
+        return self == .red;
     }
 };
 
@@ -446,24 +446,15 @@ const category = switch (value) {
 };
 ```
 
-**Common pitfall:** `defer` in loops executes per iteration:
+**`defer` in loops:** each iteration is its own scope, so `defer` fires per iteration — this is usually what you want:
 
 ```zig
-// ❌ Allocates 100 buffers, frees all at end
+// ✅ defer fires at end of each iteration — buf is freed every loop
 for (0..100) |_| {
     const buf = try allocator.alloc(u8, 1024);
-    defer allocator.free(buf);  // Defers until loop end
+    defer allocator.free(buf);
     // use buf
-}
-
-// ✅ Use nested block for immediate cleanup
-for (0..100) |_| {
-    {
-        const buf = try allocator.alloc(u8, 1024);
-        defer allocator.free(buf);  // Defers until block end
-        // use buf
-    }  // buf freed here
-}
+}  // no leaked buffers
 ```
 
 See Ch3 §3.3 for `defer` and `errdefer` patterns.
@@ -581,7 +572,7 @@ while (cond) : (continue_expr) { }
 for (items) |item| { }
 for (items, 0..) |item, idx| { }
 switch (value) {
-    case => result,
+    pattern => result,
     else => default,
 }
 

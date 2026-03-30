@@ -220,20 +220,20 @@ Exported symbols use the function name directly without name mangling, ensuring 
 Calling conventions determine how arguments are passed (registers vs stack) and who cleans up the stack. Specify conventions with `callconv`:
 
 ```zig
-fn standardC() callconv(.C) void {
+fn standardC() callconv(.c) void {
     // C calling convention (cdecl on x86)
 }
 
-fn windowsStdcall() callconv(.Stdcall) void {
+fn windowsStdcall() callconv(.stdcall) void {
     // Windows stdcall convention
 }
 
-fn alwaysInline() callconv(.Inline) void {
+fn alwaysInline() callconv(.@"inline") void {
     // Always inlined at call site
 }
 ```
 
-Most C interop uses `.C` convention. Platform-specific APIs may require `.Stdcall` (Win32 API) or other conventions.
+Most C interop uses `.c` convention. Platform-specific APIs may require `.stdcall` (Win32 API) or other conventions.
 
 **Symbol Visibility and Weak Linkage:**
 

@@ -717,7 +717,7 @@ pub const LogContext = struct {
 
             stderr.writeAll("}\n") catch return;
             stderr.flush() catch return;
-        };
+        }
     }
 };
 

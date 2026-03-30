@@ -187,27 +187,23 @@ fn allocateResource(allocator: Allocator) !Resource {
 
 If the function returns successfully, `errdefer` blocks do not execute — the caller receives the resources and becomes responsible for cleanup. If any operation fails, all preceding `errdefer` statements run in LIFO order, ensuring partial initialization is properly cleaned up.
 
-Functions that allocate resources internally often need both `defer` and `errdefer`:
+For resources used only within the function, `defer` alone is sufficient — it runs on **both** success and error paths:
 
 ```zig
 fn processData(allocator: Allocator) !void {
     const buffer = try allocator.alloc(u8, 128);
-    errdefer allocator.free(buffer); // Cleanup if error occurs
-    defer allocator.free(buffer);     // Cleanup on success too
+    defer allocator.free(buffer);  // Always runs at scope exit
 
     var resource = try Resource.init(allocator);
-    errdefer resource.deinit();
     defer resource.deinit();
 
     // Use resources...
-    // If error: errdefer runs, defer skipped
-    // If success: defer runs, errdefer skipped
+    // On error: defer runs (cleanup)
+    // On success: defer runs (cleanup)
 }
 ```
 
-Both statements are necessary because:
-- `errdefer` handles partial initialization failures
-- `defer` handles normal cleanup at function exit
+Use `errdefer` only when the resource is **returned to the caller** on success — so you want to free it on error, but *not* on success (since the caller takes ownership).
 
 Ghostty demonstrates progressive cleanup for multi-stage allocations:
 
@@ -373,6 +369,7 @@ const std = @import("std");
 
 const DatabaseError = error{
     ConnectionFailed,
+    InvalidInput,
     QueryFailed,
     Timeout,
 };

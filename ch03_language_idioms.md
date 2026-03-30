@@ -3,7 +3,7 @@
 ::: {.callout-tip}
 ## TL;DR for Zig idioms
 
-- **Naming:** `snake_case` (vars/functions), `PascalCase` (types), `SCREAMING_SNAKE_CASE` (constants)
+- **Naming:** `snake_case` (vars), `camelCase` (functions), `PascalCase` (types), `SCREAMING_SNAKE_CASE` (constants)
 - **Cleanup:** `defer cleanup()` (runs at scope exit in LIFO order), `errdefer` (only on error paths)
 - **Errors:** `!T` for error unions, `try` propagates, `catch` handles, see [Ch7 for details](#/07_error_handling)
 - **Optionals:** `?T` for nullable values, `.?` unwraps or panics, `orelse` provides default
@@ -241,7 +241,7 @@ const std = @import("std");
 fn fieldCount(comptime T: type) comptime_int {
     const info = @typeInfo(T);
     return switch (info) {
-        .Struct => |s| s.fields.len,
+        .@"struct" => |s| s.fields.len,
         else => 0,
     };
 }

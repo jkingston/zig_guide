@@ -55,6 +55,28 @@ jobs:
         run: |
           bash scripts/validate_sync.sh
 
+  validate-code-blocks:
+    name: Validate Inline Code Blocks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: '0.15.2'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate code blocks in chapters
+        run: |
+          python3 scripts/validate_code_blocks.py .
+
   analyze-code-blocks:
     name: Analyze Code Blocks
     runs-on: ubuntu-latest

@@ -525,17 +525,21 @@ pub fn build(b: *std.Build) void {
     // Main executable
     const exe = b.addExecutable(.{
         .name = "myapp",
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
     b.installArtifact(exe);
 
     // Test executable
     const tests = b.addTest(.{
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
 
     const run_tests = b.addRunArtifact(tests);
@@ -937,9 +941,11 @@ Debug vs ReleaseFast can differ by 10-100x in performance.
 ```zig
 const benchmark = b.addExecutable(.{
     .name = "benchmark",
-    .root_source_file = b.path("src/benchmark.zig"),
-    .target = target,
-    .optimize = .ReleaseFast,  // Force release mode
+    .root_module = b.createModule(.{
+        .root_source_file = b.path("src/benchmark.zig"),
+        .target = target,
+        .optimize = .ReleaseFast,  // Force release mode
+    }),
 });
 ```
 
@@ -1047,9 +1053,11 @@ pub fn build(b: *std.Build) void {
 
     const exe = b.addExecutable(.{
         .name = "myapp",
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
         .strip = false,  // Keep symbols for profiling
     });
 
@@ -1794,9 +1802,11 @@ pub fn build(b: *std.Build) void {
 
     const exe = b.addExecutable(.{
         .name = "profiling-demo",
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
         .strip = false,  // Keep symbols for profiling
     });
 
