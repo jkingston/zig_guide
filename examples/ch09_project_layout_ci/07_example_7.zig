@@ -14,12 +14,8 @@ pub const Version = struct {
 
     pub fn format(
         self: Version,
-        comptime fmt: []const u8,
-        options: std.fmt.FormatOptions,
-        writer: anytype,
-    ) !void {
-        _ = fmt;
-        _ = options;
+        writer: *std.Io.Writer,
+    ) std.Io.Writer.Error!void {
         try writer.print("{d}.{d}.{d}", .{ self.major, self.minor, self.patch });
     }
 };
@@ -40,8 +36,7 @@ test "calculate" {
 
 test "version format" {
     var buf: [100]u8 = undefined;
-    var stream = std.io.fixedBufferStream(&buf);
-    try version.format("", .{}, stream.writer());
-    const result = stream.getWritten();
-    try std.testing.expectEqualStrings("1.0.0", result);
+    var writer = std.Io.Writer.fixed(&buf);
+    try version.format(&writer);
+    try std.testing.expectEqualStrings("1.0.0", buf[0..writer.end]);
 }

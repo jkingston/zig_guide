@@ -1200,7 +1200,7 @@ The transition from managed to unmanaged containers represents a maturation of Z
 
 [^1]: [Zig 0.15.1 Release Notes](https://ziglang.org/download/0.15.1/release-notes.html)
 [^2]: [Ziggit: Embracing Unmanaged](https://ziggit.dev/t/embracing-unmanaged-plans-with-eg-autohashmap/11934)
-[^3]: [Zig Standard Library - array_list.zig](https://github.com/ziglang/zig/blob/0.15.2/lib/std/array_list.zig)
+[^3]: [Zig Standard Library - array_list.zig](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/array_list.zig)
 [^4]: [Hexops - Zig Hashmaps Explained](https://devlog.hexops.com/2022/zig-hashmaps-explained/)
 [^5]: [OpenMyMind - Zig's HashMap Part 2](https://www.openmymind.net/Zigs-HashMap-Part-2/)
 [^6]: [TigerBeetle lsm/cache_map.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/lsm/cache_map.zig)

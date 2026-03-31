@@ -2839,14 +2839,14 @@ The testing, benchmarking, and profiling capabilities in Zig enable building rob
 1. [Zig Language Reference: Testing](https://ziglang.org/documentation/master/#Testing)
 2. [TigerBeetle snaptest.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/stdx/testing/snaptest.zig#L74-L76)
 3. [Zig Standard Library: std.testing](https://ziglang.org/documentation/master/std/#std.testing)
-4. [Zig stdlib: FailingAllocator](https://github.com/ziglang/zig/blob/0.15.2/lib/std/testing/FailingAllocator.zig)
+4. [Zig stdlib: FailingAllocator](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/testing/FailingAllocator.zig)
 5. [ZLS Custom FailingAllocator](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/testing.zig#L67-L141)
 6. [TigerBeetle testing/ directory](https://github.com/tigerbeetle/tigerbeetle/tree/main/src/testing)
 7. [TigerBeetle fixtures.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/testing/fixtures.zig#L33-L52)
 8. [Zig Build System Guide](https://ziglang.org/learn/build-system/)
 9. [TigerBeetle time.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/testing/time.zig#L12-L98)
-10. [Zig stdlib: std.time.Timer](https://github.com/ziglang/zig/blob/0.15.2/lib/std/time.zig#L216-L268)
-11. [Zig stdlib: std.mem.doNotOptimizeAway](https://github.com/ziglang/zig/blob/0.15.2/lib/std/mem.zig)
+10. [Zig stdlib: std.time.Timer](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/time.zig#L216-L268)
+11. [Zig stdlib: std.mem.doNotOptimizeAway](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/mem.zig)
 12. [Example 06: Profiling](file:///home/user/zig_guide/sections/12_testing_benchmarking/examples/06_profiling)
 13. [Valgrind Callgrind Documentation](https://valgrind.org/docs/manual/cl-manual.html)
 14. [Linux perf Tutorial](https://perf.wiki.kernel.org/index.php/Tutorial)
@@ -2860,8 +2860,8 @@ The testing, benchmarking, and profiling capabilities in Zig enable building rob
 22. [Ghostty fontconfig test.zig](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/pkg/fontconfig/test.zig)
 23. [ZLS testing.zig](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/testing.zig#L9-L26)
 24. [ZLS FailingAllocator](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/testing.zig#L67-L141)
-25. [Zig Standard Library array_list.zig](https://github.com/ziglang/zig/blob/0.15.2/lib/std/array_list.zig)
-26. [Zig Standard Library hash_map.zig](https://github.com/ziglang/zig/blob/0.15.2/lib/std/hash_map.zig)
+25. [Zig Standard Library array_list.zig](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/array_list.zig)
+26. [Zig Standard Library hash_map.zig](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/hash_map.zig)
 27. [FlameGraph GitHub Repository](https://github.com/brendangregg/FlameGraph)
 28. [Example 01: Testing Fundamentals](file:///home/user/zig_guide/sections/12_testing_benchmarking/examples/01_testing_fundamentals)
 29. [Example 02: Test Organization](file:///home/user/zig_guide/sections/12_testing_benchmarking/examples/02_test_organization)
@@ -2878,7 +2878,7 @@ The testing, benchmarking, and profiling capabilities in Zig enable building rob
 40. [Massif Visualizer](https://github.com/KDE/massif-visualizer)
 41. [Hotspot Profiler](https://github.com/KDAB/hotspot)
 42. [Zig Standard Library Documentation](https://ziglang.org/documentation/master/std/)
-43. [Zig Community: Testing Best Practices](https://github.com/ziglang/zig/wiki/Testing-Best-Practices)
+43. [Zig Community: Testing Best Practices](https://codeberg.org/ziglang/zig/wiki/Testing-Best-Practices)
 44. [TigerBeetle state_machine_tests.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/state_machine_tests.zig)
 45. [Ghostty freetype test.zig](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/pkg/freetype/test.zig)
 
@@ -2890,14 +2890,14 @@ The testing, benchmarking, and profiling capabilities in Zig enable building rob
 [^1]: https://ziglang.org/documentation/master/#Testing
 [^2]: https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/stdx/testing/snaptest.zig#L74-L76
 [^3]: https://ziglang.org/documentation/master/std/#std.testing
-[^4]: https://github.com/ziglang/zig/blob/0.15.2/lib/std/testing/FailingAllocator.zig
+[^4]: https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/testing/FailingAllocator.zig
 [^5]: https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/testing.zig#L67-L141
 [^6]: https://github.com/tigerbeetle/tigerbeetle/tree/main/src/testing
 [^7]: https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/testing/fixtures.zig#L33-L52
 [^8]: https://ziglang.org/learn/build-system/
 [^9]: https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/testing/time.zig#L12-L98
-[^10]: https://github.com/ziglang/zig/blob/0.15.2/lib/std/time.zig#L216-L268
-[^11]: https://github.com/ziglang/zig/blob/0.15.2/lib/std/mem.zig
+[^10]: https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/time.zig#L216-L268
+[^11]: https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/mem.zig
 [^12]: file:///home/user/zig_guide/sections/12_testing_benchmarking/examples/06_profiling
 [^13]: https://valgrind.org/docs/manual/cl-manual.html
 [^14]: https://perf.wiki.kernel.org/index.php/Tutorial

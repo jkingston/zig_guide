@@ -1347,12 +1347,8 @@ pub const Version = struct {
 
     pub fn format(
         self: Version,
-        comptime fmt: []const u8,
-        options: std.fmt.FormatOptions,
-        writer: anytype,
-    ) !void {
-        _ = fmt;
-        _ = options;
+        writer: *std.Io.Writer,
+    ) std.Io.Writer.Error!void {
         try writer.print("{d}.{d}.{d}", .{ self.major, self.minor, self.patch });
     }
 };
@@ -2094,16 +2090,16 @@ The next iteration of Zig's package ecosystem will introduce official package re
 ## References
 
 [^1]: Zig Language Reference - Cross-Compilation - https://ziglang.org/documentation/0.15.2/#Cross-compiling
-[^2]: Zig Init Template - https://github.com/ziglang/zig/tree/0.15.2/lib/init
-[^3]: Zig Init Command Implementation - https://github.com/ziglang/zig/blob/0.15.2/src/main.zig#L6520-L6650
-[^4]: Zig Compiler Source Organization - https://github.com/ziglang/zig/tree/0.15.2/src
-[^5]: Zig Compiler Architecture - https://github.com/ziglang/zig/blob/0.15.2/src/Air.zig
+[^2]: Zig Init Template - https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/init
+[^3]: Zig Init Command Implementation - https://codeberg.org/ziglang/zig/src/tag/0.15.2/src/main.zig#L6520-L6650
+[^4]: Zig Compiler Source Organization - https://codeberg.org/ziglang/zig/src/tag/0.15.2/src
+[^5]: Zig Compiler Architecture - https://codeberg.org/ziglang/zig/src/tag/0.15.2/src/Air.zig
 [^6]: ZLS Test Organization - https://github.com/zigtools/zls/tree/master/tests
 [^7]: Mach Workspace Structure - https://github.com/hexops/mach
-[^8]: Zig Target Specification - https://github.com/ziglang/zig/blob/0.15.2/lib/std/Target.zig
-[^9]: std.Target.Query API - https://github.com/ziglang/zig/blob/0.15.2/lib/std/Target.zig#L1-L100
+[^8]: Zig Target Specification - https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Target.zig
+[^9]: std.Target.Query API - https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Target.zig#L1-L100
 [^10]: TigerBeetle CPU Requirements - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md#cpu-requirements
-[^11]: Zig ABI Specification - https://github.com/ziglang/zig/blob/0.15.2/lib/std/Target.zig#L800-L850
+[^11]: Zig ABI Specification - https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Target.zig#L800-L850
 [^12]: Ghostty Static Linking Strategy - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig#L1-L50
 [^13]: setup-zig GitHub Action - https://github.com/mlugg/setup-zig
 [^14]: TigerBeetle Custom Zig Download - https://github.com/tigerbeetle/tigerbeetle/tree/main/zig
@@ -2114,7 +2110,7 @@ The next iteration of Zig's package ecosystem will introduce official package re
 [^19]: Ghostty Test Workflow - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/.github/workflows/test.yml
 [^20]: ZLS Release Automation - https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/.github/workflows/artifacts.yml
 [^21]: TigerBeetle Monorepo Organization - https://github.com/tigerbeetle/tigerbeetle/tree/main/src/clients
-[^22]: Zig Compiler Repository - https://github.com/ziglang/zig
+[^22]: Zig Compiler Repository - https://codeberg.org/ziglang/zig
 [^23]: TigerBeetle Target Resolution - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/build.zig#L13-L42
 [^24]: TigerBeetle Style Guide - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md
 [^25]: Ghostty Build Organization - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig

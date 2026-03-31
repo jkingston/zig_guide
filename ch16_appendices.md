@@ -988,7 +988,7 @@ This section consolidates 200+ references from all chapters, organized by catego
 - build.zig Guide: https://ziglang.org/learn/build-system/
 
 **Package Management**
-- Package Management Guide: https://github.com/ziglang/zig/blob/0.15.2/doc/build.zig.zon.md
+- Package Management Guide: https://codeberg.org/ziglang/zig/src/tag/0.15.2/doc/build.zig.zon.md
 
 **Release Notes**
 - Zig 0.11 Release Notes: https://ziglang.org/download/0.11.0/release-notes.html
@@ -1010,14 +1010,20 @@ This section consolidates 200+ references from all chapters, organized by catego
 **Bun (JavaScript Runtime)**
 - Repository: https://github.com/oven-sh/bun
 - Notable: JavaScript/C++ interop, performance optimization techniques
+- Note: Acquired by Anthropic (Dec 2025), remains open-source (MIT)
 
 **ZLS (Zig Language Server)**
 - Repository: https://github.com/zigtools/zls
-- Notable: Compiler integration, language analysis patterns
+- Notable: Compiler integration, language analysis patterns, `inline else` dispatch
+
+**Lightpanda (Headless Browser)**
+- Repository: https://github.com/lightpanda-io/browser
+- Notable: Multi-language FFI (V8, libcurl, html5ever), thread-safe arena pool, dual allocator strategy
+- Zig 0.15.2, 26k stars
 
 **Zig Compiler (Self-Hosted)**
-- Repository: https://github.com/ziglang/zig
-- Standard Library Source: https://github.com/ziglang/zig/tree/master/lib/std
+- Repository: https://codeberg.org/ziglang/zig (migrated from GitHub, Nov 2025)
+- Standard Library Source: https://codeberg.org/ziglang/zig/src/branch/master/lib/std
 - Notable: Canonical Zig style, comprehensive stdlib examples
 
 ### Community Resources
@@ -2350,7 +2356,8 @@ This chapter provides comprehensive reference materials for Zig development:
 7. Ghostty: https://github.com/ghostty-org/ghostty
 8. Bun: https://github.com/oven-sh/bun
 9. ZLS: https://github.com/zigtools/zls
-10. Zig Compiler (stdlib): https://github.com/ziglang/zig/tree/master/lib/std
+10. Lightpanda: https://github.com/lightpanda-io/browser
+11. Zig Compiler (stdlib): https://codeberg.org/ziglang/zig/src/branch/master/lib/std
 
 ### Community Resources
 11. Zig Learn: https://ziglearn.org/

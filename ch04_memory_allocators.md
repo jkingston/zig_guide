@@ -71,8 +71,8 @@ Zig's standard library provides specialized allocators for different use cases:
 | Allocator | Characteristics | Best For | Trade-offs | Production Use |
 |-----------|-----------------|----------|------------|----------------|
 | `std.testing.allocator` | Fails tests on leaks, stack traces | Testing | Safety (dev-only) | Required for tests |
-| `GeneralPurposeAllocator` | Thread-safe, detects double-free/use-after-free, never reuses addresses | Development, debugging | Safety > performance | Ghostty, ZLS[^2][^3] |
-| `ArenaAllocator` | Bulk deallocation, `free()` is no-op | Request-scoped, parsers, temp data | Holds all until `deinit()` | TigerBeetle config[^2][^3] |
+| `GeneralPurposeAllocator` | Thread-safe, detects double-free/use-after-free, never reuses addresses | Development, debugging | Safety > performance | Ghostty, ZLS, Lightpanda (debug)[^2][^3] |
+| `ArenaAllocator` | Bulk deallocation, `free()` is no-op | Request-scoped, parsers, temp data | Holds all until `deinit()` | TigerBeetle config, Lightpanda ArenaPool[^2][^3] |
 | `FixedBufferAllocator` | Pre-allocated buffer (often stack), no syscalls | Known max size, perf-critical | Fixed capacity | Zig test runner[^4] |
 | `c_allocator` | Wraps malloc/free, minimal overhead | Release builds, C interop | No safety features | Production (after testing) |
 | `page_allocator` | Direct OS page mapping (4KB min) | Large buffers, isolation | High overhead for small allocs | Security-critical |
@@ -406,6 +406,8 @@ Production codebases demonstrate these patterns at scale:
 
 **ZLS** (Zig Language Server) conditionally selects debug vs release allocators based on build configuration, balancing safety and performance.[^3]
 
+**Lightpanda** (headless browser, 26k stars) demonstrates a three-tier allocator strategy:[^9a] `DebugAllocator` with stack traces in debug mode, `c_allocator` in release mode, and a thread-safe `ArenaPool` that recycles per-request arenas via a mutex-protected free list—ideal for server workloads with many short-lived allocations.
+
 These exemplars share common patterns: allocator-first parameter ordering, meaningful allocator names (`gpa`, `arena`), immediate defer placement, and comprehensive errdefer for multi-step initialization.
 
 ## Summary
@@ -426,7 +428,7 @@ Understanding these patterns provides the foundation for containers, I/O, and co
 1. [Learning Zig - Heap Memory & Allocators](https://www.openmymind.net/learning_zig/heap_memory/)
 2. [Ghostty Config.zig - ArenaAllocator usage](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/config/Config.zig#L17)
 3. [ZLS main.zig - Arena for argument parsing](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/main.zig#L282-288)
-4. [Zig test runner - FixedBufferAllocator](https://github.com/ziglang/zig/blob/0.15.2/lib/compiler/test_runner.zig)
+4. [Zig test runner - FixedBufferAllocator](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/compiler/test_runner.zig)
 5. [TigerBeetle TIGER_STYLE.md - Memory conventions](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md)
 6. [TigerBeetle manifest.zig - errdefer cleanup](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/lsm/manifest.zig#L213-216)
 7. [TigerBeetle state_machine.zig - Cascading cleanup](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/state_machine.zig#L846-852)
@@ -445,3 +447,4 @@ Understanding these patterns provides the foundation for containers, I/O, and co
 [^6]: [TigerBeetle manifest.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/lsm/manifest.zig#L213-216)
 [^7]: [TigerBeetle state_machine.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/state_machine.zig#L846-852)
 [^8]: [Bun allocators.zig](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/allocators.zig)
+[^9a]: [Lightpanda main.zig - Dual allocator strategy](https://github.com/lightpanda-io/browser/blob/main/src/main.zig)

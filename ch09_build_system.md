@@ -1202,17 +1202,17 @@ Understanding these patterns enables building libraries, CLI tools, and complex 
 
 [^1]: Zig Build System documentation - https://ziglang.org/learn/build-system/
 [^2]: Zig Language Reference: Cross-compilation - https://ziglang.org/documentation/master/#Cross-compilation
-[^3]: Zig 0.15.0 Release Notes - https://github.com/ziglang/zig/releases/tag/0.15.0
+[^3]: Zig 0.15.0 Release Notes - https://codeberg.org/ziglang/zig/releases/tag/0.15.0
 [^4]: std.Build API documentation - https://ziglang.org/documentation/master/std/#std.Build
 [^5]: Build Options guide - https://ziglang.org/learn/build-system/#build-options
 [^6]: Custom Build Steps - https://ziglang.org/learn/build-system/#custom-build-steps
-[^7]: Official Zig init template - https://github.com/ziglang/zig/blob/0.15.2/lib/init/build.zig
+[^7]: Official Zig init template - https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/init/build.zig
 [^8]: Zig module system documentation - https://ziglang.org/documentation/master/#Modules
 [^9]: ZLS build.zig build options pattern - https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/build.zig#L47-L91
 [^10]: TigerBeetle code generation pattern - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/build.zig#L1945-L1955
 [^11]: Ghostty multi-platform builds - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig
 [^12]: TigerBeetle test organization - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/build.zig#L853-L886
-[^13]: Zig 0.15 migration guide - https://github.com/ziglang/zig/wiki/0.15.0-Release-Notes
+[^13]: Zig 0.15 migration guide - https://codeberg.org/ziglang/zig/wiki/0.15.0-Release-Notes
 [^14]: std.Build.path documentation - https://ziglang.org/documentation/master/std/#std.Build.path
 [^15]: Lazy dependencies - Covered in Chapter 10: Packages & Dependencies
 [^16]: TigerBeetle CPU feature enforcement - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/build.zig#L13-L42
@@ -1225,5 +1225,5 @@ Understanding these patterns enables building libraries, CLI tools, and complex 
 [^bun4]: [Bun Source: Multi-Platform Check Steps](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/build.zig#L360-L372) - Cross-platform semantic analysis without full compilation
 [^bun5]: [Bun Source: Translate-C Post-Processing](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/build.zig#L517-L570) - Custom processing for Windows C header translations
 [^bun6]: [Bun Source: Environment-Based Build Modes](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/build.zig#L598-L601) - Fast iteration mode via BUN_BUILD_FAST flag
-[^20]: Zig compiler test organization - https://github.com/ziglang/zig/blob/0.15.2/build.zig#L381-L621
+[^20]: Zig compiler test organization - https://codeberg.org/ziglang/zig/src/tag/0.15.2/build.zig#L381-L621
 [^21]: zig-gamedev build system - https://github.com/michal-z/zig-gamedev - Multi-library C/C++ integration patterns

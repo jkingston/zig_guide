@@ -154,57 +154,57 @@ Zig's `std.fmt` module provides format specifiers for the `print` function:
 
 **Custom formatting for user types:**
 
-Implement the `format` function to make your types printable:
+Implement the `format` function to make your types printable. In 0.15+, the format method takes just two parameters — `self` and a concrete `*std.Io.Writer` — and you must use `{f}` (not `{}`) to invoke it:
 
 ```zig
+const std = @import("std");
+
 const Point = struct {
     x: f32,
     y: f32,
 
     pub fn format(
         self: Point,
-        comptime fmt_str: []const u8,
-        options: std.fmt.FormatOptions,
-        writer: anytype,
-    ) !void {
-        _ = options;
-        _ = fmt_str;
+        writer: *std.Io.Writer,
+    ) std.Io.Writer.Error!void {
         try writer.print("Point({d:.2}, {d:.2})", .{ self.x, self.y });
     }
 };
 
 // Usage:
 const p = Point{ .x = 3.14, .y = 2.71 };
-try writer.print("Location: {}\n", .{p});  // Output: Location: Point(3.14, 2.71)
+try writer.print("Location: {f}\n", .{p});  // Output: Location: Point(3.14, 2.71)
 ```
 
-For types with multiple format modes, inspect `fmt_str`:
+For types that need multiple representations, provide separate methods:
 
 ```zig
+const std = @import("std");
+
 const Color = struct {
     r: u8,
     g: u8,
     b: u8,
 
+    /// Default format: rgb(r, g, b)
     pub fn format(
         self: Color,
-        comptime fmt_str: []const u8,
-        options: std.fmt.FormatOptions,
-        writer: anytype,
-    ) !void {
-        _ = options;
-        if (std.mem.eql(u8, fmt_str, "hex")) {
-            try writer.print("#{x:0>2}{x:0>2}{x:0>2}", .{ self.r, self.g, self.b });
-        } else {
-            try writer.print("rgb({d}, {d}, {d})", .{ self.r, self.g, self.b });
-        }
+        writer: *std.Io.Writer,
+    ) std.Io.Writer.Error!void {
+        try writer.print("rgb({d}, {d}, {d})", .{ self.r, self.g, self.b });
+    }
+
+    /// Hex format: #rrggbb
+    pub fn toHexString(self: Color, buf: []u8) []const u8 {
+        return std.fmt.bufPrint(buf, "#{x:0>2}{x:0>2}{x:0>2}", .{ self.r, self.g, self.b }) catch "";
     }
 };
 
 // Usage:
 const color = Color{ .r = 255, .g = 128, .b = 64 };
-try writer.print("Default: {}\n", .{color});      // rgb(255, 128, 64)
-try writer.print("Hex: {hex}\n", .{color});       // #ff8040
+try writer.print("Default: {f}\n", .{color});        // rgb(255, 128, 64)
+var hex_buf: [7]u8 = undefined;
+try writer.print("Hex: {s}\n", .{color.toHexString(&hex_buf)});  // #ff8040
 ```
 
 ### Stream Lifetime Management
@@ -285,21 +285,17 @@ pub fn processBatch() !void {
 
 ## Code Examples
 
-### Fixed Buffer Stream (Zero Allocation)
+### Fixed Buffer Writing (Zero Allocation)
 
-For situations where heap allocation is undesirable, use `fixedBufferStream`:
+For situations where heap allocation is undesirable, use `std.io.fixedBufferStream` or `std.Io.Writer.fixed`:
 
 ```zig
 const std = @import("std");
 
-pub fn formatMetric(value: u64) ![512]u8 {
-    var buffer: [512]u8 = undefined;
-    var fbs = std.io.fixedBufferStream(&buffer);
-    const writer = fbs.writer();
-
+pub fn formatMetric(buf: []u8, value: u64) std.Io.Writer.Error![]const u8 {
+    var writer = std.Io.Writer.fixed(buf);
     try writer.print("metric.count:{d}|g\n", .{value});
-
-    return buffer;  // Entire buffer returned
+    return buf[0..writer.end];
 }
 ```
 
@@ -534,7 +530,7 @@ var writer = stdout.writer(&.{});  // Unbuffered
 TigerBeetle, a distributed financial database, demonstrates I/O patterns prioritizing correctness and observability.
 
 **Fixed Buffer Streams for Metrics**
-- Uses `std.io.fixedBufferStream()` for zero-allocation StatsD metrics formatting
+- Uses fixed-buffer writers for zero-allocation StatsD metrics formatting
 - Source: [`src/trace/statsd.zig:59-85`](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/trace/statsd.zig#L332-365)
 - Pattern: Compile-time buffer sizing for worst-case metric strings
 
@@ -567,7 +563,7 @@ Ghostty, a terminal emulator, shows modern async I/O patterns with the xev libra
 **Fixed Buffer Writers for String Conversion**
 - Stack-allocated buffers for config value serialization
 - Source: [`src/config/io.zig:99`](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/config/io.zig#L99)
-- Pattern: `var writer: std.Io.Writer = .fixed(&buf);`
+- Pattern: `var writer = std.Io.Writer.fixed(&buf);`
 
 ### Bun: High-Performance Buffered I/O
 
@@ -590,7 +586,7 @@ The Zig Language Server demonstrates I/O patterns for protocol communication.
 - 4KB stack buffer for log message formatting with overflow handling
 - Source: [`src/main.zig:50-100`](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/main.zig#L50-L100)
 - Gracefully handles buffer overflow with "..." suffix
-- Pattern: `var writer: std.Io.Writer = .fixed(&buffer);`
+- Pattern: `var writer = std.Io.Writer.fixed(&buffer);`
 
 **Unbuffered stderr for Critical Messages**
 - Uses `std.fs.File.stderr().writer(&.{})` for immediate error output
@@ -742,9 +738,9 @@ The explicit nature of 0.15+ buffering may seem verbose initially, but it provid
 
 ## References
 
-1. Zig Standard Library – Io.zig ([0.15.2](https://github.com/ziglang/zig/blob/0.15.2/lib/std/Io.zig))
-2. Zig Standard Library – fmt.zig ([0.15.2](https://github.com/ziglang/zig/blob/0.15.2/lib/std/fmt.zig))
-3. Zig Standard Library – fs/File.zig ([0.15.2](https://github.com/ziglang/zig/blob/0.15.2/lib/std/fs/File.zig))
+1. Zig Standard Library – Io.zig ([0.15.2](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Io.zig))
+2. Zig Standard Library – fmt.zig ([0.15.2](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/fmt.zig))
+3. Zig Standard Library – fs/File.zig ([0.15.2](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/fs/File.zig))
 4. TigerBeetle – Fixed buffer metrics formatting ([src/trace/statsd.zig:59-85](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/trace/statsd.zig#L332-365))
 5. TigerBeetle – Direct I/O implementation ([src/io/linux.zig:1433-1570](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/io/linux.zig#L1433-L1570))
 6. TigerBeetle – LSE error recovery ([src/storage.zig:279-384](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/storage.zig#L279-L384))

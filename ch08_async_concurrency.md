@@ -173,7 +173,7 @@ const cpu_count = try std.Thread.getCpuCount();
 std.debug.print("CPU cores: {d}\n", .{cpu_count});
 ```
 
-Full implementation available at: [lib/std/Thread.zig](https://github.com/ziglang/zig/blob/0.15.2/lib/std/Thread.zig)
+Full implementation available at: [lib/std/Thread.zig](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Thread.zig)
 
 ### Synchronization Primitives
 
@@ -649,7 +649,7 @@ pool.waitAndWork(&wait_group);
 std.debug.print("Final count: {d}\n", .{counter.load(.monotonic)});
 ```
 
-Full implementation: [lib/std/Thread/Pool.zig](https://github.com/ziglang/zig/blob/0.15.2/lib/std/Thread/Pool.zig)
+Full implementation: [lib/std/Thread/Pool.zig](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Thread/Pool.zig)
 
 #### Production Thread Pool: Bun's Work-Stealing Design
 
@@ -1552,9 +1552,9 @@ This section links to production concurrency patterns in real-world Zig projects
 
 ### TigerBeetle: Distributed Database
 
-**Project**: High-performance distributed database for financial systems
+**Project**: High-performance distributed database for financial systems (v0.16.78, 15.5k stars, [Jepsen-tested](https://jepsen.io/analyses/tigerbeetle-0.16.11))
 **Concurrency Model**: Single-threaded event loop + thread-safe client API
-**Repository**: [tigerbeetle/tigerbeetle](https://github.com/tigerbeetle/tigerbeetle)
+**Repository**: [tigerbeetle/tigerbeetle](https://github.com/tigerbeetle/tigerbeetle) — Zig 0.14.1
 
 **Key Patterns:**
 
@@ -1575,9 +1575,9 @@ This section links to production concurrency patterns in real-world Zig projects
 
 ### Bun: JavaScript Runtime
 
-**Project**: All-in-one JavaScript runtime (Node.js alternative)
+**Project**: All-in-one JavaScript runtime (v1.3.9, 88.5k stars, [acquired by Anthropic](https://bun.com/blog/bun-joins-anthropic) Dec 2025)
 **Concurrency Model**: Work-stealing thread pool + event loop hybrid
-**Repository**: [oven-sh/bun](https://github.com/oven-sh/bun)
+**Repository**: [oven-sh/bun](https://github.com/oven-sh/bun) — custom Zig 0.13 fork
 
 **Key Patterns:**
 
@@ -1603,9 +1603,9 @@ This section links to production concurrency patterns in real-world Zig projects
 
 ### ZLS: Zig Language Server
 
-**Project**: Official language server for Zig (IDE support)
+**Project**: Official language server for Zig (v0.15.1, 4.7k stars, tracking 0.16.0-dev on master)
 **Concurrency Model**: Thread pool for analysis + main LSP thread
-**Repository**: [zigtools/zls](https://github.com/zigtools/zls)
+**Repository**: [zigtools/zls](https://github.com/zigtools/zls) — Zig 0.15.1
 
 **Key Patterns:**
 
@@ -1633,9 +1633,9 @@ This section links to production concurrency patterns in real-world Zig projects
 
 ### Ghostty: Terminal Emulator
 
-**Project**: High-performance GPU-accelerated terminal by Mitchell Hashimoto
+**Project**: High-performance GPU-accelerated terminal by Mitchell Hashimoto (v1.3.1, 49.2k stars)
 **Concurrency Model**: Multiple libxev event loops in separate threads
-**Repository**: [ghostty-org/ghostty](https://github.com/ghostty-org/ghostty)
+**Repository**: [ghostty-org/ghostty](https://github.com/ghostty-org/ghostty) — Zig 0.15.2
 
 **Key Patterns:**
 
@@ -1660,9 +1660,9 @@ This section links to production concurrency patterns in real-world Zig projects
 
 ### Mach: Game Engine Concurrency Patterns
 
-**Project**: Game engine and multimedia framework ecosystem
+**Project**: Game engine and multimedia framework ecosystem (v0.4, 4.7k stars, self-hosted at code.hexops.com)
 **Concurrency Model**: Lock-free data structures with single-threaded event loop
-**Repository**: [hexops/mach](https://github.com/hexops/mach)
+**Repository**: [hexops/mach](https://github.com/hexops/mach) — pinned Zig nightly (2024.11.0-mach)
 
 **Key Patterns:**
 
@@ -1893,11 +1893,38 @@ pub fn tryLock(objs: *@This()) bool {
 
 > **See also:** Chapter 6 (I/O Streams) for zap's buffered response writers and zero-copy request parsing patterns.
 
+### Lightpanda: Headless Browser
+
+**Project**: Ground-up headless browser for AI automation (1.0.0-dev, 26.2k stars)
+**Concurrency Model**: Arena-pooled request handling with mutex-protected free list
+**Repository**: [lightpanda-io/browser](https://github.com/lightpanda-io/browser) — Zig 0.15.2
+
+**Key Patterns:**
+
+1. **Thread-Safe Arena Pool**
+   - Pattern: Pre-allocated pool of `ArenaAllocator` instances, acquired per-request
+   - Mutex protects the free list; the arenas themselves are lock-free once acquired
+   - `acquire()` / `release()` / `reset()` lifecycle prevents allocation churn
+
+2. **Dual Allocator Strategy**
+   - Debug builds: `DebugAllocator` with 10-frame stack traces for leak detection
+   - Release builds: `std.heap.c_allocator` for raw performance
+   - Selected at comptime via `builtin.mode == .Debug`
+
+3. **Multi-Language Integration**
+   - V8 (JavaScript), libcurl (networking), html5ever (Rust HTML parser)
+   - Each dependency receives matching target/optimization settings from `build.zig`
+
+**Architectural Notes:**
+- Claims 16x lower memory and 9x faster than Chrome headless
+- Uses Chrome DevTools Protocol (CDP) for automation interface
+- Arena pool pattern is directly applicable to any request-handling server
+
 ### Zig Compiler Self-Hosting
 
 **Project**: Zig compiler itself (written in Zig)
 **Concurrency Model**: Thread pool for parallel compilation
-**Repository**: [ziglang/zig](https://github.com/ziglang/zig)
+**Repository**: [ziglang/zig](https://codeberg.org/ziglang/zig)
 
 **Key Patterns:**
 
@@ -1913,7 +1940,7 @@ pub fn tryLock(objs: *@This()) bool {
    - Track module dependencies with atomic refcounts
    - Safe concurrent access to shared AST nodes
 
-Source: [main.zig](https://github.com/ziglang/zig/blob/0.15.2/src/main.zig)
+Source: [main.zig](https://codeberg.org/ziglang/zig/src/tag/0.15.2/src/main.zig)
 
 ### Production Patterns Summary
 
@@ -1923,8 +1950,9 @@ Source: [main.zig](https://github.com/ziglang/zig/blob/0.15.2/src/main.zig)
 | Bun | Work-stealing thread pool | Lock-free ring buffer | [ThreadPool.zig:849-1042](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig#L849-L1042) |
 | ZLS | Thread pool + RwLock | Reader-writer document store | [DocumentStore.zig:20-36](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/DocumentStore.zig#L20-L36) |
 | Ghostty | Multi-loop libxev | Per-thread event loops | [ghostty repository](https://github.com/ghostty-org/ghostty) |
+| Lightpanda | Arena pool + mutex | Thread-safe arena reuse | [lightpanda-io/browser](https://github.com/lightpanda-io/browser) |
 | zap | Event loop + worker pool | Connection pooling + zero-copy parsing | [zap repository](https://github.com/zigzap/zap) |
-| Zig Compiler | Parallel compilation | WaitGroup coordination | [main.zig](https://github.com/ziglang/zig/blob/0.15.2/src/main.zig) |
+| Zig Compiler | Parallel compilation | WaitGroup coordination | [main.zig](https://codeberg.org/ziglang/zig/src/tag/0.15.2/src/main.zig) |
 
 ---
 
@@ -1971,13 +1999,13 @@ Zig's concurrency model rewards careful design but provides the tools for buildi
 
 [^2]: [Zig Language Reference 0.15.2](https://ziglang.org/documentation/0.15.2/)
 
-[^3]: [std.Thread.Mutex Implementation](https://github.com/ziglang/zig/blob/0.15.2/lib/std/Thread/Mutex.zig)
+[^3]: [std.Thread.Mutex Implementation](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Thread/Mutex.zig)
 
 [^4]: [TigerBeetle context.zig (Locker implementation)](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client/context.zig#L62-L126)
 
 [^5]: [ZLS DocumentStore.zig (RwLock usage)](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/DocumentStore.zig#L20-L36)
 
-[^6]: [std.atomic.Value Implementation](https://github.com/ziglang/zig/blob/0.15.2/lib/std/atomic.zig)
+[^6]: [std.atomic.Value Implementation](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/atomic.zig)
 
 [^7]: [Bun ThreadPool.zig (Atomic CAS)](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig#L374-L379)
 
@@ -2006,8 +2034,8 @@ Zig's concurrency model rewards careful design but provides the tools for buildi
 
 **Official Documentation:**
 - [Zig Language Reference: Threads](https://ziglang.org/documentation/master/#Threads)
-- [Zig Standard Library: std.Thread](https://github.com/ziglang/zig/blob/0.15.2/lib/std/Thread.zig)
-- [Zig Standard Library: std.atomic](https://github.com/ziglang/zig/blob/0.15.2/lib/std/atomic.zig)
+- [Zig Standard Library: std.Thread](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Thread.zig)
+- [Zig Standard Library: std.atomic](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/atomic.zig)
 
 **Libraries:**
 - [libxev: Event Loop for Zig](https://github.com/mitchellh/libxev)
@@ -2028,5 +2056,5 @@ Zig's concurrency model rewards careful design but provides the tools for buildi
 - [ThreadSanitizer (TSan)](https://github.com/google/sanitizers)
 
 **Benchmark Code:**
-- [std.crypto.benchmark](https://github.com/ziglang/zig/blob/0.15.2/lib/std/crypto/benchmark.zig)
-- [std.hash.benchmark](https://github.com/ziglang/zig/blob/0.15.2/lib/std/hash/benchmark.zig)
+- [std.crypto.benchmark](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/crypto/benchmark.zig)
+- [std.hash.benchmark](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/hash/benchmark.zig)
