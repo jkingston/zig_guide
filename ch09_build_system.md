@@ -418,10 +418,8 @@ pub fn build(b: *std.Build) void {
 ```zig
 const std = @import("std");
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
     var args = try std.process.argsWithAllocator(allocator);
     defer args.deinit();

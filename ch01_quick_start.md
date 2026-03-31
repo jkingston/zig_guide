@@ -5,7 +5,7 @@
 
 - **Installation:** Download from [ziglang.org](https://ziglang.org/download/), install matching ZLS for IDE support
 - **First project:** `zig init` creates structure, `zig build` compiles, `zig build run` executes
-- **Memory management:** `GeneralPurposeAllocator` with `defer` for automatic leak detection
+- **Memory management:** `process.Init` provides `init.gpa` allocator with automatic leak detection
 - **Error handling:** `!void` return type, `try` propagates errors, `defer` ensures cleanup on all paths
 - **Cross-compilation:** `zig build -Dtarget=x86_64-linux` — compile for any target from any host
 - **Jump to:** [Installation](#installation) | [First Project](#your-first-project) | [Development Workflow](#development-workflow)
@@ -48,11 +48,8 @@ Replace `src/main.zig` with:
 ```zig
 const std = @import("std");
 
-pub fn main() !void {
-    // Memory allocation with leak detection
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
     // Read from stdin
     const stdin = std.fs.File.stdin();
@@ -69,19 +66,13 @@ pub fn main() !void {
 ```
 
 **What this demonstrates:**
-- **Memory allocation** (Chapter 4) - `GeneralPurposeAllocator` with leak detection
+- **process.Init** (Appendix C) - `init.gpa` provides a pre-initialized allocator with leak detection
 - **Error handling** (Chapter 7) - `!void` return type, `try` keyword
 - **Resource cleanup** (Chapter 7) - `defer` ensures cleanup on all exit paths
 - **I/O operations** (Chapter 6) - Reading from stdin with proper error handling
 - **String processing** (Chapter 5) - Splitting and iteration
 
-> **0.16+ note:** Zig 0.16 introduces `process.Init` ("juicy main"), which provides a pre-initialized allocator, arena, and I/O interface. The classic `pub fn main() !void` still works, but the new signature eliminates boilerplate:
-> ```zig
-> pub fn main(init: std.process.Init) !void {
->     // init.gpa, init.arena, init.io all ready to use
-> }
-> ```
-> See Appendix C for full details.
+> **0.16+ note:** Zig 0.16 introduces `process.Init` ("juicy main"), which provides a pre-initialized allocator, arena, and I/O interface. The classic `pub fn main() !void` still works, but `process.Init` eliminates boilerplate. `init.gpa` is a `GeneralPurposeAllocator`-backed allocator; `init.arena` provides scratch space; `init.io` provides async I/O. See Appendix C for full details.
 
 **Build and run:**
 

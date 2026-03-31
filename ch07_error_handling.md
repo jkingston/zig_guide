@@ -662,15 +662,8 @@ const Container = struct {
     }
 };
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer {
-        const leaked = gpa.deinit();
-        if (leaked == .leak) {
-            std.debug.print("Memory leaked!\n", .{});
-        }
-    }
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
     var container = try Container.init(allocator);
     defer container.deinit();
@@ -686,7 +679,7 @@ pub fn main() !void {
 - Multi-resource container initialization
 - Complex cleanup in `deinit` methods
 - Using `errdefer` in methods that modify state
-- GPA leak detection with `defer` block
+- `process.Init` provides a leak-detecting allocator via `init.gpa`
 
 ### Example 6: Complex Error Handling
 

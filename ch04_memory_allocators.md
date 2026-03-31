@@ -64,6 +64,8 @@ pub fn main() !void {
 
 This example demonstrates the core interface with leak detection. The `GeneralPurposeAllocator` reports leaks at `deinit()`, catching forgotten frees during development.
 
+> **0.16+ note:** In application code, `std.process.Init` provides a pre-initialized GPA via `init.gpa`, eliminating the manual setup shown above. The explicit patterns in this chapter are shown for understanding—they remain valid and are necessary in libraries, tests, and tools that don't use `process.Init`.
+
 ### Allocator Types and Selection
 
 Zig's standard library provides specialized allocators for different use cases:

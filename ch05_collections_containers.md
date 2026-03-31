@@ -334,10 +334,8 @@ This pattern is common in performance-critical code, particularly when processin
 ```zig
 const std = @import("std");
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
     // Unmanaged ArrayList (default)
     std.debug.print("=== Unmanaged ArrayList ===\n", .{});
@@ -400,10 +398,8 @@ const User = struct {
     }
 };
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
     // Pattern 1: Direct value storage
     std.debug.print("=== Pattern 1: Direct Value Storage ===\n", .{});
@@ -528,10 +524,8 @@ const Database = struct {
     }
 };
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
     std.debug.print("=== Nested Container with errdefer ===\n", .{});
 
@@ -588,10 +582,8 @@ fn processData(allocator: std.mem.Allocator, input: []const u8) !std.ArrayList(u
     return numbers;
 }
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
     std.debug.print("=== Ownership Transfer Patterns ===\n\n", .{});
 
@@ -636,10 +628,8 @@ This example shows three ownership transfer patterns. `toOwnedSlice()` transfers
 ```zig
 const std = @import("std");
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
     std.debug.print("=== Reusing Containers Across Iterations ===\n\n", .{});
 
@@ -701,10 +691,8 @@ This example demonstrates `clearRetainingCapacity()` for efficient container reu
 ```zig
 const std = @import("std");
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
     const iterations = 1000;
 
