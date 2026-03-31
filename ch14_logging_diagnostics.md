@@ -1077,7 +1077,7 @@ pub const Tracer = struct {
             log,
             udp: struct {
                 io: *IO,
-                address: std.net.Address,
+                address: std.net.Address, // 0.16+: std.Io.net.Address
             },
         } = .log,
     };

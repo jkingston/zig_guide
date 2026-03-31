@@ -6,11 +6,12 @@
 
 ## 1. Supported Zig Version
 
-**Current Version:** Zig 0.15.2
+**Current Version:** Zig 0.16.0-dev (targeting 0.16.0 release)
 
-This guide teaches modern Zig idioms and best practices using **Zig 0.15.2** — the latest stable version at time of writing. All code examples, runnable programs, and CI validation target this version.
+This guide teaches modern Zig idioms and best practices using **Zig 0.16.0** APIs. Content is validated against 0.16.0-dev and will be pinned to the stable release when available.
 
-**For Zig 0.14.1 users:** See Appendix A for quick-reference patterns and Appendix B for full migration guide.
+**For Zig 0.15.x users:** See Appendix C for the 0.15→0.16 migration guide.
+**For Zig 0.14.1 users:** See Appendix A for quick-reference patterns and Appendix B for the 0.14→0.15 migration guide.
 
 ### Validation
 

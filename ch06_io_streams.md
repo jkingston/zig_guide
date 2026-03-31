@@ -17,6 +17,8 @@ Zig provides a consistent I/O abstraction through its `Writer` and `Reader` inte
 
 **Version Note:** Significant API changes occurred between Zig 0.14.x and 0.15.x for stdout/stderr access and writer buffering. This chapter marks version-specific patterns with 🕐 **0.14.x** for legacy code and ✅ **0.15+** for current patterns. Most file I/O operations remain compatible across versions.
 
+> **0.16+ note:** In Zig 0.16, all I/O operations require an `Io` instance, analogous to how allocations require an `Allocator`. Additionally, `std.net` has been removed and moved to `std.Io.net`. See Appendix C and Chapter 8 (std.Io section) for details.
+
 This chapter covers obtaining writers and readers, formatting output, managing stream lifetimes, and practical patterns from production Zig codebases. Understanding these patterns is essential for CLI tools, servers, build systems, and any program that reads or writes data.
 
 ## Core Concepts
@@ -151,6 +153,18 @@ Zig's `std.fmt` module provides format specifiers for the `print` function:
 | `{s:<10}` | Left align | `print("'{s:<10}'", .{"hi"})` | `'hi        '` |
 | `{s:>10}` | Right align | `print("'{s:>10}'", .{"hi"})` | `'        hi'` |
 | `{s:^10}` | Center | `print("'{s:^10}'", .{"hi"})` | `'    hi    '` |
+
+**0.16+ format specifiers:**
+
+| Specifier | Type | Example | Notes |
+|-----------|------|---------|-------|
+| `{f}` | Custom format | `print("{f}", .{my_val})` | Calls type's `format` method (required since 0.15) |
+| `{t}` | Tag/error name | `print("{t}", .{enum_val})` | Shorthand for `@tagName()` / `@errorName()` |
+| `{b64}` | Base64 | `print("{b64}", .{bytes})` | Standard base64 encoding |
+| `{B}` | Size (decimal) | `print("{B}", .{1536})` → `1.5kB` | Replaces `fmtIntSizeDec` |
+| `{Bi}` | Size (binary) | `print("{Bi}", .{1536})` → `1.5KiB` | Replaces `fmtIntSizeBin` |
+| `{D}` | Duration | `print("{D}", .{ns_value})` | Replaces `fmtDuration` |
+| `{x}`/`{X}` | Hex slice | `print("{x}", .{byte_slice})` | Hex formatting for slices; replaces `fmtSliceHexLower`/`Upper` |
 
 **Custom formatting for user types:**
 

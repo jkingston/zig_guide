@@ -75,6 +75,14 @@ pub fn main() !void {
 - **I/O operations** (Chapter 6) - Reading from stdin with proper error handling
 - **String processing** (Chapter 5) - Splitting and iteration
 
+> **0.16+ note:** Zig 0.16 introduces `process.Init` ("juicy main"), which provides a pre-initialized allocator, arena, and I/O interface. The classic `pub fn main() !void` still works, but the new signature eliminates boilerplate:
+> ```zig
+> pub fn main(init: std.process.Init) !void {
+>     // init.gpa, init.arena, init.io all ready to use
+> }
+> ```
+> See Appendix C for full details.
+
 **Build and run:**
 
 ```bash

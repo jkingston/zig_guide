@@ -1190,6 +1190,11 @@ The Zig build system provides deterministic, type-safe project configuration thr
 - Always specify `.target` and `.optimize` in modules to avoid cryptic errors
 - Use `b.path()` instead of relative paths for portability
 
+**0.16+ changes:**
+- Fetched packages stored locally in `zig-pkg/` at the project root (alongside the global cache at `~/.cache/zig/p/`)
+- `zig build --fork=[path]` enables temporary local dependency overrides across the entire tree without modifying `build.zig.zon`
+- Update `.gitignore` to include `zig-pkg/` alongside `.zig-cache/` and `zig-out/`
+
 **Production practices:**
 - Large projects split build.zig across multiple files for maintainability
 - Feature flags with lazy dependencies reduce build times for optional functionality
