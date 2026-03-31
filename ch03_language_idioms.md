@@ -595,6 +595,33 @@ const http_methods = ComptimeStringMapWithKeyType(Method, .{
 
 View source: [comptime_string_map.zig](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/bun.js/bindings/comptime_string_map.zig)
 
+### ZLS: `inline else` for Tagged Union Dispatch
+
+ZLS (Zig Language Server) demonstrates the most powerful comptime pattern in Zig: using `inline else` with `@tagName` to generate specialized code per tagged union variant at compile time, eliminating runtime dispatch overhead:[^14]
+
+```zig
+const Request = union(enum) {
+    initialize: InitParams,
+    shutdown,
+    @"textDocument/completion": CompletionParams,
+
+    // inline else generates a specialized branch per variant
+    fn handle(self: Request, server: *Server) !void {
+        switch (self) {
+            .shutdown => server.handleShutdown(),
+            inline else => |params, method| {
+                // @tagName(method) extracts the string at comptime
+                return server.dispatch(@tagName(method), params);
+            },
+        }
+    }
+};
+```
+
+The `inline else` keyword unrolls the remaining switch arms at compile time, generating one specialized function call per variant. The `method` capture is a comptime-known enum tag, so `@tagName(method)` evaluates to a string literal. This pattern is uniquely Zig — no other language can express "generate specialized code per variant" this concisely.
+
+View source: [Server.zig](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/Server.zig)
+
 ---
 
 ## Summary
@@ -630,3 +657,4 @@ These patterns remain stable across Zig 0.14.0, 0.14.1, 0.15.1, and 0.15.2, with
 [^11]: [TigerBeetle vsr.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/vsr.zig)
 [^12]: [Ghostty main.zig](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/main.zig)
 [^13]: [Bun comptime_string_map.zig](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/bun.js/bindings/comptime_string_map.zig)
+[^14]: [ZLS Server.zig - inline else dispatch](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/Server.zig)

@@ -15,10 +15,11 @@ This guide teaches modern Zig idioms and best practices using **Zig 0.15.2** —
 ### Validation
 
 - **CI Testing:** All examples validated on Zig 0.15.2
-- **Compilation:** 100% success rate (100 example files, 4,430+ lines)
-- **Last updated:** November 2025
+- **Compilation:** 87 complete programs pass `zig ast-check` (101 example files, 4,430+ lines)
+- **Inline validation:** `scripts/validate_code_blocks.py` checks all code blocks in chapter markdown
+- **Last updated:** March 2026
 
-**Future Versions:** When new Zig versions are released (e.g., 0.16), the guide will be updated to target the new version. Migration guidance will be added to the appendices as needed.
+**0.16.0 Preparation:** A draft migration guide (Appendix C) and chapter impact assessment are available on the `update/zig-0.16` branch. Key changes: process.Init (41 main examples), std.Io async system (ch08 rewrite), std.net removal, zig-pkg/ directory. See [todo.md](todo.md) for the full update plan.
 
 ---
 
@@ -153,5 +154,5 @@ When this file is updated, ensure these files reference current policy:
 
 ---
 
-**Last Updated:** 2025-11-14
-**Next Review:** Upon Zig 0.16 release
+**Last Updated:** 2026-03-31
+**Next Review:** Upon Zig 0.16.0 release (see `update/zig-0.16` branch for draft updates)

@@ -2309,6 +2309,20 @@ This pattern enables Zig projects to leverage mature C++ game development librar
 
 > **See also:** Chapter 9 (Build System) for zig-gamedev's build organization and multi-library dependency management.
 
+### Lightpanda: Multi-Language Build Integration
+
+Lightpanda, a headless browser (26k stars, Zig 0.15.2), demonstrates how Zig's build system can orchestrate dependencies across three languages in a single `build.zig`:[^17]
+
+**Key integration points:**
+- **V8 (C++):** Linked as a Zig dependency with sanitizer flag propagation from the parent build
+- **libcurl (C):** Built with its full dependency chain (zlib, brotli, nghttp2, boringssl), each receiving matching target/optimization settings
+- **html5ever (Rust):** Compiled via `cargo build` invoked as a build system command — Zig's build system orchestrates the Rust toolchain
+- **macOS frameworks:** Conditional linking of CoreFoundation and SystemConfiguration via `builtin.os.tag`
+
+This is the most complex multi-language build integration in any production Zig project. Each dependency receives consistent target triples and optimization levels from `build.zig`, ensuring the entire stack is cross-compilable.
+
+View source: [lightpanda-io/browser](https://github.com/lightpanda-io/browser)
+
 ### Memory Safety with defer and errdefer
 
 Production code uses defer consistently for cleanup:
@@ -2535,3 +2549,4 @@ The zero-overhead nature of Zig's FFI—combined with compile-time safety checks
 [^14]: https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/os/passwd.zig
 [^15]: https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client_exports.zig
 [^16]: https://github.com/michal-z/zig-gamedev - C++ library integration patterns (ImGui, PhysX, WebGPU)
+[^17]: https://github.com/lightpanda-io/browser - Multi-language build integration (V8, libcurl, html5ever)

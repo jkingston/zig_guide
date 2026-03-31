@@ -592,6 +592,23 @@ The Zig Language Server demonstrates I/O patterns for protocol communication.
 - Uses `std.fs.File.stderr().writer(&.{})` for immediate error output
 - Source: [`src/main.zig:98`](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/main.zig#L98)
 
+### Lightpanda: Slab-Allocated I/O Buffers
+
+Lightpanda, a headless browser (26k stars, Zig 0.15.2), uses a slab allocator for size-class segregated I/O buffer management.
+
+**Slab Allocator for I/O Buffers**
+- Size-class segregation using `ArrayHashMapUnmanaged` for fast lookup
+- `DynamicBitSetUnmanaged` tracks free slots within each slab
+- Exponential chunk growth via bit shifting reduces fragmentation
+- Integrates with `std.mem.Allocator` via VTable for transparent use
+
+**Arena Pool for Per-Request I/O**
+- Thread-safe pool of `ArenaAllocator` instances for request-scoped I/O
+- `acquire()` / `release()` lifecycle avoids allocation churn
+- Combined with `DebugAllocator` in debug mode for leak detection
+
+Source: [lightpanda-io/browser](https://github.com/lightpanda-io/browser)
+
 ### zigimg: Binary Format Parsing
 
 zigimg, an image encoding/decoding library, demonstrates structured I/O patterns for binary format parsing.

@@ -1,6 +1,6 @@
 # Zig: Zero to Hero - TODO List
 
-> Last Updated: November 11, 2025
+> Last Updated: March 31, 2026
 
 ## 🚨 Critical Priority (Beta Blockers)
 
@@ -50,6 +50,26 @@
   - ✅ Cross-compilation configuration
   - ✅ Full source code examples in `examples/ch01_introduction/`
   - ✅ HTTP client example (`zighttp`) in appendix
+
+---
+
+## 🔄 Zig 0.16.0 Update (When Released)
+
+**Branch:** `update/zig-0.16` — draft migration appendix already created
+
+- [ ] **Verify 0.16.0 APIs against final release** (2-4h)
+  - Confirm process.Init, std.Io, std.net removal match draft appendix
+  - Test code examples with released 0.16.0 binary
+- [ ] **Update 41 `pub fn main` examples for process.Init** (4-8h)
+  - Chapter impact: ch01(1), ch03(2), ch04(3), ch05(6), ch06(2), ch07(2), ch08(3), ch09(3), ch10(1), ch11(4), ch12(8), ch13(2), ch14(4)
+- [ ] **Rewrite ch06 (I/O Streams)** for std.Io.net and final Writer API (8-12h)
+- [ ] **Rewrite ch08 (Async/Concurrency)** for std.Io async system (8-12h)
+  - io.async() / io.concurrent(), Future, Queue, Group, backends
+- [ ] **Update build/package chapters** (ch09, ch10) for zig-pkg/ and --fork (2-4h)
+- [ ] **Update CI** to validate on Zig 0.16.0 (1h)
+- [ ] **Finalize Appendix C** (migration 0.15→0.16) and merge branch (2-4h)
+
+**Total estimated:** 30-50 hours
 
 ---
 
@@ -134,6 +154,15 @@
 
 ## 📝 Progress Notes
 
+### March 31, 2026
+- ✅ **Fixed 0.15.2 format API bugs** — custom `format` signature (4-param → 2-param), `{f}` specifier requirement
+- ✅ **Migrated 57 ziglang links** from GitHub to Codeberg (repo moved Nov 2025)
+- ✅ **Added Lightpanda** as new exemplar project (26k stars, Zig 0.15.2, headless browser)
+- ✅ **Updated exemplar statuses** — TigerBeetle v0.16.78 Jepsen-tested, Bun Anthropic-acquired, Ghostty v1.3.1, ZLS v0.15.1, Mach v0.4
+- ✅ **Added inline code block validation CI** — 87 complete programs validated via `zig ast-check`
+- ✅ **Created `update/zig-0.16` branch** with draft Appendix C (migration 0.15→0.16)
+- ✅ **Comprehensive 0.16.0-dev research** — process.Init, std.Io, Writergate, build changes, chapter impact assessment (41 mains, 144 print calls, 5 high-impact chapters)
+
 ### November 11, 2025
 - ✅ Documentation audit complete
 - ✅ Fixed inconsistent chapter counts in README, todo.md, AGENTS.md, CONTRIBUTING.md
@@ -172,20 +201,20 @@
 
 ## 🎯 Next Steps
 
-1. **Immediate (This Month):**
-   - Consider starting hands-on projects for 1.0 release
-   - Plan technical review strategy
-   - Draft diagram specifications for Chapter 3 and 7
+1. **Immediate (When 0.16.0 ships):**
+   - Merge `update/zig-0.16` branch after verifying against final release
+   - Update all 41 `pub fn main` examples for process.Init
+   - Rewrite ch06 and ch08 for std.Io
 
 2. **Short-term (1-2 Months):**
-   - Complete High Priority tasks for 1.0 release
-   - Engage Zig community for feedback
-   - Develop exercise sections
+   - Start hands-on projects for 1.0 release
+   - Submit for Zig community technical review
+   - Draft diagram specifications for Chapter 3 and 7
 
 3. **Long-term (Post-1.0):**
-   - Enhancement priority items
-   - Community contributions
+   - Exercise sections with solutions
    - Video companion series
+   - Community contributions
 
 ---
 
@@ -194,7 +223,7 @@
 This guide is the **only comprehensive production-focused Zig resource** for experienced developers:
 - Complete "Zero to Hero" onboarding with Quick Start guide and real projects
 - 15 chapters covering all aspects of professional Zig development
-- Real-world examples from major projects (Bun, TigerBeetle, Ghostty, Mach, ZLS)
-- 100% validated code examples
-- Professional CI/CD and automation
-- Targets Zig 0.14.x and 0.15.x with clear version guidance
+- Real-world examples from major projects (Bun, TigerBeetle, Ghostty, Mach, ZLS, Lightpanda)
+- 87 complete programs validated via `zig ast-check`, 101 example files
+- Professional CI/CD: example validation + inline code block validation
+- Targets Zig 0.15.2 with migration appendices for 0.14.x; 0.16 update branch ready
