@@ -1132,30 +1132,31 @@ Without `--dir=.`, any filesystem operation fails with PermissionDenied error.
 Standard Zig filesystem APIs work in WASI:
 
 ```zig
-pub fn main() !void {
-    const allocator = std.heap.page_allocator;
-    const cwd = std.fs.cwd();
+pub fn main(init: std.process.Init) !void {
+    const io = init.io;
+    const cwd = std.Io.Dir.cwd();
 
     // Create file
-    const file = try cwd.createFile("output.txt", .{});
-    defer file.close();
+    const file = try cwd.createFile(io, "output.txt", .{});
+    defer file.close(io);
 
-    try file.writeAll("Hello from WASI\n");
+    try file.writePositionalAll(io, "Hello from WASI\n", 0);
 
     // Read file
-    try file.seekTo(0);
-    const contents = try file.readToEndAlloc(allocator, 1024 * 1024);
-    defer allocator.free(contents);
+    var rbuf: [4096]u8 = undefined;
+    var reader = file.reader(io, &rbuf);
+    const contents = try reader.interface.readAlloc(init.gpa, 1024 * 1024);
+    defer init.gpa.free(contents);
 
     std.debug.print("Contents: {s}\n", .{contents});
 
     // Directory operations
-    try cwd.makeDir("test_dir");
-    var dir = try cwd.openDir("test_dir", .{ .iterate = true });
-    defer dir.close();
+    try cwd.createDir(io, "test_dir", .default_dir);
+    var dir = try cwd.openDir(io, "test_dir", .{ .iterate = true });
+    defer dir.close(io);
 
     var iter = dir.iterate();
-    while (try iter.next()) |entry| {
+    while (try iter.next(io)) |entry| {
         std.debug.print("Found: {s}\n", .{entry.name});
     }
 }
@@ -1164,10 +1165,8 @@ pub fn main() !void {
 **Command-Line Arguments:**
 
 ```zig
-pub fn main() !void {
-    const allocator = std.heap.page_allocator;
-
-    var args = try std.process.argsWithAllocator(allocator);
+pub fn main(init: std.process.Init) !void {
+    var args = try std.process.Args.Iterator.initAllocator(init.minimal.args, init.gpa);
     defer args.deinit();
 
     var i: usize = 0;
@@ -1187,17 +1186,15 @@ wasmtime --dir=. program.wasm arg1 arg2 arg3
 **Environment Variables:**
 
 ```zig
-pub fn main() !void {
-    const allocator = std.heap.page_allocator;
-
-    const env_map = try std.process.getEnvMap(allocator);
+pub fn main(init: std.process.Init) !void {
+    var env_map = try init.minimal.environ.createMap(init.gpa);
     defer env_map.deinit();
 
     var iter = env_map.iterator();
     while (iter.next()) |entry| {
         std.debug.print("{s}={s}\n", .{
             entry.key_ptr.*,
-            entry.value_ptr.*
+            entry.value_ptr.*,
         });
     }
 }
@@ -1603,16 +1600,16 @@ This example demonstrates WASI compilation, filesystem operations with capabilit
 ```zig
 const std = @import("std");
 
-pub fn main() !void {
-    const allocator = std.heap.page_allocator;
-    const stdout_file = std.fs.File.stdout();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
+    const stdout_file = std.Io.File.stdout();
     var buf: [256]u8 = undefined;
-    var stdout_writer = stdout_file.writer(&buf);
+    var stdout_writer = stdout_file.writer(init.io, &buf);
     const stdout = &stdout_writer.interface;
 
     // Command-line arguments
     try stdout.print("=== Command-line arguments ===\n", .{});
-    var args = try std.process.argsWithAllocator(allocator);
+    var args = try std.process.Args.Iterator.initAllocator(init.minimal.args, allocator);
     defer args.deinit();
 
     var i: usize = 0;
@@ -1623,7 +1620,7 @@ pub fn main() !void {
 
     // Environment variables
     try stdout.print("\n=== Environment variables ===\n", .{});
-    const env_map = try std.process.getEnvMap(allocator);
+    var env_map = try init.minimal.environ.createMap(allocator);
     defer env_map.deinit();
 
     var iter = env_map.iterator();
@@ -1636,24 +1633,25 @@ pub fn main() !void {
 
     // Filesystem operations (requires --dir capability)
     try stdout.print("\n=== Filesystem operations ===\n", .{});
-    const cwd = std.fs.cwd();
+    const cwd = std.Io.Dir.cwd();
 
     // Create file
-    const file = try cwd.createFile("wasi_test.txt", .{});
-    defer file.close();
+    const file = try cwd.createFile(init.io, "wasi_test.txt", .{});
+    defer file.close(init.io);
 
-    try file.writeAll("Hello from WASI!\n");
+    try file.writePositionalAll(init.io, "Hello from WASI!\n", 0);
     try stdout.print("Created file: wasi_test.txt\n", .{});
 
     // Read file
-    try file.seekTo(0);
-    const contents = try file.readToEndAlloc(allocator, 1024);
+    var rbuf: [4096]u8 = undefined;
+    var file_reader = file.reader(init.io, &rbuf);
+    const contents = try file_reader.interface.readAlloc(allocator, 1024);
     defer allocator.free(contents);
 
     try stdout.print("Contents: {s}\n", .{contents});
 
     // Create directory
-    try cwd.makeDir("wasi_dir");
+    try cwd.createDir(init.io, "wasi_dir", .default_dir);
     try stdout.print("Created directory: wasi_dir\n", .{});
     try stdout.flush();
 }

@@ -79,7 +79,7 @@ defer list.deinit(allocator);    // Allocator required for cleanup
 The `Auto` prefix indicates automatic hash function selection. `StringHashMap` treats string keys by content rather than pointer equality.[^4]
 
 ```zig
-var users = std.AutoHashMapUnmanaged(u32, User).init();
+var users: std.AutoHashMapUnmanaged(u32, User) = .empty;
 try users.put(allocator, 1, user_instance);
 defer users.deinit(allocator);
 ```
@@ -112,7 +112,7 @@ const User = struct {
     age: u8,
 };
 
-var users = std.AutoHashMapUnmanaged(u32, User).init();
+var users: std.AutoHashMapUnmanaged(u32, User) = .empty;
 try users.put(allocator, 1, User{ .id = 1, .age = 30 });
 defer users.deinit(allocator);  // Frees hash map structure
 ```
@@ -129,7 +129,7 @@ const User = struct {
     }
 };
 
-var users = std.AutoHashMapUnmanaged(u32, User).init();
+var users: std.AutoHashMapUnmanaged(u32, User) = .empty;
 defer {
     var it = users.iterator();
     while (it.next()) |entry| {
@@ -142,7 +142,7 @@ defer {
 **Pointer storage** detaches value lifetime from container lifetime. The container stores only pointers; pointed-to values require separate cleanup:
 
 ```zig
-var users = std.AutoHashMapUnmanaged(u32, *User).init();
+var users: std.AutoHashMapUnmanaged(u32, *User) = .empty;
 defer {
     var it = users.iterator();
     while (it.next()) |entry| {
@@ -158,7 +158,7 @@ This pattern is described in the community resources as "the lifetime of the val
 **Ownership transfer** through `toOwnedSlice()` transfers an ArrayList's internal buffer to the caller:
 
 ```zig
-var list = std.ArrayList(u8).init(allocator);
+var list: std.ArrayList(u8) = .empty;
 try list.appendSlice(allocator, "Hello");
 
 const owned = try list.toOwnedSlice(allocator);
@@ -256,7 +256,7 @@ Choosing the appropriate container requires understanding performance characteri
 
 ```zig
 // ArrayList: Unknown size, heap allocation
-var dynamic = std.ArrayList(u8).init(allocator);
+var dynamic: std.ArrayList(u8) = .empty;
 defer dynamic.deinit(allocator);
 
 // Fixed array: Known size, stack allocation
@@ -314,7 +314,7 @@ The comment explains why 9 is chosen: it covers the common case (shell execution
 **Container reuse** with `clearRetainingCapacity()` avoids allocation churn in loops:
 
 ```zig
-var buffer = std.ArrayList(u8).init(allocator);
+var buffer: std.ArrayList(u8) = .empty;
 defer buffer.deinit(allocator);
 
 try buffer.ensureTotalCapacity(allocator, 1024);
@@ -339,7 +339,7 @@ pub fn main(init: std.process.Init) !void {
 
     // Unmanaged ArrayList (default)
     std.debug.print("=== Unmanaged ArrayList ===\n", .{});
-    var unmanaged_list = std.ArrayList(u32).init(allocator);
+    var unmanaged_list: std.ArrayList(u32) = .empty;
     defer unmanaged_list.deinit(allocator);  // Allocator required
 
     try unmanaged_list.append(allocator, 10);  // Allocator required
@@ -358,7 +358,7 @@ pub fn main(init: std.process.Init) !void {
 
     // Pre-allocation pattern
     std.debug.print("=== Pre-allocation Pattern ===\n", .{});
-    var preallocated = std.ArrayList(u32).init(allocator);
+    var preallocated: std.ArrayList(u32) = .empty;
     defer preallocated.deinit(allocator);
 
     // Allocate exact capacity upfront (no reallocation needed)
@@ -403,7 +403,7 @@ pub fn main(init: std.process.Init) !void {
 
     // Pattern 1: Direct value storage
     std.debug.print("=== Pattern 1: Direct Value Storage ===\n", .{});
-    var users_direct = std.AutoHashMapUnmanaged(u32, User).init();
+    var users_direct: std.AutoHashMapUnmanaged(u32, User) = .empty;
     defer {
         // Must clean up allocated fields within values
         var it = users_direct.iterator();
@@ -422,7 +422,7 @@ pub fn main(init: std.process.Init) !void {
 
     // Pattern 2: Pointer storage (detached lifetime)
     std.debug.print("=== Pattern 2: Pointer Storage ===\n", .{});
-    var users_ptr = std.AutoHashMapUnmanaged(u32, *User).init();
+    var users_ptr: std.AutoHashMapUnmanaged(u32, *User) = .empty;
     defer {
         // Must free both the pointed-to objects AND the pointers
         var it = users_ptr.iterator();
@@ -433,7 +433,7 @@ pub fn main(init: std.process.Init) !void {
         users_ptr.deinit(allocator);
     }
 
-    var user2 = try allocator.create(User);
+    const user2 = try allocator.create(User);
     user2.* = try User.init(allocator, 2, "Bob", 200);
     try users_ptr.put(allocator, user2.id, user2);
 
@@ -443,7 +443,7 @@ pub fn main(init: std.process.Init) !void {
 
     // Pattern 3: HashMap as Set (void value)
     std.debug.print("=== Pattern 3: HashMap as Set ===\n", .{});
-    var seen_ids = std.AutoHashMapUnmanaged(u32, void).init();
+    var seen_ids: std.AutoHashMapUnmanaged(u32, void) = .empty;
     defer seen_ids.deinit(allocator);
 
     try seen_ids.put(allocator, 42, {});
@@ -471,7 +471,7 @@ const Database = struct {
     };
 
     pub fn init(allocator: std.mem.Allocator, table_names: []const []const u8) !Database {
-        var tables = std.ArrayList(Table).init(allocator);
+        var tables: std.ArrayList(Table) = .empty;
         errdefer {
             // Clean up any successfully initialized tables on error
             for (tables.items) |*table| {
@@ -488,7 +488,7 @@ const Database = struct {
             const table_name = try allocator.dupe(u8, name);
             errdefer allocator.free(table_name);  // If rows allocation fails
 
-            var rows = std.ArrayList([]u8).init(allocator);
+            var rows: std.ArrayList([]u8) = .empty;
             errdefer rows.deinit(allocator);  // If append to tables fails
 
             try tables.append(allocator, .{
@@ -538,7 +538,7 @@ pub fn main(init: std.process.Init) !void {
     try db.addRow(0, "Bob");
     try db.addRow(1, "Widget");
 
-    for (db.tables.items, 0..) |table, i| {
+    for (db.tables.items) |table| {
         std.debug.print("Table {s} has {} rows\n", .{ table.name, table.rows.items.len });
     }
 
@@ -554,7 +554,7 @@ This example demonstrates cascading `errdefer` for multi-level nested containers
 const std = @import("std");
 
 fn buildMessage(allocator: std.mem.Allocator, parts: []const []const u8) ![]const u8 {
-    var list = std.ArrayList(u8).init(allocator);
+    var list: std.ArrayList(u8) = .empty;
     // Note: No defer here - ownership transferred via toOwnedSlice
 
     for (parts, 0..) |part, i| {
@@ -569,7 +569,7 @@ fn buildMessage(allocator: std.mem.Allocator, parts: []const []const u8) ![]cons
 }
 
 fn processData(allocator: std.mem.Allocator, input: []const u8) !std.ArrayList(u32) {
-    var numbers = std.ArrayList(u32).init(allocator);
+    var numbers: std.ArrayList(u32) = .empty;
     errdefer numbers.deinit(allocator);  // Clean up on error
 
     for (input) |byte| {
@@ -613,7 +613,7 @@ pub fn main(init: std.process.Init) !void {
         byte.* = @intCast('A' + i);
     }
 
-    var list_from_slice = std.ArrayList(u8).fromOwnedSlice(allocator, raw_data);
+    var list_from_slice = std.ArrayList(u8).fromOwnedSlice(raw_data);
     defer list_from_slice.deinit(allocator);  // Now list owns the data
 
     try list_from_slice.append(allocator, 'F');  // Can grow
@@ -633,7 +633,7 @@ pub fn main(init: std.process.Init) !void {
 
     std.debug.print("=== Reusing Containers Across Iterations ===\n\n", .{});
 
-    var buffer = std.ArrayList(u8).init(allocator);
+    var buffer: std.ArrayList(u8) = .empty;
     defer buffer.deinit(allocator);
 
     // Pre-allocate reasonable capacity
@@ -661,7 +661,7 @@ pub fn main(init: std.process.Init) !void {
     // HashMap example
     std.debug.print("\n=== HashMap Reset Pattern ===\n\n", .{});
 
-    var cache = std.AutoHashMapUnmanaged(u32, []const u8).init();
+    var cache: std.AutoHashMapUnmanaged(u32, []const u8) = .empty;
     defer cache.deinit(allocator);
 
     try cache.ensureTotalCapacity(allocator, 100);
@@ -699,10 +699,10 @@ pub fn main(init: std.process.Init) !void {
     // HashMap vs ArrayHashMap iteration performance
     std.debug.print("=== HashMap vs ArrayHashMap Iteration ===\n", .{});
 
-    var hash_map = std.AutoHashMapUnmanaged(u32, u32).init();
+    var hash_map: std.AutoHashMapUnmanaged(u32, u32) = .empty;
     defer hash_map.deinit(allocator);
 
-    var array_hash_map = std.AutoArrayHashMapUnmanaged(u32, u32).init();
+    var array_hash_map: std.AutoArrayHashMapUnmanaged(u32, u32) = .empty;
     defer array_hash_map.deinit(allocator);
 
     // Populate both
@@ -711,8 +711,8 @@ pub fn main(init: std.process.Init) !void {
         try array_hash_map.put(allocator, @intCast(i), @intCast(i * 2));
     }
 
-    // Iterate HashMap
-    var timer = try std.time.Timer.start();
+    // Iterate HashMap (sparse buckets — cache-unfriendly)
+    const start1 = std.Io.Timestamp.now(init.io, .awake);
     var sum1: u64 = 0;
     for (0..iterations) |_| {
         var it1 = hash_map.iterator();
@@ -720,10 +720,10 @@ pub fn main(init: std.process.Init) !void {
             sum1 += entry.value_ptr.*;
         }
     }
-    const hash_map_time = timer.read();
+    const hash_map_time = start1.durationTo(std.Io.Timestamp.now(init.io, .awake));
 
-    // Iterate ArrayHashMap
-    timer.reset();
+    // Iterate ArrayHashMap (contiguous memory — cache-friendly)
+    const start2 = std.Io.Timestamp.now(init.io, .awake);
     var sum2: u64 = 0;
     for (0..iterations) |_| {
         var it2 = array_hash_map.iterator();
@@ -731,13 +731,14 @@ pub fn main(init: std.process.Init) !void {
             sum2 += entry.value_ptr.*;
         }
     }
-    const array_hash_map_time = timer.read();
+    const array_hash_map_time = start2.durationTo(std.Io.Timestamp.now(init.io, .awake));
 
-    std.debug.print("HashMap iteration: {} ns (sum: {})\n", .{ hash_map_time, sum1 });
-    std.debug.print("ArrayHashMap iteration: {} ns (sum: {})\n", .{ array_hash_map_time, sum2 });
+    std.debug.print("HashMap iteration: {} ns (sum: {})\n", .{ hash_map_time.nanoseconds, sum1 });
+    std.debug.print("ArrayHashMap iteration: {} ns (sum: {})\n", .{ array_hash_map_time.nanoseconds, sum2 });
 
-    if (array_hash_map_time > 0) {
-        const speedup = @as(f64, @floatFromInt(hash_map_time)) / @as(f64, @floatFromInt(array_hash_map_time));
+    if (array_hash_map_time.nanoseconds > 0) {
+        const speedup = @as(f64, @floatFromInt(@as(i64, @intCast(hash_map_time.nanoseconds)))) /
+            @as(f64, @floatFromInt(@as(i64, @intCast(array_hash_map_time.nanoseconds))));
         std.debug.print("ArrayHashMap is {d:.2}x faster for iteration\n", .{speedup});
     }
 }
@@ -754,7 +755,7 @@ Containers that allocate memory must call `deinit()` before going out of scope. 
 **Problem:**
 ```zig
 fn processData(allocator: std.mem.Allocator) !void {
-    var list = std.ArrayList(u8).init(allocator);
+    var list: std.ArrayList(u8) = .empty;
     try list.append(allocator, 'A');
     // Forgot: defer list.deinit(allocator);
     if (someCondition) return error.Failed;  // Leak!
@@ -779,7 +780,7 @@ Place `defer` immediately after initialization:
 
 ```zig
 fn processData(allocator: std.mem.Allocator) !void {
-    var list = std.ArrayList(u8).init(allocator);
+    var list: std.ArrayList(u8) = .empty;
     defer list.deinit(allocator);  // Placed immediately
     try list.append(allocator, 'A');
     if (someCondition) return error.Failed;  // No leak
@@ -795,7 +796,7 @@ Containers containing other containers require multi-level cleanup. Calling `dei
 var outer = std.ArrayList(std.ArrayList(u8)).init(allocator);
 defer outer.deinit(allocator);  // Only frees outer, not inner lists!
 
-var inner = std.ArrayList(u8).init(allocator);
+var inner: std.ArrayList(u8) = .empty;
 try inner.append(allocator, 1);
 try outer.append(allocator, inner);
 ```

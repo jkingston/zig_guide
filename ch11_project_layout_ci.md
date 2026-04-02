@@ -1380,10 +1380,10 @@ test "version format" {
 const std = @import("std");
 const core = @import("core");
 
-pub fn main() !void {
-    const stdout_file = std.fs.File.stdout();
+pub fn main(init: std.process.Init) !void {
+    const stdout_file = std.Io.File.stdout();
     var buf: [256]u8 = undefined;
-    var stdout_writer = stdout_file.writer(&buf);
+    var stdout_writer = stdout_file.writer(init.io, &buf);
     const stdout = &stdout_writer.interface;
 
     try stdout.print("Workspace App v{}\n", .{core.version});

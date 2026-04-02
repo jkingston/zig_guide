@@ -1074,11 +1074,11 @@ Without `process.Init`, set up the backend manually:
 const std = @import("std");
 
 pub fn main() !void {
-    var debug_allocator: std.heap.DebugAllocator(.{}) = .init;
+    var debug_allocator: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
     defer _ = debug_allocator.deinit();
     const gpa = debug_allocator.allocator();
 
-    var threaded: std.Io.Threaded = .init(gpa);
+    var threaded = std.Io.Threaded.init(gpa, .{});
     defer threaded.deinit();
     const io = threaded.io();
 

@@ -38,14 +38,14 @@ All allocation methods return error unions (`![]T` or `!*T`), with `error.OutOfM
 const std = @import("std");
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var da: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
     defer {
-        const deinit_status = gpa.deinit();
+        const deinit_status = da.deinit();
         if (deinit_status == .leak) {
             std.debug.print("Memory leak detected!\n", .{});
         }
     }
-    const allocator = gpa.allocator();
+    const allocator = da.allocator();
 
     // Slice allocation
     const numbers = try allocator.alloc(u32, 5);
@@ -57,12 +57,12 @@ pub fn main() !void {
     single.* = 42;
 
     // Aligned allocation (16-byte boundary)
-    const aligned = try allocator.alignedAlloc(u8, 16, 64);
+    const aligned = try allocator.alignedAlloc(u8, .@"16", 64);
     defer allocator.free(aligned);
 }
 ```
 
-This example demonstrates the core interface with leak detection. The `GeneralPurposeAllocator` reports leaks at `deinit()`, catching forgotten frees during development.
+This example demonstrates the core interface with leak detection. The `DebugAllocator` reports leaks at `deinit()`, catching forgotten frees during development.
 
 > **0.16+ note:** In application code, `std.process.Init` provides a pre-initialized GPA via `init.gpa`, eliminating the manual setup shown above. The explicit patterns in this chapter are shown for understanding—they remain valid and are necessary in libraries, tests, and tools that don't use `process.Init`.
 
@@ -207,13 +207,14 @@ fn createResources(allocator: std.mem.Allocator) !Resources {
 const std = @import("std");
 
 fn handleRequest(allocator: std.mem.Allocator, req_id: u32, data: []const u8) ![]u8 {
-    var parts = std.ArrayList([]const u8).init(allocator);
-    defer parts.deinit();
+    _ = data;
+    var parts: std.ArrayList([]const u8) = .empty;
+    defer parts.deinit(allocator);
 
-    try parts.append("Processing request ");
+    try parts.append(allocator, "Processing request ");
     const id_str = try std.fmt.allocPrint(allocator, "{}", .{req_id});
     defer allocator.free(id_str);
-    try parts.append(id_str);
+    try parts.append(allocator, id_str);
 
     // Concatenate parts
     var total_len: usize = 0;
@@ -230,10 +231,10 @@ fn handleRequest(allocator: std.mem.Allocator, req_id: u32, data: []const u8) ![
 }
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
+    var da: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
+    defer std.debug.assert(da.deinit() == .ok);
 
-    var arena = std.heap.ArenaAllocator.init(gpa.allocator());
+    var arena = std.heap.ArenaAllocator.init(da.allocator());
     defer arena.deinit();
 
     // Process multiple requests

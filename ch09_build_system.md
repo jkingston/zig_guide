@@ -421,9 +421,9 @@ const std = @import("std");
 pub fn main(init: std.process.Init) !void {
     const allocator = init.gpa;
 
-    var args = try std.process.argsWithAllocator(allocator);
+    var args = try std.process.Args.Iterator.initAllocator(init.minimal.args, allocator);
     defer args.deinit();
-    _ = args.skip(); // program name
+    _ = args.next(); // skip program name
 
     var output_path: ?[]const u8 = null;
     while (args.next()) |arg| {
@@ -441,10 +441,11 @@ pub fn main(init: std.process.Init) !void {
         \\
     ;
 
-    const file = try std.fs.cwd().createFile(path, .{});
-    defer file.close();
+    const cwd = std.Io.Dir.cwd();
+    const file = try cwd.createFile(init.io, path, .{});
+    defer file.close(init.io);
 
-    try file.writeAll(code);
+    try file.writePositionalAll(init.io, code, 0);
 }
 ```
 

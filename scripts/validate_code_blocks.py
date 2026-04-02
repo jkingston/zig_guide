@@ -3,11 +3,14 @@
 Validate Zig code blocks from markdown chapters.
 
 Two validation levels:
-  1. Complete programs (pub fn main / test blocks) — full ast-check
+  1. Complete programs (pub fn main / test blocks) — semantic compilation via
+     `zig build-obj` (catches type errors, wrong signatures, etc.)
   2. All other zig blocks — skipped (snippets shown in context)
 
-Extracts ```zig code blocks, identifies complete programs, and runs
-`zig ast-check` on them to catch syntax errors.
+`zig build-obj` compiles to object code without linking, avoiding platform-
+specific linker issues while still performing full semantic analysis.
+
+Falls back to `zig ast-check` (syntax only) with --syntax-only flag.
 
 Exit code: 0 if all tested blocks pass, 1 if any fail.
 """
@@ -60,7 +63,7 @@ def extract_code_blocks(markdown_content: str, file_path: str):
 def is_old_version_block(block: dict) -> bool:
     """Check if block is marked as an old version example."""
     context = '\n'.join(block['context_before']).lower()
-    return any(m in context for m in ['0.14', '0.13', '0.12', '0.11', '🕐'])
+    return any(m in context for m in ['0.15', '0.14', '0.13', '0.12', '0.11', '🕐'])
 
 
 def is_complete_program(code: str) -> bool:
@@ -164,15 +167,72 @@ def is_incomplete_test(code: str) -> bool:
     return False
 
 
-def ast_check(code: str, tmp_dir: str, block_id: str) -> tuple:
-    """Run zig ast-check on a code block. Returns (success, error_message).
+IGNORABLE_ERRORS = [
+    'use of undeclared identifier',
+    'unused local constant',
+    'unused local variable',
+    'local variable is never mutated',
+    'unused function parameter',
+    'unused capture',
+    'documentation comments cannot be attached to tests',
+    # build-obj errors expected in isolated code blocks:
+    'no module named',
+    'import of file outside module path',
+    'unable to load',
+]
 
-    Filters out semantic errors that ast-check reports but which are
-    expected in isolated code blocks (undeclared identifiers, unused vars).
-    """
+
+def _all_errors_ignorable(stderr: str) -> bool:
+    """Check if all error lines in stderr are in our ignorable list."""
+    error_lines = [l for l in stderr.split('\n') if ': error:' in l]
+    return bool(error_lines) and all(
+        any(ign in line for ign in IGNORABLE_ERRORS)
+        for line in error_lines
+    )
+
+
+def _write_zig_file(code: str, tmp_dir: str, block_id: str) -> str:
     zig_file = os.path.join(tmp_dir, f"block_{block_id}.zig")
     with open(zig_file, 'w') as f:
         f.write(code)
+    return zig_file
+
+
+def build_obj_check(code: str, tmp_dir: str, block_id: str) -> tuple:
+    """Semantically compile a code block via `zig build-obj`.
+
+    Returns (success, error_message). This catches type errors, wrong
+    function signatures, and other semantic issues that ast-check misses.
+    Falls back gracefully for blocks that reference external dependencies.
+    """
+    zig_file = _write_zig_file(code, tmp_dir, block_id)
+
+    try:
+        result = subprocess.run(
+            ['zig', 'build-obj', zig_file],
+            capture_output=True, text=True, timeout=60
+        )
+        if result.returncode == 0:
+            return True, None
+
+        stderr = result.stderr.strip()
+        if _all_errors_ignorable(stderr):
+            return True, None
+        return False, stderr
+
+    except subprocess.TimeoutExpired:
+        return False, "Timed out"
+    except FileNotFoundError:
+        return False, "zig not found in PATH"
+
+
+def ast_check(code: str, tmp_dir: str, block_id: str) -> tuple:
+    """Run zig ast-check on a code block (syntax only).
+
+    Returns (success, error_message). Filters out semantic errors that
+    ast-check reports but which are expected in isolated code blocks.
+    """
+    zig_file = _write_zig_file(code, tmp_dir, block_id)
 
     try:
         result = subprocess.run(
@@ -181,23 +241,8 @@ def ast_check(code: str, tmp_dir: str, block_id: str) -> tuple:
         )
         if result.returncode != 0:
             stderr = result.stderr.strip()
-            # Filter out semantic errors expected in isolated snippets
-            ignorable = [
-                'use of undeclared identifier',
-                'unused local constant',
-                'unused local variable',
-                'local variable is never mutated',
-                'unused function parameter',
-                'unused capture',
-                'documentation comments cannot be attached to tests',
-            ]
-            # Check if ALL errors are ignorable
-            error_lines = [l for l in stderr.split('\n') if ': error:' in l]
-            if error_lines and all(
-                any(ign in line for ign in ignorable)
-                for line in error_lines
-            ):
-                return True, None  # All errors are ignorable
+            if _all_errors_ignorable(stderr):
+                return True, None
             return False, stderr
         return True, None
     except subprocess.TimeoutExpired:
@@ -208,12 +253,14 @@ def ast_check(code: str, tmp_dir: str, block_id: str) -> tuple:
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: validate_code_blocks.py <directory|file> [--json] [--verbose]")
+        print("Usage: validate_code_blocks.py <directory|file> [--json] [--verbose] [--syntax-only]")
         sys.exit(1)
 
     path = Path(sys.argv[1])
     json_output = '--json' in sys.argv
     verbose = '--verbose' in sys.argv
+    syntax_only = '--syntax-only' in sys.argv
+    validate = ast_check if syntax_only else build_obj_check
 
     if path.is_file():
         md_files = [(path, path.stem)]
@@ -267,7 +314,7 @@ def main():
 
                 prepared = prepare_for_check(code)
                 block_id = f"{chapter_name}_{block['index']}"
-                success, error_msg = ast_check(prepared, tmp_dir, block_id)
+                success, error_msg = validate(prepared, tmp_dir, block_id)
 
                 ch_tested += 1
                 stats['tested'] += 1
@@ -299,11 +346,13 @@ def main():
                     status = "✗"
                 print(f"  {status} {chapter_name}: {ch_passed}/{ch_tested} validated, {ch_skipped} snippets ({total} total)")
 
+        mode = "syntax-only (ast-check)" if syntax_only else "semantic (build-obj)"
         if json_output:
-            output = {**stats, 'failures': failures}
+            output = {**stats, 'mode': mode, 'failures': failures}
             print(json.dumps(output, indent=2))
         else:
             print(f"\n{'='*60}")
+            print(f"Mode: {mode}")
             print(f"Validated: {stats['passed']}/{stats['tested']} passed, "
                   f"{stats['skipped']} snippets skipped, {stats['failed']} failed")
 

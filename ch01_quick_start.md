@@ -52,8 +52,10 @@ pub fn main(init: std.process.Init) !void {
     const allocator = init.gpa;
 
     // Read from stdin
-    const stdin = std.fs.File.stdin();
-    const content = try stdin.readToEndAlloc(allocator, 1024 * 1024);
+    const stdin = std.Io.File.stdin();
+    var rbuf: [4096]u8 = undefined;
+    var reader = stdin.reader(init.io, &rbuf);
+    const content = try reader.interface.readAlloc(allocator, 1024 * 1024);
     defer allocator.free(content);
 
     // Count words

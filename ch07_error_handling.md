@@ -633,8 +633,8 @@ const Container = struct {
     allocator: std.mem.Allocator,
 
     fn init(allocator: std.mem.Allocator) !Container {
-        var items = std.ArrayList([]const u8).init(allocator);
-        errdefer items.deinit();
+        var items: std.ArrayList([]const u8) = .empty;
+        errdefer items.deinit(allocator);
 
         const scratch = try allocator.alloc(u8, 1024);
         errdefer allocator.free(scratch);
@@ -650,7 +650,7 @@ const Container = struct {
         for (self.items.items) |item| {
             self.allocator.free(item);
         }
-        self.items.deinit();
+        self.items.deinit(self.allocator);
         self.allocator.free(self.scratch);
     }
 
@@ -658,7 +658,7 @@ const Container = struct {
         const copy = try self.allocator.dupe(u8, data);
         errdefer self.allocator.free(copy);
 
-        try self.items.append(copy);
+        try self.items.append(self.allocator, copy);
     }
 };
 
