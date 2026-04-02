@@ -6,21 +6,19 @@
 
 ## 1. Supported Zig Version
 
-**Current Version:** Zig 0.16.0-dev (targeting 0.16.0 release)
+**Current Version:** Zig 0.16.0-dev (tracking `master`)
 
-This guide teaches modern Zig idioms and best practices using **Zig 0.16.0** APIs. Content is validated against 0.16.0-dev and will be pinned to the stable release when available.
+This guide teaches modern Zig idioms and best practices using **Zig 0.16.0-dev** APIs. Content is semantically validated against 0.16.0-dev and will be re-validated when 0.16.0 stable releases. APIs may shift before the stable release — readers should expect minor adjustments.
 
 **For Zig 0.15.x users:** See Appendix C for the 0.15→0.16 migration guide.
 **For Zig 0.14.1 users:** See Appendix A for quick-reference patterns and Appendix B for the 0.14→0.15 migration guide.
 
 ### Validation
 
-- **CI Testing:** All examples validated on Zig 0.15.2
-- **Compilation:** 87 complete programs pass `zig ast-check` (101 example files, 4,430+ lines)
-- **Inline validation:** `scripts/validate_code_blocks.py` checks all code blocks in chapter markdown
-- **Last updated:** March 2026
-
-**0.16.0 Preparation:** A draft migration guide (Appendix C) and chapter impact assessment are available on the `update/zig-0.16` branch. Key changes: process.Init (41 main examples), std.Io async system (ch08 rewrite), std.net removal, zig-pkg/ directory. See [todo.md](todo.md) for the full update plan.
+- **CI Testing:** All examples validated on Zig 0.16.0-dev (`master`)
+- **Semantic compilation:** 92 complete programs pass `zig build-obj` (full type checking, not just syntax)
+- **Inline validation:** `scripts/validate_code_blocks.py` semantically compiles all code blocks in chapter markdown
+- **Last updated:** April 2026
 
 ---
 
@@ -138,7 +136,7 @@ When this file is updated, ensure these files reference current policy:
 
 ## 7. Summary
 
-**Version strategy:** Latest version only (0.15.2) with migration appendices
+**Version strategy:** Latest dev version (0.16.0-dev) with migration appendices
 
 **Benefits:**
 - Clean, focused content (no version markers)
@@ -147,13 +145,13 @@ When this file is updated, ensure these files reference current policy:
 - Modern best practices only
 
 **Trade-offs:**
-- 0.14.1 users must mentally translate or upgrade
-- Runnable examples target 0.15.2 only
-- Historical patterns in appendices only
+- 0.15.x and 0.14.1 users must use migration appendices or upgrade
+- Runnable examples target 0.16.0-dev only
+- Dev APIs may shift before 0.16.0 stable — re-validation needed on release
 
 **This approach balances reader experience, maintenance sustainability, and backward support.**
 
 ---
 
-**Last Updated:** 2026-03-31
-**Next Review:** Upon Zig 0.16.0 release (see `update/zig-0.16` branch for draft updates)
+**Last Updated:** 2026-04-02
+**Next Review:** Upon Zig 0.16.0 stable release (re-validate all examples, pin CI to `0.16.0`)
