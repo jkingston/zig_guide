@@ -8,15 +8,17 @@ pub const BenchmarkResult = struct {
     avg_ns: u64,
 };
 
-pub fn benchmarkWithArg(comptime FnType: type, func: FnType, arg: anytype, iterations: u64) !BenchmarkResult {
-    var timer = try std.time.Timer.start();
+pub fn benchmarkWithArg(io: std.Io, comptime FnType: type, func: FnType, arg: anytype, iterations: u64) !BenchmarkResult {
+    const clock: std.Io.Clock = .awake;
+    const start = clock.now(io);
 
     var i: u64 = 0;
     while (i < iterations) : (i += 1) {
         _ = func(arg);
     }
 
-    const elapsed_ns = timer.read();
+    const end = clock.now(io);
+    const elapsed_ns: u64 = @intCast(@as(i64, @truncate(@divTrunc(start.durationTo(end).nanoseconds, 1))));
     return BenchmarkResult{
         .total_ns = elapsed_ns,
         .iterations = iterations,

@@ -58,7 +58,7 @@ const Container = struct {
 };
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
     defer {
         const leaked = gpa.deinit();
         if (leaked == .leak) {

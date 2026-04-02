@@ -11,7 +11,7 @@ const c = struct {
     pub const sqlite3_stmt = opaque {};
 
     pub const SQLITE_OK = 0;
-    pub const SQLITE_TRANSIENT = @as(?*const fn (?*anyopaque) void, @ptrFromInt(@as(usize, @bitCast(@as(isize, -1)))));
+    pub const SQLITE_TRANSIENT: ?*align(1) const fn (?*anyopaque) void = @ptrFromInt(@as(usize, @bitCast(@as(isize, -1))));
 
     pub fn sqlite3_open(filename: [*:0]const u8, ppDb: *?*sqlite3) i32 {
         _ = filename;
@@ -68,7 +68,7 @@ const c = struct {
         idx: c_int,
         text: [*:0]const u8,
         n: c_int,
-        destructor: ?*const fn (?*anyopaque) void,
+        destructor: ?*align(1) const fn (?*anyopaque) void,
     ) i32 {
         _ = stmt;
         _ = idx;

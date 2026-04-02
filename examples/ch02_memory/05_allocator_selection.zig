@@ -36,7 +36,7 @@ fn processWithFixedBuffer() !void {
 }
 
 fn processWithGPA() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
     defer {
         const status = gpa.deinit();
         if (status == .leak) {
@@ -55,7 +55,7 @@ fn processWithGPA() !void {
 }
 
 pub fn main() !void {
-    var gpa_main = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa_main: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
     defer std.debug.assert(gpa_main.deinit() == .ok);
 
     try processWithArena(gpa_main.allocator());

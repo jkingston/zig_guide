@@ -6,7 +6,7 @@
 const std = @import("std");
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
     defer {
         const deinit_status = gpa.deinit();
         if (deinit_status == .leak) {

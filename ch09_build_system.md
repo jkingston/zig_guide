@@ -418,14 +418,12 @@ pub fn build(b: *std.Build) void {
 ```zig
 const std = @import("std");
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
-    var args = try std.process.argsWithAllocator(allocator);
+    var args = try std.process.Args.Iterator.initAllocator(init.minimal.args, allocator);
     defer args.deinit();
-    _ = args.skip(); // program name
+    _ = args.next(); // skip program name
 
     var output_path: ?[]const u8 = null;
     while (args.next()) |arg| {
@@ -443,10 +441,11 @@ pub fn main() !void {
         \\
     ;
 
-    const file = try std.fs.cwd().createFile(path, .{});
-    defer file.close();
+    const cwd = std.Io.Dir.cwd();
+    const file = try cwd.createFile(init.io, path, .{});
+    defer file.close(init.io);
 
-    try file.writeAll(code);
+    try file.writePositionalAll(init.io, code, 0);
 }
 ```
 
@@ -1189,6 +1188,11 @@ The Zig build system provides deterministic, type-safe project configuration thr
 - Zig 0.15 introduced the module system, replacing setter methods with constructor structs
 - Always specify `.target` and `.optimize` in modules to avoid cryptic errors
 - Use `b.path()` instead of relative paths for portability
+
+**0.16+ changes:**
+- Fetched packages stored locally in `zig-pkg/` at the project root (alongside the global cache at `~/.cache/zig/p/`)
+- `zig build --fork=[path]` enables temporary local dependency overrides across the entire tree without modifying `build.zig.zon`
+- Update `.gitignore` to include `zig-pkg/` alongside `.zig-cache/` and `zig-out/`
 
 **Production practices:**
 - Large projects split build.zig across multiple files for maintainability

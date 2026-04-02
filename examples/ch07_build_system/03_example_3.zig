@@ -5,21 +5,23 @@
 
 const std = @import("std");
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    var da: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
+    defer std.debug.assert(da.deinit() == .ok);
+    const allocator = da.allocator();
 
-    var args = try std.process.argsWithAllocator(allocator);
-    defer args.deinit();
-    _ = args.skip(); // program name
+    const io = init.io;
+    var args_iter = std.process.Args.Iterator.init(init.minimal.args);
+    _ = args_iter.next(); // program name
 
     var output_path: ?[]const u8 = null;
-    while (args.next()) |arg| {
+    while (args_iter.next()) |arg| {
         if (std.mem.eql(u8, arg, "--output")) {
-            output_path = args.next();
+            output_path = args_iter.next();
         }
     }
+
+    _ = allocator;
 
     const path = output_path orelse return error.MissingOutputPath;
 
@@ -30,8 +32,9 @@ pub fn main() !void {
         \\
     ;
 
-    const file = try std.fs.cwd().createFile(path, .{});
-    defer file.close();
+    const cwd = std.Io.Dir.cwd();
+    const file = try cwd.createFile(io, path, .{});
+    defer file.close(io);
 
-    try file.writeAll(code);
+    try file.writeStreamingAll(io, code);
 }

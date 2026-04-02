@@ -5,12 +5,14 @@
 
 const std = @import("std");
 
-pub fn main() !void {
-    const file = try std.fs.cwd().createFile("output.txt", .{});
-    defer file.close();
+pub fn main(init: std.process.Init) !void {
+    const io = init.io;
+    const cwd = std.Io.Dir.cwd();
+    const file = try cwd.createFile(io, "output.txt", .{});
+    defer file.close(io);
 
     var buf: [4096]u8 = undefined;
-    var writer = file.writer(&buf);
+    var writer = file.writer(io, &buf);
 
     try writer.interface.print("Writing to file\n", .{});
     for (0..100) |i| {

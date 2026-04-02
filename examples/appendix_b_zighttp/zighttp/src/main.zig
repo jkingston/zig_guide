@@ -44,21 +44,21 @@ fn printError(err: anyerror) void {
     }
 }
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     // Set up allocator
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
     defer std.debug.assert(gpa.deinit() == .ok);
     const allocator = gpa.allocator();
 
     // Parse arguments
-    const parsed_args = args.Args.parse(allocator) catch |err| {
+    const parsed_args = args.Args.parse(allocator, init.minimal.args) catch |err| {
         printError(err);
         std.process.exit(1);
     };
     defer parsed_args.deinit(allocator);
 
     // Make HTTP request
-    var response = http_client.request(allocator, parsed_args) catch |err| {
+    var response = http_client.request(allocator, init.io, parsed_args) catch |err| {
         std.debug.print("HTTP request failed: {s}\n", .{@errorName(err)});
         std.process.exit(1);
     };
@@ -66,7 +66,7 @@ pub fn main() !void {
 
     // Get stdout
     var stdout_buffer: [4096]u8 = undefined;
-    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
+    var stdout_writer = std.Io.File.stdout().writer(init.io, &stdout_buffer);
     const stdout = &stdout_writer.interface;
 
     // Print status
@@ -83,4 +83,5 @@ pub fn main() !void {
     }
 
     try stdout.writeAll("\n");
+    try stdout_writer.interface.flush();
 }

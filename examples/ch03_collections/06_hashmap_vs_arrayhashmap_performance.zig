@@ -5,10 +5,10 @@
 
 const std = @import("std");
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    var da: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
+    defer std.debug.assert(da.deinit() == .ok);
+    const allocator = da.allocator();
 
     const iterations = 1000;
 
@@ -27,8 +27,10 @@ pub fn main() !void {
         try array_hash_map.put(allocator, @intCast(i), @intCast(i * 2));
     }
 
+    const clock: std.Io.Clock = .awake;
+
     // Iterate HashMap
-    var timer = try std.time.Timer.start();
+    const start1 = clock.now(init.io);
     var sum1: u64 = 0;
     for (0..iterations) |_| {
         var it1 = hash_map.iterator();
@@ -36,10 +38,11 @@ pub fn main() !void {
             sum1 += entry.value_ptr.*;
         }
     }
-    const hash_map_time = timer.read();
+    const end1 = clock.now(init.io);
+    const hash_map_ns: i64 = @truncate(@divTrunc(start1.durationTo(end1).nanoseconds, 1));
 
     // Iterate ArrayHashMap
-    timer.reset();
+    const start2 = clock.now(init.io);
     var sum2: u64 = 0;
     for (0..iterations) |_| {
         var it2 = array_hash_map.iterator();
@@ -47,7 +50,11 @@ pub fn main() !void {
             sum2 += entry.value_ptr.*;
         }
     }
-    const array_hash_map_time = timer.read();
+    const end2 = clock.now(init.io);
+    const array_hash_map_ns: i64 = @truncate(@divTrunc(start2.durationTo(end2).nanoseconds, 1));
+
+    const hash_map_time: u64 = @intCast(hash_map_ns);
+    const array_hash_map_time: u64 = @intCast(array_hash_map_ns);
 
     std.debug.print("HashMap iteration: {} ns (sum: {})\n", .{ hash_map_time, sum1 });
     std.debug.print("ArrayHashMap iteration: {} ns (sum: {})\n", .{ array_hash_map_time, sum2 });

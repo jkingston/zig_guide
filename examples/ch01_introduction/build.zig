@@ -13,7 +13,7 @@ pub fn build(b: *std.Build) void {
         "01_example_1",
     };
 
-    // Examples that require Zig 0.15+ (use std.fs.File.stdout() API)
+    // Examples that require Zig 0.15+ (use std.Io.File.stdout() API)
     const examples_015 = [_][]const u8{
         "03_stdout_writer_changes_in_015",
         "04_example_4",

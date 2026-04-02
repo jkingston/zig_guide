@@ -15,12 +15,12 @@ pub const Response = struct {
 };
 
 /// Make an HTTP request with the given arguments
-pub fn request(allocator: std.mem.Allocator, request_args: Args) !Response {
+pub fn request(allocator: std.mem.Allocator, io: std.Io, request_args: Args) !Response {
     // Parse the URL
     const uri = try std.Uri.parse(request_args.url);
 
     // Create HTTP client
-    var client = std.http.Client{ .allocator = allocator };
+    var client = std.http.Client{ .allocator = allocator, .io = io };
     defer client.deinit();
 
     // Prepare request method
@@ -38,7 +38,7 @@ pub fn request(allocator: std.mem.Allocator, request_args: Args) !Response {
     };
 
     // Create writer for response
-    var response_writer_obj = std.Io.Writer.Allocating.init(allocator);
+    var response_writer_obj: std.Io.Writer.Allocating = .init(allocator);
     defer response_writer_obj.deinit();
 
     // Make request using fetch

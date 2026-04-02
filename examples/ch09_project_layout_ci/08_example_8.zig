@@ -6,9 +6,9 @@
 const std = @import("std");
 const core = @import("core");
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     var buf: [256]u8 = undefined;
-    var stdout = std.fs.File.stdout().writer(&buf);
+    var stdout = std.Io.File.stdout().writer(init.io, &buf);
 
     try stdout.interface.print("Workspace App v{}\n", .{core.version});
     try core.greet(&stdout.interface, "Workspace");

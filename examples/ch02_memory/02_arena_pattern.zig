@@ -30,7 +30,7 @@ fn handleRequest(allocator: std.mem.Allocator, req_id: u32, data: []const u8) ![
 }
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
     defer std.debug.assert(gpa.deinit() == .ok);
 
     var arena = std.heap.ArenaAllocator.init(gpa.allocator());

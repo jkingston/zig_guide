@@ -16,7 +16,7 @@ fn createResources(allocator: std.mem.Allocator) !struct { a: []u8, b: []u8 } {
 }
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
     defer std.debug.assert(gpa.deinit() == .ok);
     const allocator = gpa.allocator();
 

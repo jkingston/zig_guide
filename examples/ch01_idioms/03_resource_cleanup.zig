@@ -5,30 +5,36 @@
 
 const std = @import("std");
 
-fn processFile(allocator: std.mem.Allocator, path: []const u8) !void {
-    const file = try std.fs.cwd().openFile(path, .{});
-    defer file.close();
+fn processFile(io: std.Io, allocator: std.mem.Allocator, path: []const u8) !void {
+    const cwd = std.Io.Dir.cwd();
+    const file = try cwd.openFile(io, path, .{});
+    defer file.close(io);
 
-    const content = try file.readToEndAlloc(allocator, 1024 * 1024);
+    var buf: [4096]u8 = undefined;
+    var reader = file.reader(io, &buf);
+    const content = try reader.interface.allocRemaining(allocator, .limited(1024 * 1024));
     defer allocator.free(content);
 
     // Process content here
     std.debug.print("Read {} bytes from {s}\n", .{ content.len, path });
 }
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(gpa.deinit() == .ok);
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    var da: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
+    defer std.debug.assert(da.deinit() == .ok);
+    const allocator = da.allocator();
+
+    const io = init.io;
+    const cwd = std.Io.Dir.cwd();
 
     // Create a test file
     const test_path = "test_file.txt";
     {
-        const file = try std.fs.cwd().createFile(test_path, .{});
-        defer file.close();
-        try file.writeAll("Hello, Zig!\n");
+        const file = try cwd.createFile(io, test_path, .{});
+        defer file.close(io);
+        try file.writeStreamingAll(io, "Hello, Zig!\n");
     }
-    defer std.fs.cwd().deleteFile(test_path) catch {};
+    defer cwd.deleteFile(io, test_path) catch {};
 
-    try processFile(allocator, test_path);
+    try processFile(io, allocator, test_path);
 }

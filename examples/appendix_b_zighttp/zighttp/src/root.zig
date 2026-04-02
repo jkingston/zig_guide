@@ -9,7 +9,7 @@ const std = @import("std");
 /// ```zig
 /// const zighttp = @import("zighttp");
 ///
-/// var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+/// var gpa: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
 /// defer _ = gpa.deinit();
 /// const allocator = gpa.allocator();
 ///

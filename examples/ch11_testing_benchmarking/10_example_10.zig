@@ -19,9 +19,9 @@ fn sumFormula(n: u64) u64 {
     return (n * (n + 1)) / 2;
 }
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     var stdout_buf: [4096]u8 = undefined;
-    var stdout = std.fs.File.stdout().writer(&stdout_buf);
+    var stdout = std.Io.File.stdout().writer(init.io, &stdout_buf);
     const iterations = 1_000_000;
     const n = 1000;
 
@@ -29,6 +29,7 @@ pub fn main() !void {
 
     // Benchmark iterative approach
     const iterative_result = try benchmark_mod.benchmarkWithArg(
+        init.io,
         @TypeOf(sumIterative),
         sumIterative,
         n,
@@ -37,6 +38,7 @@ pub fn main() !void {
 
     // Benchmark formula approach
     const formula_result = try benchmark_mod.benchmarkWithArg(
+        init.io,
         @TypeOf(sumFormula),
         sumFormula,
         n,

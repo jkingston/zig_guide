@@ -138,6 +138,8 @@ $ zig fetch https://github.com/user/repo/archive/COMMIT.tar.gz
 3. Adds entry to `build.zig.zon` (if `--save` specified)
 4. Caches in global cache (`~/.cache/zig` or `ZIG_GLOBAL_CACHE_DIR`)
 
+> **0.16+:** Fetched packages are also stored locally in `zig-pkg/` at the project root. Add `zig-pkg/` to your `.gitignore`.
+
 Subsequent builds reuse the cached package—no re-download unless hash changes.[^4]
 
 ### Dependency Integration in build.zig
@@ -208,6 +210,20 @@ Development often requires local dependencies before publishing:
 | **Example** | `{.url = "...", .hash = "..."}` | `{.path = "./lib"}` |
 
 Both URL and path dependencies can be marked `.lazy = true` for conditional loading.[^6]
+
+### Local Development Overrides with --fork (0.16+)
+
+The `--fork` flag provides temporary local overrides for dependencies without modifying `build.zig.zon`:
+
+```bash
+# Override a dependency with a local checkout for development
+zig build --fork=my-library=/path/to/local/checkout
+
+# Works across the entire dependency tree
+zig build --fork=shared-utils=../my-fork
+```
+
+This resolves before package fetching based on content hashes. Use it during development to test changes to dependencies without editing version-controlled files. The override applies to the named dependency wherever it appears in the tree.
 
 ### Fingerprint Field
 

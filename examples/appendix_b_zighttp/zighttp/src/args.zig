@@ -25,7 +25,7 @@ pub const Args = struct {
     pretty: bool = true,
 
     /// Parse command-line arguments using zig-clap
-    pub fn parse(allocator: std.mem.Allocator) !Args {
+    pub fn parse(allocator: std.mem.Allocator, process_args: std.process.Args) !Args {
         // Define CLI parameters at compile time
         const params = comptime clap.parseParamsComptime(
             \\-h, --help             Display this help and exit.
@@ -38,13 +38,11 @@ pub const Args = struct {
 
         // Parse arguments with diagnostic support
         var diag = clap.Diagnostic{};
-        var res = clap.parse(clap.Help, &params, clap.parsers.default, .{
+        var res = clap.parse(clap.Help, &params, clap.parsers.default, process_args, .{
             .diagnostic = &diag,
             .allocator = allocator,
         }) catch |err| {
-            var stderr_buffer: [4096]u8 = undefined;
-            var stderr_writer = std.fs.File.stderr().writer(&stderr_buffer);
-            diag.report(&stderr_writer.interface, err) catch {};
+            std.debug.print("Argument parsing error: {s}\n", .{@errorName(err)});
             return error.InvalidArguments;
         };
         defer res.deinit();

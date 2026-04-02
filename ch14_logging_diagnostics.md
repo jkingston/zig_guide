@@ -646,6 +646,7 @@ For production systems, structured logging enables automated analysis and correl
 const std = @import("std");
 
 pub const LogContext = struct {
+    io: std.Io,
     correlation_id: []const u8,
     user_id: ?u32 = null,
     request_path: ?[]const u8 = null,
@@ -672,58 +673,52 @@ pub const LogContext = struct {
         comptime format: []const u8,
         args: anytype,
     ) void {
-        // 🕐 **0.14.x:**
-        // const stderr = std.io.getStdErr().writer();
-
-        // ✅ **0.15+:**
-        var stderr_buf: [2048]u8 = undefined;
-        var stderr_writer = std.fs.File.stderr().writer(&stderr_buf);
-        const stderr = &stderr_writer.interface;
-
-        std.debug.lockStdErr();
-        defer std.debug.unlockStdErr();
+        var stderr_buf: [4096]u8 = undefined;
+        var stderr = std.Io.Writer.fixed(&stderr_buf);
 
         var buf: [4096]u8 = undefined;
         const message = std.fmt.bufPrint(&buf, format, args) catch "format error";
 
-        nosuspend {
-            stderr.writeAll("{") catch return;
+        const ts = std.Io.Timestamp.now(self.io, .real);
+        const millis = @divFloor(ts.nanoseconds, std.time.ns_per_ms);
 
-            stderr.writeAll("\"timestamp\":") catch return;
-            stderr.print("{d}", .{std.time.milliTimestamp()}) catch return;
+        stderr.writeAll("{") catch return;
 
-            stderr.writeAll(",\"level\":\"") catch return;
-            stderr.writeAll(level.asText()) catch return;
-            stderr.writeAll("\"") catch return;
+        stderr.writeAll("\"timestamp\":") catch return;
+        stderr.print("{d}", .{millis}) catch return;
 
-            stderr.writeAll(",\"correlation_id\":\"") catch return;
-            stderr.writeAll(self.correlation_id) catch return;
-            stderr.writeAll("\"") catch return;
+        stderr.writeAll(",\"level\":\"") catch return;
+        stderr.writeAll(@tagName(level)) catch return;
+        stderr.writeAll("\"") catch return;
 
-            if (self.user_id) |uid| {
-                stderr.writeAll(",\"user_id\":") catch return;
-                stderr.print("{d}", .{uid}) catch return;
-            }
+        stderr.writeAll(",\"correlation_id\":\"") catch return;
+        stderr.writeAll(self.correlation_id) catch return;
+        stderr.writeAll("\"") catch return;
 
-            if (self.request_path) |path| {
-                stderr.writeAll(",\"path\":\"") catch return;
-                stderr.writeAll(path) catch return;
-                stderr.writeAll("\"") catch return;
-            }
-
-            stderr.writeAll(",\"message\":\"") catch return;
-            stderr.writeAll(message) catch return;
-            stderr.writeAll("\"") catch return;
-
-            stderr.writeAll("}\n") catch return;
-            stderr.flush() catch return;
+        if (self.user_id) |uid| {
+            stderr.writeAll(",\"user_id\":") catch return;
+            stderr.print("{d}", .{uid}) catch return;
         }
+
+        if (self.request_path) |path| {
+            stderr.writeAll(",\"path\":\"") catch return;
+            stderr.writeAll(path) catch return;
+            stderr.writeAll("\"") catch return;
+        }
+
+        stderr.writeAll(",\"message\":\"") catch return;
+        stderr.writeAll(message) catch return;
+        stderr.writeAll("\"") catch return;
+
+        stderr.writeAll("}\n") catch return;
+        std.debug.print("{s}", .{stderr_buf[0..stderr.end]});
     }
 };
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     // Simulate HTTP request handling
     const ctx = LogContext{
+        .io = init.io,
         .correlation_id = "req-12345-abcde",
         .user_id = 42,
         .request_path = "/api/users/42",
@@ -1077,7 +1072,7 @@ pub const Tracer = struct {
             log,
             udp: struct {
                 io: *IO,
-                address: std.net.Address,
+                address: std.net.Address, // 0.16+: std.Io.net.Address
             },
         } = .log,
     };

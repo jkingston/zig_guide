@@ -9,6 +9,7 @@ pub const LogContext = struct {
     correlation_id: []const u8,
     user_id: ?u32 = null,
     request_path: ?[]const u8 = null,
+    io: std.Io,
 
     pub fn logInfo(
         self: LogContext,
@@ -33,9 +34,7 @@ pub const LogContext = struct {
         args: anytype,
     ) void {
         var stderr_buf: [4096]u8 = undefined;
-        var stderr = std.fs.File.stderr().writer(&stderr_buf);
-        std.debug.lockStdErr();
-        defer std.debug.unlockStdErr();
+        var stderr = std.Io.File.stderr().writer(self.io, &stderr_buf);
 
         var buf: [4096]u8 = undefined;
         const message = std.fmt.bufPrint(&buf, format, args) catch "format error";
@@ -43,10 +42,7 @@ pub const LogContext = struct {
         nosuspend {
             stderr.interface.writeAll("{") catch return;
 
-            stderr.interface.writeAll("\"timestamp\":") catch return;
-            stderr.interface.print("{d}", .{std.time.milliTimestamp()}) catch return;
-
-            stderr.interface.writeAll(",\"level\":\"") catch return;
+            stderr.interface.writeAll("\"level\":\"") catch return;
             const level_text = switch (level) {
                 .err => "error",
                 .warn => "warning",
@@ -81,12 +77,13 @@ pub const LogContext = struct {
     }
 };
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     // Simulate HTTP request handling
     const ctx = LogContext{
         .correlation_id = "req-12345-abcde",
         .user_id = 42,
         .request_path = "/api/users/42",
+        .io = init.io,
     };
 
     ctx.logInfo("Request started", .{});

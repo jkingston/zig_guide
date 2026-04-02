@@ -15,12 +15,14 @@ fn expensiveOperation() void {
     std.mem.doNotOptimizeAway(&sum);
 }
 
-pub fn main() !void {
-    var timer = try std.time.Timer.start();
+pub fn main(init: std.process.Init) !void {
+    const clock: std.Io.Clock = .awake;
+    const start = clock.now(init.io);
 
     // Code to measure
     expensiveOperation();
 
-    const elapsed_ns = timer.read();
+    const end = clock.now(init.io);
+    const elapsed_ns: u64 = @intCast(@as(i64, @truncate(@divTrunc(start.durationTo(end).nanoseconds, 1))));
     std.debug.print("Elapsed: {d} ns\n", .{elapsed_ns});
 }
