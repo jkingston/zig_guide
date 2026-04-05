@@ -173,6 +173,7 @@ fn findFirst(items: []i32, target: i32) ?usize {
 ```
 
 **Decision criteria:**
+
 - Use `!T` when absence indicates a problem requiring error handling
 - Use `?T` when absence is a valid, expected state
 - Use `!?T` when an operation can fail *or* return nothing (e.g., optional database query with possible connection error)

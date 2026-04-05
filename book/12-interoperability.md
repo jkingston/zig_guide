@@ -39,6 +39,7 @@ This eliminates the impedance mismatch common in FFI systems, enabling gradual C
 | `@cDefine` | Define C macro for import | Control conditional compilation in headers | `@cDefine("DEBUG", "1")` (in `@cImport`) | Yes |
 
 **Decision tree:**
+
 - **Have C header?** → Use `@cImport` (easiest, full type translation)
 - **No header, calling C?** → Use `extern` (manual declaration)
 - **Exposing Zig to C?** → Use `export` (creates C-compatible symbols)
@@ -312,6 +313,7 @@ extern fn process_value(value: c_int) void;
 ```
 
 This distinction matters because C's `int` type varies by platform:
+
 - Modern desktop platforms: 32-bit
 - Historical 16-bit platforms: 16-bit
 - Some 64-bit ABIs: could be 64-bit
@@ -2104,6 +2106,7 @@ pub fn get(alloc: std.mem.Allocator) !Entry {
 ```
 
 **Key Patterns:**
+
 - Compile-time platform detection (`builtin.os.tag`)
 - Conditional @cImport for platform-specific headers
 - @compileError for unsupported platforms
@@ -2200,6 +2203,7 @@ pub fn init(
 ```
 
 **Key Patterns:**
+
 - Opaque types matching Zig implementation size
 - Compile-time size/alignment verification
 - C-compatible error enums (backed by c_int)
@@ -2312,6 +2316,7 @@ This pattern enables Zig projects to leverage mature C++ game development librar
 Lightpanda, a headless browser (26k stars, Zig 0.15.2), demonstrates how Zig's build system can orchestrate dependencies across three languages in a single `build.zig`:[^17]
 
 **Key integration points:**
+
 - **V8 (C++):** Linked as a Zig dependency with sanitizer flag propagation from the parent build
 - **libcurl (C):** Built with its full dependency chain (zlib, brotli, nghttp2, boringssl), each receiving matching target/optimization settings
 - **html5ever (Rust):** Compiled via `cargo build` invoked as a build system command — Zig's build system orchestrates the Rust toolchain

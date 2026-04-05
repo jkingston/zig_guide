@@ -85,6 +85,7 @@ pub const SpawnConfig = struct {
 ```
 
 Default stack sizes are platform-specific:
+
 - Linux/Windows: 16 MiB
 - macOS: Must be page-aligned (typically 4 MiB)
 - WASM: Configurable (typically 1 MiB)
@@ -273,6 +274,7 @@ Source: [TigerBeetle context.zig:62-126](https://github.com/tigerbeetle/tigerbee
 A reader-writer lock optimized for read-heavy workloads. Multiple readers can hold the lock simultaneously, but writers require exclusive access.
 
 **Semantics:**
+
 - Multiple concurrent readers OR
 - Single exclusive writer
 - Writers block all readers and other writers
@@ -433,6 +435,7 @@ pub fn Value(comptime T: type) type {
 ```
 
 **Supported Types:**
+
 - All integer types (u8, i32, u64, etc.)
 - Pointers
 - Booleans
@@ -508,6 +511,7 @@ fn consumer() void {
 ```
 
 The acquire-release pair creates a **happens-before** relationship:
+
 - Producer's write to `data` happens-before the release
 - Release happens-before the acquire
 - Acquire happens-before consumer's read of `data`
@@ -576,6 +580,7 @@ Source: [TigerBeetle signal.zig:87-107](https://github.com/tigerbeetle/tigerbeet
 **Best Practices:**
 
 99% of cases use:
+
 - **`.monotonic`** for simple counters
 - **`.acquire/.release`** for publishing/consuming data
 - **`.seq_cst`** only when debugging or strict ordering required
@@ -806,12 +811,14 @@ Original design: [kprotty/zap thread_pool.zig](https://github.com/kprotty/zap/bl
 #### When to Use Thread Pools
 
 **Use Thread Pools When:**
+
 - CPU-bound tasks (parsing, compression, cryptography)
 - Parallelizable workloads with independent units
 - Need to limit concurrent threads to CPU count
 - Amortizing thread creation overhead matters
 
 **Avoid Thread Pools When:**
+
 - I/O-bound tasks (use event loops instead)
 - Tasks have strict ordering requirements
 - Single task execution
@@ -831,11 +838,13 @@ Modern event loops use either the **proactor** or **reactor** pattern:
 | **Reactor** | Kernel notifies readiness, app does I/O | Linux (epoll), BSD (kqueue) | libuv, Tokio |
 
 **Proactor Benefits:**
+
 - Simpler application code (kernel performs I/O)
 - Better performance with modern interfaces (io_uring)
 - Completion-based is more intuitive
 
 **Reactor Benefits:**
+
 - Wider platform support
 - More mature ecosystem
 - Fine-grained control over I/O operations
@@ -845,6 +854,7 @@ Modern event loops use either the **proactor** or **reactor** pattern:
 **libxev** is Mitchell Hashimoto's event loop library for Zig, designed as a modern replacement for removed async/await.[^13]
 
 **Key Characteristics:**
+
 - **Zero Runtime Allocations**: All memory managed by caller
 - **Platform-Optimized Backends**:
   - Linux: io_uring (5.1+ kernel) with epoll fallback
@@ -942,6 +952,7 @@ pub fn main() !void {
 Ghostty uses libxev extensively with multiple event loops in separate threads:[^14]
 
 **Architecture:**
+
 - **Main thread**: Terminal I/O event loop (PTY reading/writing)
 - **Renderer thread**: OpenGL/Metal rendering loop
 - **CF release thread**: macOS Core Foundation cleanup
@@ -1169,6 +1180,7 @@ This section references the tested examples included with this chapter. All exam
 Demonstrates thread lifecycle, data passing, and configuration:
 
 **Key Concepts:**
+
 - Thread creation with `spawn()`
 - Joining and detaching threads
 - Custom stack sizes
@@ -1207,6 +1219,7 @@ Full file: `/home/jack/workspace/zig_guide/sections/07_async_concurrency/example
 Covers Mutex, atomic operations, RwLock, Condition, and memory ordering:
 
 **Key Concepts:**
+
 - Mutex-protected shared counter
 - Lock-free atomic counter
 - Reader-writer lock for document store
@@ -1258,6 +1271,7 @@ Full file: `/home/jack/workspace/zig_guide/sections/07_async_concurrency/example
 Demonstrates `std.Thread.Pool` usage patterns:
 
 **Key Concepts:**
+
 - Basic thread pool with WaitGroup
 - Shared state with atomic operations
 - Results collection with Mutex
@@ -1294,6 +1308,7 @@ Full file: `/home/jack/workspace/zig_guide/sections/07_async_concurrency/example
 Performance measurement techniques using `std.time.Timer`:
 
 **Key Concepts:**
+
 - Timer usage and lap measurements
 - Preventing compiler optimizations
 - Comparing algorithms
@@ -1335,6 +1350,7 @@ Full file: `/home/jack/workspace/zig_guide/sections/07_async_concurrency/example
 Conceptual demonstration of event loop patterns (does not require libxev):
 
 **Key Concepts:**
+
 - Event loop architecture
 - Proactor vs Reactor patterns
 - When to use event loops vs threads
@@ -1368,6 +1384,7 @@ fn processData(data: []const u8) void {
 ```
 
 **Why It Matters:**
+
 - Unjoined threads leak stack memory (16 MiB per thread on Linux)
 - Process exit may crash if threads are still running
 - Debug builds panic on program exit
@@ -1561,6 +1578,7 @@ mutex.lock();  // Panic: "Deadlock detected"
 ```
 
 For cross-thread deadlocks, use external tools:
+
 - Helgrind (Valgrind)
 - ThreadSanitizer with deadlock detection
 - Manual code review
@@ -1677,6 +1695,7 @@ fn processInBackground(task: *ProcessTask) void {
 **Golden Rule:**
 
 Event loop callbacks should:
+
 - ✓ Perform I/O operations (read, write, accept)
 - ✓ Schedule timers
 - ✓ Update state quickly (< 1ms)
@@ -1708,6 +1727,7 @@ This section links to production concurrency patterns in real-world Zig projects
    - Memory ordering: `.release` for publish, `.acquire` for reload
 
 **Architectural Notes:**
+
 - Main replica is single-threaded (uses io_uring on Linux)
 - Client libraries are thread-safe, allowing multi-threaded apps
 - Heavy use of assertions for invariant checking
@@ -1736,6 +1756,7 @@ This section links to production concurrency patterns in real-world Zig projects
    - Pattern: Lazy initialization with `bun.once()`
 
 **Architectural Notes:**
+
 - Multiple thread pools: bundler, HTTP, SQLite
 - Each JavaScript event loop runs in dedicated thread
 - Pool size determined by CPU core count
@@ -1766,6 +1787,7 @@ This section links to production concurrency patterns in real-world Zig projects
    - Pattern: Conditional compilation for performance profiling
 
 **Architectural Notes:**
+
 - Main thread handles LSP protocol
 - Thread pool analyzes Zig ASTs in parallel
 - Build runner spawns processes, must be serialized
@@ -1793,6 +1815,7 @@ This section links to production concurrency patterns in real-world Zig projects
    - Draw commands: text, cursor, etc.
 
 **Architectural Notes:**
+
 - Uses libxev for all I/O (PTY, signals, timers)
 - Platform-specific event loop integration
 - Rendering decoupled from terminal processing for 120+ FPS
@@ -1837,6 +1860,7 @@ pub fn Queue(comptime Value: type) type {
 **Why lock-free:** Game engines need to pass events (input, audio callbacks) from multiple threads to the main render thread without blocking. Traditional mutexes cause priority inversion and frame drops.
 
 **Memory ordering semantics:**
+
 - `.acq_rel` (acquire-release): Full barrier ensuring all prior writes visible to other threads
 - `.acquire`: Load operation sees all writes before corresponding `.release` store
 - `.release`: Store operation makes all prior writes visible to `.acquire` loads
@@ -1956,6 +1980,7 @@ oom: std.Thread.ResetEvent = .{},
 ```
 
 **ResetEvent pattern:**
+
 - **set()**: Signal that OOM occurred
 - **wait()**: Block until signal received
 - **reset()**: Clear signal for next use
@@ -1979,10 +2004,12 @@ pub fn tryLock(objs: *@This()) bool {
 ```
 
 **When to use Mutex vs lock-free:**
+
 - **Lock-free**: Hot path, high-frequency operations (event queues, node pools)
 - **Mutex**: Coarse-grained operations where contention is rare (entity creation/deletion)
 
 **Key Takeaways from Mach:**
+
 - **Lock-free MPSC** enables cross-thread communication without blocking or priority inversion
 - **Atomic node pools** eliminate allocation overhead in hot paths
 - **Memory ordering** (.acq_rel, .acquire, .release) ensures visibility guarantees
@@ -2020,12 +2047,14 @@ pub fn tryLock(objs: *@This()) bool {
    - Defers allocation until handler explicitly requires owned data
 
 **Architectural Notes:**
+
 - Single event loop handles I/O multiplexing (Linux: epoll, BSD: kqueue)
 - Optional worker thread pool for CPU-bound request handlers
 - Explicit flush control for streaming responses
 - Production-grade performance: handles 100K+ requests/sec
 
 **Comparison with libxev:**
+
 - zap: HTTP-specific, optimized for web server workloads
 - libxev: General-purpose event loop (files, sockets, timers, signals)
 - Both demonstrate Zig's library-based async approach (no language keywords)
@@ -2055,6 +2084,7 @@ pub fn tryLock(objs: *@This()) bool {
    - Each dependency receives matching target/optimization settings from `build.zig`
 
 **Architectural Notes:**
+
 - Claims 16x lower memory and 9x faster than Chrome headless
 - Uses Chrome DevTools Protocol (CDP) for automation interface
 - Arena pool pattern is directly applicable to any request-handling server
@@ -2172,28 +2202,34 @@ Zig's concurrency model rewards careful design but provides the tools for buildi
 ### Additional Resources
 
 **Official Documentation:**
+
 - [Zig Language Reference: Threads](https://ziglang.org/documentation/master/#Threads)
 - [Zig Standard Library: std.Thread](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/Thread.zig)
 - [Zig Standard Library: std.atomic](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/atomic.zig)
 
 **Libraries:**
+
 - [libxev: Event Loop for Zig](https://github.com/mitchellh/libxev)
 - [zap: HTTP Server Framework](https://github.com/zigzap/zap) - Production event loop patterns for web services
 - [kprotty/zap: Original Thread Pool Design](https://github.com/kprotty/zap/blob/blog/src/thread_pool.zig)
 - [Tracy Profiler](https://github.com/wolfpld/tracy)
 
 **Blog Posts:**
+
 - [Mitchell Hashimoto: libxev - Evented I/O for Zig](https://mitchellh.com/writing/libxev-evented-io-zig)
 
 **Community Resources:**
+
 - [Zig Guide: Concurrency](https://zig.guide/)
 - [ZigLearn: Threads](https://ziglearn.org/)
 
 **Performance Tools:**
+
 - [Linux perf](https://perf.wiki.kernel.org/)
 - [Valgrind (Helgrind, DRD)](https://valgrind.org/)
 - [ThreadSanitizer (TSan)](https://github.com/google/sanitizers)
 
 **Benchmark Code:**
+
 - [std.crypto.benchmark](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/crypto/benchmark.zig)
 - [std.hash.benchmark](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/hash/benchmark.zig)

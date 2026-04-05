@@ -944,6 +944,7 @@ else
 ```
 
 **Trade-off:**
+
 - **Debug builds:** Fast recompilation (skip embedding 100+ KB of generated code)
 - **Release builds:** Single portable binary with no external file dependencies
 - **Override:** `-Dcodegen_embed=true` forces embedding for reproducible CI builds
@@ -1068,6 +1069,7 @@ $ zig build                    # Full debug build with all checks
 This provides an escape hatch for extremely fast iteration without adding a custom build mode or option flag.
 
 **Key Takeaways from Bun:**
+
 - Target refinement before resolution ensures backward compatibility
 - Layered fallback strategies make builds robust across environments
 - Conditional embedding balances development speed with release requirements
@@ -1144,6 +1146,7 @@ pub fn build(b: *std.Build) void {
 ```
 
 This pattern demonstrates production-grade build systems for complex projects with:
+
 - 10+ external C/C++ libraries
 - Platform-specific graphics APIs (D3D12, Vulkan, Metal)
 - Cross-compilation to Windows, Linux, macOS from any host
@@ -1174,27 +1177,32 @@ Each category can be run independently (`zig build test-behavior`), enabling fas
 The Zig build system provides deterministic, type-safe project configuration through executable code. Key patterns:
 
 **Fundamentals:**
+
 - Always use `standardTargetOptions()` and `standardOptimizeOption()`
 - Modules are the primary abstraction for dependency management
 - Build steps coordinate task execution with explicit dependencies
 
 **Advanced patterns:**
+
 - Build options enable compile-time configuration with zero runtime cost
 - Custom build steps support code generation and asset processing
 - Multi-target builds produce release artifacts for all platforms in one command
 - Test organization separates unit and integration tests with filtering support
 
 **Migration:**
+
 - Zig 0.15 introduced the module system, replacing setter methods with constructor structs
 - Always specify `.target` and `.optimize` in modules to avoid cryptic errors
 - Use `b.path()` instead of relative paths for portability
 
 **0.16+ changes:**
+
 - Fetched packages stored locally in `zig-pkg/` at the project root (alongside the global cache at `~/.cache/zig/p/`)
 - `zig build --fork=[path]` enables temporary local dependency overrides across the entire tree without modifying `build.zig.zon`
 - Update `.gitignore` to include `zig-pkg/` alongside `.zig-cache/` and `zig-out/`
 
 **Production practices:**
+
 - Large projects split build.zig across multiple files for maintainability
 - Feature flags with lazy dependencies reduce build times for optional functionality
 - Git-based versioning eliminates manual version management

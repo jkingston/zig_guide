@@ -268,6 +268,7 @@ pub fn defaultLog(
 ```
 
 **Key Features:**
+
 - Uses 64-byte stack buffer (no heap allocation)
 - Thread-safe via stderr locking
 - Silently ignores write errors
@@ -475,6 +476,7 @@ pub fn diagnoseError() void {
 This prints a full stack trace showing the call chain leading to the current location. Useful for debugging unexpected code paths or error conditions.
 
 **Limitations:**
+
 - Requires debug symbols (doesn't work with stripped binaries)
 - Not available on all platforms (WASM, some embedded targets)
 - Performance overhead in debug builds
@@ -739,6 +741,7 @@ pub fn main(init: std.process.Init) !void {
 ```
 
 This format is parseable by standard log aggregators and enables:
+
 - Request tracing via correlation IDs
 - User activity tracking
 - Performance analysis (duration)
@@ -1082,6 +1085,7 @@ pub const Tracer = struct {
 ```
 
 This trace system provides:
+
 - Structured event logging for deterministic replay
 - StatsD metrics integration for monitoring
 - Process ID tracking for distributed correlation
@@ -1120,6 +1124,7 @@ fn logFn(
 ```
 
 This approach enables:
+
 - Native platform integration (macOS Console.app)
 - Cross-platform stderr fallback
 - Consistent API regardless of platform
@@ -1171,6 +1176,7 @@ ZLS routes logs to stderr, keeping them separate from LSP JSON-RPC communication
 - `.goto` - Go-to-definition tracing
 
 This demonstrates logging in development tools where:
+
 - Rich diagnostics help debug protocol issues
 - Logs must not interfere with primary communication channel
 - Filtering by component aids development
@@ -1217,12 +1223,14 @@ Zig's logging system provides a pragmatic balance between developer observabilit
 **Development vs Production:**
 
 **Development (Debug mode):**
+
 - Log level: `.debug` (all logs enabled)
 - Use `std.debug.print` for quick diagnostics
 - Enable verbose logging for all subsystems
 - Include detailed error context and stack traces
 
 **Production (Release modes):**
+
 - Log level: `.info` or `.warn` (filter debug logs)
 - Sample high-frequency info logs
 - Always capture errors with context

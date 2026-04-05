@@ -290,16 +290,19 @@ const FileWriter = struct {
 ## Migration Checklist
 
 ### Pre-Migration (15 min)
+
 - [ ] Backup codebase (git commit or branch)
 - [ ] Update Zig to 0.15.2
 - [ ] Review this guide
 
 ### Phase 1: Build System (15-30 min)
+
 - [ ] Update `build.zig` with `.root_module` wrappers
 - [ ] Test: `zig build` compiles
 - [ ] Commit: "build: migrate to 0.15.2 module API"
 
 ### Phase 2: I/O (30-60 min)
+
 - [ ] Update stdout/stderr imports
 - [ ] Add buffers to all `writer()` calls
 - [ ] Add `.interface` accessor to method calls
@@ -308,6 +311,7 @@ const FileWriter = struct {
 - [ ] Commit: "refactor: migrate I/O to 0.15.2"
 
 ### Phase 3: Containers (30-60 min)
+
 - [ ] Change `.init(allocator)` → `.empty`
 - [ ] Add allocator to `deinit()` calls
 - [ ] Add allocator to mutation methods
@@ -316,6 +320,7 @@ const FileWriter = struct {
 - [ ] Commit: "refactor: migrate containers to 0.15.2"
 
 ### Final Validation (30-60 min)
+
 - [ ] Run full test suite
 - [ ] Check for warnings
 - [ ] Test release builds
@@ -403,15 +408,18 @@ pub fn main() !void {
 ## Resources
 
 **For detailed explanations:**
+
 - Chapter 5: Collections & Containers (managed vs unmanaged)
 - Chapter 6: I/O, Streams & Formatting (buffering patterns)
 - Chapter 9: Build System (module system)
 
 **For working code examples:**
+
 - `examples/` directory contains 100 validated 0.15.2 examples
 - All examples compile successfully on Zig 0.15.2
 
 **If migration issues persist:**
+
 - Zig Discord: Real-time help
 - Ziggit forum: Migration questions
 - GitHub issues: Report unclear error messages

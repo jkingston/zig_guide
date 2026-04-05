@@ -154,6 +154,7 @@ expected 5, found 4
 ```
 
 Output includes:
+
 - Test name and index (3/10)
 - Error type (`TestExpectedEqual`)
 - Expected vs actual values
@@ -198,6 +199,7 @@ try testing.expectError(error.InvalidFormat, result);
 ```
 
 Fails if:
+
 - The error union contains a value (not an error)
 - The error differs from expected
 
@@ -247,6 +249,7 @@ Relative comparison avoids absolute tolerance issues on large or small numbers.
 **testing.allocator**
 
 A `GeneralPurposeAllocator` configured specifically for test use. Automatically detects:
+
 - Memory leaks (allocations not freed)
 - Double-frees
 - Use-after-free (when safety checks enabled)
@@ -379,6 +382,7 @@ test "Queue: edge cases" {
 ```
 
 Advantages:
+
 - Tests stay synchronized with implementation
 - Easy to find relevant tests
 - Encourages testing as part of development
@@ -427,6 +431,7 @@ src/
 ```
 
 This pattern separates:
+
 - **Production code**: Core implementation
 - **Test code**: Colocated test blocks
 - **Test infrastructure**: Reusable testing utilities
@@ -469,6 +474,7 @@ pub fn initTime(options: struct {
 ```
 
 Benefits:
+
 - Provides defaults for most options
 - Requires passing `.{}` at call sites (makes customization explicit)
 - Centralizes complex initialization logic
@@ -796,12 +802,14 @@ pub fn main() !void {
 ```
 
 **Key Methods:**
+
 - `start() !Timer`: Initialize timer (may fail if no monotonic clock available)
 - `read() u64`: Read elapsed nanoseconds since start/reset
 - `reset()`: Reset timer to zero
 - `lap() u64`: Read elapsed time and reset in one operation
 
 Timer implementation uses platform-specific monotonic clocks:
+
 - Linux: `CLOCK_BOOTTIME` (includes suspend time)
 - macOS: `CLOCK_UPTIME_RAW`
 - Windows: `QueryPerformanceCounter`
@@ -863,6 +871,7 @@ const elapsed = timer.read();
 ```
 
 Warm-up stabilizes:
+
 - CPU frequency (modern CPUs scale based on load)
 - L1/L2 cache state (loads hot paths into cache)
 - Branch predictor state (trains the predictor)
@@ -912,6 +921,7 @@ const variance = variance_sum / num_samples;
 ```
 
 Multiple samples:
+
 - Identify outliers (context switches, interrupts)
 - Measure consistency (variance)
 - Increase confidence in the mean
@@ -1108,11 +1118,13 @@ std.mem.copy                     150,000,000  12.2%
 ```
 
 **Advantages:**
+
 - Exact instruction counts (deterministic)
 - Function-level and line-level detail
 - Call graph visualization
 
 **Disadvantages:**
+
 - Very slow (10-100x slowdown)
 - Not real-time profiling
 
@@ -1143,16 +1155,19 @@ perf script > out.perf
 ```
 
 **perf Options:**
+
 - `-F 999`: Sample at 999Hz (odd number reduces aliasing)
 - `-g`: Record call graphs
 - `--call-graph dwarf`: Use DWARF for better stack traces (larger data)
 
 **Advantages:**
+
 - Low overhead (typically <5%)
 - Real-time profiling
 - Hardware counters (cache misses, branch mispredictions)
 
 **Disadvantages:**
+
 - Statistical (not deterministic)
 - Requires root or `perf_event_paranoid` adjustment
 
@@ -1200,11 +1215,13 @@ massif-visualizer massif.out.12345
 ```
 
 **Advantages:**
+
 - Shows allocation patterns over time
 - Identifies memory leaks and bloat
 - Snapshots show detailed heap state
 
 **Disadvantages:**
+
 - Significant slowdown
 - Requires Valgrind-compatible system
 
@@ -1229,6 +1246,7 @@ perf script > out.perf
 ```
 
 **Reading Flame Graphs:**
+
 - X-axis: Alphabetical sort (not time)
 - Y-axis: Stack depth (bottom = entry, top = leaf)
 - Width: Time spent in function (or descendants)
@@ -1239,21 +1257,25 @@ Wide plateaus at the bottom indicate hot paths consuming most time.
 **Profiling Overhead Considerations:**
 
 **Callgrind:**
+
 - Overhead: 10-100x slowdown
 - Impact: Totally changes performance characteristics
 - Use for: Instruction counts, relative comparisons
 
 **perf:**
+
 - Overhead: <5% typically
 - Impact: Minimal on real-world performance
 - Use for: Production-like profiling
 
 **Massif:**
+
 - Overhead: 5-20x slowdown
 - Impact: Slows allocation-heavy code significantly
 - Use for: Memory analysis, not performance
 
 **Build Mode Impact:**
+
 - Debug: 10-100x slower than ReleaseFast
 - ReleaseSafe: ~2x slower due to safety checks
 - ReleaseFast: Baseline for profiling
@@ -1325,6 +1347,7 @@ test "factorial: error cases" {
 ```
 
 **Patterns Demonstrated:**
+
 - Colocated tests alongside implementation
 - Basic assertions (`expectEqual`, `expectError`)
 - Testing both success and error paths
@@ -1412,6 +1435,7 @@ pub fn createTestArena(backing: std.mem.Allocator) std.heap.ArenaAllocator {
 ```
 
 **Patterns Demonstrated:**
+
 - Separating test utilities into dedicated modules
 - Using `builtin.is_test` for compile-time guards
 - Centralized test fixtures and data
@@ -1500,6 +1524,7 @@ test "powers of two: comptime generation" {
 ```
 
 **Patterns Demonstrated:**
+
 - Table-driven tests with struct arrays
 - `inline for` for comptime test case expansion
 - Generic type testing across multiple types
@@ -1619,6 +1644,7 @@ test "arena allocator pattern" {
 ```
 
 **Patterns Demonstrated:**
+
 - Memory leak detection with `testing.allocator`
 - Using `FailingAllocator` to test error paths
 - Systematic testing of allocation failure at different points
@@ -1775,6 +1801,7 @@ pub fn main() !void {
 ```
 
 **Patterns Demonstrated:**
+
 - Warm-up iterations before measurement
 - Multiple sample collection for statistics
 - `std.mem.doNotOptimizeAway` to prevent optimization
@@ -1894,6 +1921,7 @@ echo "Done! View massif_report.txt"
 ```
 
 **Patterns Demonstrated:**
+
 - Build configuration with symbols preserved
 - Integration with multiple profiling tools
 - Automation scripts for profiling workflows
@@ -2331,6 +2359,7 @@ pub const TimeSim = struct {
 ```
 
 Key patterns:
+
 - Controlled time advancement via `tick()`
 - Multiple offset types (linear drift, periodic, step jumps)
 - Simulates clock skew and NTP adjustments
@@ -2355,6 +2384,7 @@ pub const PacketSimulatorOptions = struct {
 ```
 
 Simulates:
+
 - Variable network delays
 - Packet loss and replay attacks
 - Network partitions (split-brain scenarios)
@@ -2408,6 +2438,7 @@ pub fn storageFormat(
 ```
 
 Benefits:
+
 - Reduces test boilerplate
 - Ensures consistent setup
 - Single source of truth for defaults
@@ -2489,6 +2520,7 @@ pub fn expectEqual(expected: anytype, actual: anytype) error{TestExpectedEqual}!
 ```
 
 Benefits:
+
 - Semantic comparison via JSON serialization
 - Human-readable diffs for complex structures
 - Better diagnostics than default `expectEqual`
@@ -2704,6 +2736,7 @@ test "concurrent producers" {
 ```
 
 **Pattern breakdown:**
+
 - **Thread.Pool**: Manages thread lifecycle automatically
 - **WaitGroup**: Synchronizes completion of all producers
 - **Anonymous struct with run()**: Captures queue pointer without heap allocation
@@ -2747,6 +2780,7 @@ fn ExpectVector(comptime T: type) type {
 This drastically reduces debugging time for SIMD code.
 
 **Key Takeaways from Mach:**
+
 - **Type-aware assertions** reduce boilerplate and prevent type annotation errors
 - **Epsilon equality by default** for floats prevents spurious failures from rounding
 - **SIMD alignment** in tests ensures production code path is actually tested

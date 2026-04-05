@@ -31,6 +31,7 @@ zig version
 ```
 
 **Install ZLS (Zig Language Server)** for IDE support:
+
 - Download the **nightly** build from [ZLS releases](https://github.com/zigtools/zls/releases) to match Zig master
 - See [ZLS compatibility guide](https://github.com/zigtools/zls#compatibility) for version matching
 - See **Appendix A: Development Setup** for detailed editor configuration
@@ -73,6 +74,7 @@ pub fn main(init: std.process.Init) !void {
 ```
 
 **What this demonstrates:**
+
 - **process.Init** (Appendix C) - `init.gpa` provides a pre-initialized allocator with leak detection
 - **Error handling** (Chapter 7) - `!void` return type, `try` keyword
 - **Resource cleanup** (Chapter 7) - `defer` ensures cleanup on all exit paths
@@ -171,6 +173,7 @@ The `comptime` annotation forces evaluation during compilation. The result is a 
 - **Need troubleshooting?** → Appendix D (Troubleshooting Guide)
 
 **Key chapters for common tasks:**
+
 - **Memory management** → Chapter 4 (Memory & Allocators)
 - **Error handling** → Chapter 7 (Error Handling & Resource Cleanup)
 - **File I/O** → Chapter 6 (I/O, Streams & Formatting)
@@ -183,6 +186,7 @@ The `comptime` annotation forces evaluation during compilation. The result is a 
 ## Summary
 
 You've installed Zig, built your first working program, and seen key Zig concepts in action:
+
 - Explicit memory allocation with leak detection
 - Error handling with `try` and `!void`
 - Resource cleanup with `defer`

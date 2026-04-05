@@ -422,6 +422,7 @@ GitHub Actions dominates Zig CI workflows. Common patterns include Zig installat
 The `mlugg/setup-zig` action is standard:[^13]
 
 ```yaml
+
 - uses: mlugg/setup-zig@v2
   with:
     version: master
@@ -434,6 +435,7 @@ Alternative: Custom download scripts (TigerBeetle pattern) for precise version c
 Cache both global and local Zig directories:[^15]
 
 ```yaml
+
 - uses: actions/cache@v4
   with:
     path: |
@@ -1661,6 +1663,7 @@ Missing global cache or incorrect key:
 **AVOID:**
 
 ```yaml
+
 - uses: actions/cache@v4
   with:
     path: zig-cache          # Missing global cache
@@ -1670,6 +1673,7 @@ Missing global cache or incorrect key:
 **USE:**
 
 ```yaml
+
 - uses: actions/cache@v4
   with:
     path: |
@@ -1725,6 +1729,7 @@ Cross-compiling without native testing:
 **AVOID:**
 
 ```yaml
+
 - name: Build for macOS
   run: zig build -Dtarget=aarch64-macos
 # No actual testing on macOS
@@ -1733,6 +1738,7 @@ Cross-compiling without native testing:
 **USE:**
 
 ```yaml
+
 - name: Build for macOS
   if: matrix.os == 'macos-latest'
   run: zig build -Dtarget=aarch64-macos
@@ -1861,6 +1867,7 @@ ZLS implements sophisticated release automation:[^26]
 1. **Skip logic** — Only build on new commits:
 
 ```yaml
+
 - run: |
     LAST_SUCCESS=$(curl .../runs?status=success&per_page=1)
     if [ "$LAST_SUCCESS" = "$CURRENT_COMMIT" ]; then
@@ -1871,6 +1878,7 @@ ZLS implements sophisticated release automation:[^26]
 2. **Signed releases** — Cryptographic verification:
 
 ```yaml
+
 - run: |
     echo "${MINISIGN_SECRET}" > minisign.key
     zig build release -Drelease-minisign --summary all
@@ -1880,6 +1888,7 @@ ZLS implements sophisticated release automation:[^26]
 3. **S3 upload** — Artifact distribution:
 
 ```yaml
+
 - run: |
     s3cmd put ./zig-out/artifacts/ --recursive \
       s3://releases-bucket/ \
@@ -1889,6 +1898,7 @@ ZLS implements sophisticated release automation:[^26]
 4. **Metadata publication** — JSON API update:
 
 ```yaml
+
 - run: |
     zig run .github/workflows/prepare_release_payload.zig |
       curl --data @- https://releases.zigtools.org/v1/zls/publish
@@ -1939,6 +1949,7 @@ jobs:
 **Artifact Packaging:**
 
 ```yaml
+
 - name: Package artifacts
   run: |
     zig build -Doptimize=ReleaseSafe
@@ -1952,6 +1963,7 @@ jobs:
 ```
 
 **Why Use This as Reference:**
+
 - Maintained by Zig core team
 - Demonstrates best practices for Zig CI
 - Handles edge cases (Windows path separators, macOS code signing, Linux musl builds)
@@ -1962,16 +1974,19 @@ jobs:
 Ghostty produces different artifact types per platform:[^29]
 
 **macOS:**
+
 - Universal binaries (x86_64 + aarch64 using `lipo`)
 - .app bundle with Info.plist
 - .dmg installer for distribution
 
 **Linux:**
+
 - Flatpak for sandboxed distribution
 - AppImage for portable execution
 - Distribution-specific packages (.deb, .rpm)
 
 **Windows:**
+
 - MSVC-linked executable
 - Installer (MSI or NSIS)
 
@@ -1997,6 +2012,7 @@ mach/
 ```
 
 Each package:
+
 - Has independent semantic versioning
 - Can be consumed separately
 - Shares common development infrastructure

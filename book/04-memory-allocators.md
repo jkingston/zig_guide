@@ -195,6 +195,7 @@ fn createResources(allocator: std.mem.Allocator) !Resources {
 ```
 
 **Memory Management Strategy:**
+
 - **Arenas** — Request-scoped bulk cleanup (all freed together)
 - **Manual cleanup (defer/errdefer)** — Individual lifetimes or incremental reclamation
 - See TigerBeetle's manifest initialization for cascading errdefer patterns[^6]
@@ -418,6 +419,7 @@ These exemplars share common patterns: allocator-first parameter ordering, meani
 Zig's explicit memory management model eliminates hidden allocations, making ownership and lifetime visible in the code. The uniform `Allocator` interface enables compile-time polymorphism, allowing seamless switching between allocators for different use cases.
 
 Key principles:
+
 - **Allocators are explicit parameters**—no hidden allocations
 - **Choose allocators by use case**—arena for request scoping, fixed-buffer for bounded performance, GPA for safety
 - **Ownership is documented**—caller-owns, callee-returns-owned, or init/deinit pairs

@@ -271,11 +271,13 @@ const borrowed: []const u8 = "static string";
 HashMap provides O(1) average-case lookup with unordered storage. ArrayHashMap maintains insertion order and offers O(1) indexing with faster iteration due to contiguous memory layout.[^4]
 
 Choose HashMap when:
+
 - Insertion order does not matter
 - Lookup performance is critical
 - Memory layout is less important
 
 Choose ArrayHashMap when:
+
 - Iteration is frequent
 - Insertion order matters
 - Array-like indexing is needed
@@ -1022,6 +1024,7 @@ const SliceAdapter = struct {
 ```
 
 **Benefits:**
+
 - **Memory:** One copy of each string, no duplication
 - **Lookups:** O(1) for both string→index and index→string
 - **Cache-friendly:** Contiguous string storage in `string_bytes`
@@ -1156,6 +1159,7 @@ const EventQueue = std.fifo.LinearFifo(Event, .Dynamic);
 **Why 8192:** Prevents reallocation during gameplay. Input events (keyboard, mouse) occur frequently; pre-allocation ensures zero-allocation event handling in the main loop.
 
 **Key Takeaways from Mach:**
+
 - **Custom hash contexts** enable memory-efficient string interning and specialized lookups
 - **MultiArrayList** (structure-of-arrays) maximizes cache efficiency for component iteration
 - **BitSetUnmanaged** provides 8x memory savings over bool arrays for entity state

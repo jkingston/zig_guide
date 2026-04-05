@@ -224,11 +224,13 @@ Each allocation adds an `errdefer` ensuring that if any subsequent allocation fa
 The `anyerror` type represents the union of all possible errors in a program. It should be used sparingly:
 
 **When to use:**
+
 - Generic error handling utilities
 - Error logging and telemetry infrastructure
 - Callbacks with unknown error types
 
 **When NOT to use:**
+
 - Public API boundaries (prevents compile-time error exhaustiveness)
 - Performance-critical paths (larger type, less optimization)
 
@@ -352,6 +354,7 @@ pub fn main() !void {
 Run with `zig run example_basic_errors.zig`.
 
 **Key concepts demonstrated:**
+
 - Explicit error set definition with domain-specific errors
 - Error set merging to combine failure modes
 - Inferred error sets for convenience
@@ -425,6 +428,7 @@ fn processRequest(user_id: u32) !void {
 ```
 
 **Key concepts demonstrated:**
+
 - Simple error propagation with `try`
 - Adding context before re-propagating errors
 - Error-specific handling with `switch`
@@ -511,6 +515,7 @@ fn complexCleanup(allocator: std.mem.Allocator) !void {
 Run the full example to see LIFO cleanup order and error-triggered cleanup.
 
 **Key concepts demonstrated:**
+
 - LIFO execution order of `defer` statements
 - `errdefer` executing only on error paths
 - Combining both for complete cleanup coverage
@@ -590,6 +595,7 @@ test "systematic error path testing" {
 Run with `zig test example_testing_errors.zig`.
 
 **Key concepts demonstrated:**
+
 - Using `FailingAllocator` to inject allocation failures
 - Systematic testing of all error paths
 - Verifying `errdefer` cleanup with allocation metrics
@@ -597,6 +603,7 @@ Run with `zig test example_testing_errors.zig`.
 - Using `std.testing.expectError` for error assertions
 
 **FailingAllocator configuration:**
+
 - `fail_index` — Number of successful allocations before failure
 - `resize_fail_index` — Number of successful resizes before failure
 - Tracks `allocations`, `deallocations`, `allocated_bytes`, `freed_bytes`[^6]
@@ -675,6 +682,7 @@ pub fn main(init: std.process.Init) !void {
 ```
 
 **Key concepts demonstrated:**
+
 - Graceful degradation with fallback allocations
 - Multi-resource container initialization
 - Complex cleanup in `deinit` methods
@@ -744,6 +752,7 @@ const Transaction = struct {
 ```
 
 **Key concepts demonstrated:**
+
 - Transaction pattern with commit/rollback semantics
 - State-dependent cleanup in `deinit`
 - Multi-step validation before commit
@@ -1151,6 +1160,7 @@ Zig's error handling and resource cleanup mechanisms provide compile-time safety
 3. **Test systematically** — Fail at each allocation point to verify `errdefer` chains
 
 **Production Patterns:**
+
 - Use explicit error sets in public APIs for clear contracts
 - Add context when catching and re-propagating errors
 - Group allocation and cleanup visually for code review
@@ -1158,6 +1168,7 @@ Zig's error handling and resource cleanup mechanisms provide compile-time safety
 - Test error paths as thoroughly as success paths
 
 When designing error handling:
+
 - **For libraries:** Use explicit error sets to document contracts
 - **For applications:** Balance explicitness with convenience using inferred error sets
 - **For recovery:** Use `catch` with domain-specific logic

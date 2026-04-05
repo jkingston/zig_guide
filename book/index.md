@@ -7,17 +7,20 @@
 This guide teaches modern Zig idioms and best practices using **Zig 0.16.0-dev** (tracking `master`). All code examples and runnable programs target this version. APIs may shift before the 0.16.0 stable release.
 
 **Working with Zig 0.14.1?**
+
 - See Appendix A for quick-reference patterns showing 0.14 equivalents
 - See Appendix B for the full migration guide (0.14 → 0.15)
 - **Recommended:** Upgrade to 0.16.0-dev first (typical migration: 2-4 hours)
 
 **Who This Guide Is For:**
+
 - Systems programmers learning Zig from C, C++, or Rust backgrounds
 - Developers building Zig applications with modern Zig
 - Teams evaluating Zig for production use
 - Contributors to Zig open-source projects
 
 **This guide assumes:**
+
 - Prior systems programming experience
 - Familiarity with basic programming concepts
 - Understanding of memory management principles

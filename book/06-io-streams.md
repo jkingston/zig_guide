@@ -544,17 +544,20 @@ var writer = stdout.writer(&.{});  // Unbuffered
 TigerBeetle, a distributed financial database, demonstrates I/O patterns prioritizing correctness and observability.
 
 **Fixed Buffer Streams for Metrics**
+
 - Uses fixed-buffer writers for zero-allocation StatsD metrics formatting
 - Source: [`src/trace/statsd.zig:59-85`](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/trace/statsd.zig#L332-365)
 - Pattern: Compile-time buffer sizing for worst-case metric strings
 
 **Direct I/O with Sector Alignment**
+
 - Opens journal files with `O_DIRECT` flag to bypass page cache
 - Source: [`src/io/linux.zig:1433-1570`](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/io/linux.zig#L1433-L1570)
 - Graceful fallback when Direct I/O unavailable
 - Block device vs regular file handling
 
 **Latent Sector Error (LSE) Recovery**
+
 - Binary search subdivision to isolate failed sectors on read errors
 - Source: [`src/storage.zig:279-384`](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/storage.zig#L279-L384)
 - Zeros unreadable sectors for graceful degradation
@@ -565,16 +568,19 @@ TigerBeetle, a distributed financial database, demonstrates I/O patterns priorit
 Ghostty, a terminal emulator, shows modern async I/O patterns with the xev library.
 
 **PTY Stream Management**
+
 - Uses `xev.Stream.initFd()` for async pseudo-terminal I/O
 - Source: [`src/termio/Exec.zig:128-129`](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/termio/Exec.zig#L128-L129), [`src/termio/Exec.zig:502-516`](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/termio/Exec.zig#L502-L516)
 - Write queue with buffer pooling to reduce allocation overhead
 
 **Config File Reading**
+
 - XDG-compliant path resolution with fallbacks
 - Source: [`src/config/file_load.zig:136-166`](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/config/file_load.zig#L136-L166)
 - Comprehensive validation: file type, size checks before reading
 
 **Fixed Buffer Writers for String Conversion**
+
 - Stack-allocated buffers for config value serialization
 - Source: [`src/config/io.zig:99`](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/config/io.zig#L99)
 - Pattern: `var writer = std.Io.Writer.fixed(&buf);`
@@ -584,11 +590,13 @@ Ghostty, a terminal emulator, shows modern async I/O patterns with the xev libra
 Bun, a JavaScript runtime, demonstrates performance-optimized I/O for module loading.
 
 **Reference-Counted I/O Readers**
+
 - Buffered readers with async deinit queues
 - Source: [`src/shell/IOReader.zig:1-150`](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/shell/IOReader.zig#L1-L150)
 - Pattern: Ref-counting prevents premature resource cleanup in async contexts
 
 **Dynamic Buffers with ArrayListUnmanaged**
+
 - Uses `std.ArrayListUnmanaged` for buffers without storing allocators
 - Reduces struct size and indirection overhead for hot-path I/O
 
@@ -597,12 +605,14 @@ Bun, a JavaScript runtime, demonstrates performance-optimized I/O for module loa
 The Zig Language Server demonstrates I/O patterns for protocol communication.
 
 **Fixed Buffer Logging**
+
 - 4KB stack buffer for log message formatting with overflow handling
 - Source: [`src/main.zig:50-100`](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/main.zig#L50-L100)
 - Gracefully handles buffer overflow with "..." suffix
 - Pattern: `var writer = std.Io.Writer.fixed(&buffer);`
 
 **Unbuffered stderr for Critical Messages**
+
 - Uses `std.fs.File.stderr().writer(&.{})` for immediate error output
 - Source: [`src/main.zig:98`](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/main.zig#L98)
 
@@ -611,12 +621,14 @@ The Zig Language Server demonstrates I/O patterns for protocol communication.
 Lightpanda, a headless browser (26k stars, Zig 0.16.0-dev), uses a slab allocator for size-class segregated I/O buffer management.
 
 **Slab Allocator for I/O Buffers**
+
 - Size-class segregation using `ArrayHashMapUnmanaged` for fast lookup
 - `DynamicBitSetUnmanaged` tracks free slots within each slab
 - Exponential chunk growth via bit shifting reduces fragmentation
 - Integrates with `std.mem.Allocator` via VTable for transparent use
 
 **Arena Pool for Per-Request I/O**
+
 - Thread-safe pool of `ArenaAllocator` instances for request-scoped I/O
 - `acquire()` / `release()` lifecycle avoids allocation churn
 - Combined with `DebugAllocator` in debug mode for leak detection
@@ -649,6 +661,7 @@ pub fn loadImage(path: []const u8, allocator: std.mem.Allocator) !zigimg.Image {
 ```
 
 **Key Patterns:**
+
 - Stream-based chunk parsing without loading entire file into memory
 - Source: [`src/formats/png.zig`](https://github.com/zigimg/zigimg/blob/f5783e87627cbd9e0b45fad112e9f73503914f36/src/formats/png.zig)
 - Validates chunk CRCs and structure as data streams in
@@ -674,6 +687,7 @@ pub fn processImage(reader: anytype, allocator: std.mem.Allocator) !void {
 ```
 
 **Allocator-Aware Design:**
+
 - Explicit allocator threading for pixel buffer allocation
 - Arena allocator pattern for temporary decode buffers
 - Caller-owned pixel data with clear ownership semantics
@@ -712,6 +726,7 @@ pub fn main() !void {
 ```
 
 **Key Patterns:**
+
 - Pre-allocated response buffers for common HTTP scenarios
 - Source: [`src/http.zig`](https://github.com/zigzap/zap/blob/76679f308c702cd8880201e6e93914e1d836a54b/src/http.zig)
 - Stack-allocated buffers for headers, dynamic allocation for large bodies
@@ -735,6 +750,7 @@ fn handleUpload(req: *zap.Request, res: *zap.Response) !void {
 ```
 
 **Event Loop Integration:**
+
 - Tight integration with epoll/kqueue for async I/O
 - Non-blocking reads with automatic buffer management
 - Connection pooling with buffer reuse to minimize allocations
@@ -746,21 +762,25 @@ fn handleUpload(req: *zap.Request, res: *zap.Response) !void {
 Zig's I/O abstraction provides explicit control over buffering, resource lifetimes, and formatting. Key decisions:
 
 **Buffering Strategy:**
+
 - Use buffered I/O (4KB-8KB buffers) for files and network streams
 - Use unbuffered I/O for interactive terminal output and critical errors
 - Use fixed buffer streams when heap allocation is undesirable
 
 **Version Migration:**
+
 - 0.14.x to 0.15+: Replace `std.io.getStdOut()` with `std.fs.File.stdout()`
 - Pass explicit buffers to `file.writer(&buf)` or `&.{}` for unbuffered
 - Access formatting through `writer.interface.print()` instead of `writer.print()`
 
 **Resource Management:**
+
 - Always use `defer` for cleanup on all paths (success and error)
 - Use `errdefer` for cleanup only on error paths
 - Consider arena allocators when multiple allocations share a lifetime
 
 **Performance:**
+
 - Buffered I/O typically provides 5-10x speedup for small writes
 - Pre-allocate buffers on the stack when size is known
 - Use `writeAll` for static strings; reserve `print` for actual formatting

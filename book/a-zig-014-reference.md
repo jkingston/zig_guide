@@ -255,12 +255,14 @@ error: expected 2 arguments, found 1
 ## When to Upgrade
 
 **Upgrade to 0.15.2 if:**
+
 - You can spare 2-4 hours for migration
 - You want to follow book examples directly
 - Your team is open to version upgrades
 - You want latest features and bug fixes
 
 **Stay on 0.14.1 if:**
+
 - Upgrade not approved by team
 - Production system with strict version lock
 - Migration time not available short-term
@@ -272,6 +274,7 @@ error: expected 2 arguments, found 1
 ## Summary
 
 **Using this book with Zig 0.14.1:**
+
 - ✅ Learn modern Zig patterns (concepts apply to both versions)
 - ✅ Use this appendix to translate examples
 - ⚠️  Runnable examples won't compile (0.15.2 only)
@@ -279,6 +282,7 @@ error: expected 2 arguments, found 1
 - 💡 **Recommended:** Upgrade to 0.15.2 for best experience
 
 **Translation pattern:**
+
 - Build system: Remove `.root_module` wrapper
 - I/O: Use `std.io.getStdOut()`, no buffers, no `.interface`
 - Containers: Use `.init(allocator)`, remove allocator from method calls

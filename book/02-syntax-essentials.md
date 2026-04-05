@@ -275,6 +275,7 @@ const as_byte: u8 = @bitCast(flags);  // 0b00000101
 ```
 
 **Use cases:**
+
 - Hardware register interfaces
 - Network protocol headers
 - File format parsing
@@ -296,6 +297,7 @@ const IPv4Header = packed struct {
 ```
 
 **Memory guarantees:**
+
 - Packed structs have no padding between fields
 - Total size equals sum of field bit widths (rounded to byte boundary)
 - Field order matches declaration order

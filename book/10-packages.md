@@ -825,30 +825,35 @@ This pattern is suitable for large projects with many dependencies.[^17]
 Zig's package system provides deterministic, content-addressed dependency management through `build.zig.zon` and the `zig fetch` workflow. Key patterns:
 
 **Fundamentals:**
+
 - Content-addressed by SHA-256 hash, not version numbers
 - Single manifest file (`build.zig.zon`), no lock files
 - Global cache prevents redundant downloads
 - Fingerprint provides globally unique package identity
 
 **Dependency patterns:**
+
 - Lazy dependencies defer fetching until used
 - Pass `.target` and `.optimize` for consistency
 - Access modules with `dep.module()`, artifacts with `dep.artifact()`
 - Local path dependencies for development
 
 **Publishing:**
+
 - Include essential files in `.paths` (source, docs, license)
 - Expose modules with `b.addModule()`
 - Tag releases with semantic versions
 - Document build options for consumers
 
 **Advanced patterns:**
+
 - Platform-specific dependencies with conditional loading
 - Custom package registries for large projects
 - Transitive dependency access via `dep.builder.lazyDependency()`
 - Build-time configuration through dependency options
 
 **Migration notes:**
+
 - Zig 0.15+ requires `.fingerprint` field
 - Hash format evolved from multihash (`1220...`) to named (`name-version-base64`)
 - Lazy dependencies introduced in 0.12, essential for modern workflows

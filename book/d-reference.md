@@ -5,6 +5,7 @@ This chapter provides comprehensive reference materials for Zig development: a c
 **Target Audience**: All Zig developers looking for quick reference and terminology clarification.
 
 **Chapter Goals**:
+
 - Provide quick lookup for Zig terminology and concepts
 - Document idiomatic Zig style conventions from production codebases
 - Consolidate all references into searchable index
@@ -22,6 +23,7 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### A
 
 **Allocator**
+
 - **Definition**: Interface (std.mem.Allocator) providing uniform memory allocation API with methods like alloc(), free(), create(), and destroy()
 - **Key Methods**: alloc(), free(), create(), destroy(), realloc()
 - **Usage**: Foundation of Zig's explicit memory management philosophy
@@ -29,18 +31,21 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 - **Version**: All versions
 
 **anyopaque**
+
 - **Definition**: Type-erased pointer type replacing c_void in Zig 0.11+
 - **Usage**: C interop, type-erased storage, opaque pointers
 - **Chapter**: 11 (Interoperability)
 - **Version**: 0.11+
 
 **anytype**
+
 - **Definition**: Type allowing compile-time polymorphism; compiler infers actual type from usage
 - **Common Uses**: Generic functions, formatting, duck typing
 - **Chapter**: 2 (Language Idioms), 5 (I/O), 11 (Interoperability)
 - **Version**: All versions
 
 **Arena Allocator**
+
 - **Definition**: Allocator that batch-frees all allocations at once; ideal for temporary allocations with shared lifetime
 - **Pattern**: `var arena = std.heap.ArenaAllocator.init(parent); defer arena.deinit();`
 - **Usage**: Request handlers, batch operations, temporary data structures
@@ -48,24 +53,28 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 - **Version**: All versions
 
 **ArrayList**
+
 - **Definition**: Dynamic array type (std.ArrayList) that grows as needed
 - **Key Methods**: init(), deinit(), append(), pop(), items, capacity
 - **Chapter**: 3 (Memory & Allocators), 4 (Data Structures)
 - **Version**: 0.15+ defaults to unmanaged (requires explicit allocator in methods)
 
 **assert**
+
 - **Definition**: Runtime check in Debug/ReleaseSafe modes that panics if condition is false; optimized away in ReleaseFast
 - **Usage**: `std.debug.assert(condition)`
 - **Chapter**: 2 (Language Idioms), 6 (Error Handling)
 - **Version**: All versions
 
 **Async/Await**
+
 - **Definition**: (DEPRECATED) Async function syntax removed in Zig 0.11+
 - **Migration**: Use event loop libraries like libxev or manually manage state machines
 - **Chapter**: 7 (Async & Concurrency)
 - **Version**: Removed in 0.11+
 
 **Atomics**
+
 - **Definition**: Lock-free synchronization primitives (std.atomic.Value)
 - **Operations**: load(), store(), fetchAdd(), cmpxchgWeak(), fence()
 - **Chapter**: 7 (Async & Concurrency)
@@ -74,30 +83,35 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### B
 
 **Build Artifact**
+
 - **Definition**: Output of build process (executable, library, object file)
 - **Types**: exe (executable), lib (static/dynamic library), obj (object file)
 - **Chapter**: 8 (Build System), 10 (Project Layout)
 - **Version**: All versions
 
 **Build Mode**
+
 - **Definition**: Optimization level for compilation
 - **Modes**: Debug (default, safety checks), ReleaseFast (optimized, no checks), ReleaseSafe (optimized with checks), ReleaseSmall (size-optimized)
 - **Chapter**: 8 (Build System)
 - **Version**: All versions
 
 **build.zig**
+
 - **Definition**: Zig build script replacing traditional build systems (Make, CMake)
 - **Structure**: Defines build steps, dependencies, options, and targets
 - **Chapter**: 8 (Build System), 9 (Packages & Dependencies), 10 (Project Layout)
 - **Version**: All versions (API evolved significantly 0.11+)
 
 **build.zig.zon**
+
 - **Definition**: Package manifest file defining dependencies and package metadata
 - **Format**: Zig Object Notation (ZON) - Zig's data serialization format
 - **Chapter**: 9 (Packages & Dependencies)
 - **Version**: 0.11+ (requires .fingerprint field in 0.15+)
 
 **Builtin Functions**
+
 - **Definition**: Functions prefixed with @ that provide compiler intrinsics
 - **Examples**: @import(), @as(), @intCast(), @alignOf(), @sizeOf(), @compileError()
 - **Chapter**: 2 (Language Idioms), 11 (Interoperability)
@@ -106,36 +120,42 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### C
 
 **c_allocator**
+
 - **Definition**: Allocator wrapping C's malloc/free for C interop
 - **Usage**: FFI boundaries, interfacing with C libraries
 - **Chapter**: 3 (Memory & Allocators), 11 (Interoperability)
 - **Version**: All versions
 
 **C ABI**
+
 - **Definition**: Application Binary Interface for C compatibility
 - **Keywords**: extern, export, callconv(.C)
 - **Chapter**: 11 (Interoperability)
 - **Version**: All versions
 
 **@cImport**
+
 - **Definition**: Builtin to import C headers and translate to Zig
 - **Usage**: `const c = @cImport(@cInclude("header.h"));`
 - **Chapter**: 11 (Interoperability)
 - **Version**: All versions
 
 **Comptime**
+
 - **Definition**: Compile-time execution allowing code generation and type manipulation
 - **Keywords**: comptime, @compileLog(), @compileError()
 - **Chapter**: 2 (Language Idioms), 4 (Data Structures), 11 (Interoperability)
 - **Version**: All versions
 
 **Container**
+
 - **Definition**: Generic data structures (ArrayList, HashMap, etc.)
 - **Managed vs Unmanaged**: Managed stores allocator; unmanaged requires passing allocator to methods
 - **Chapter**: 4 (Data Structures)
 - **Version**: 0.15+ defaults to unmanaged
 
 **Cross-Compilation**
+
 - **Definition**: Compiling for a different target platform than host
 - **Usage**: `zig build -Dtarget=aarch64-linux`
 - **Chapter**: 8 (Build System), 10 (Project Layout)
@@ -144,6 +164,7 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### D
 
 **defer**
+
 - **Definition**: Executes code at scope exit (similar to Go's defer)
 - **Pattern**: Place immediately after resource acquisition
 - **Usage**: `var gpa = GPA{}; defer std.debug.assert(gpa.deinit() == .ok);`
@@ -151,12 +172,14 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 - **Version**: All versions
 
 **deinit**
+
 - **Definition**: Convention for cleanup functions (opposite of init)
 - **Pattern**: Always pair init() with deinit() using defer
 - **Chapter**: 3 (Memory & Allocators), 4 (Data Structures)
 - **Version**: All versions
 
 **Dependency**
+
 - **Definition**: External package imported via build.zig.zon
 - **Management**: Declared in dependencies section with .url and .hash
 - **Chapter**: 9 (Packages & Dependencies)
@@ -165,30 +188,35 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### E
 
 **Error Set**
+
 - **Definition**: Type defining possible error values (like enum)
 - **Syntax**: `const MyError = error { OutOfMemory, InvalidInput };`
 - **Chapter**: 6 (Error Handling)
 - **Version**: All versions
 
 **Error Union**
+
 - **Definition**: Type that can be either a value or an error (T!U)
 - **Syntax**: `fn foo() !i32` returns `anyerror!i32`
 - **Chapter**: 6 (Error Handling)
 - **Version**: All versions
 
 **errdefer**
+
 - **Definition**: Like defer, but only executes if function returns with error
 - **Usage**: Multi-step initialization cleanup
 - **Chapter**: 6 (Error Handling)
 - **Version**: All versions
 
 **extern**
+
 - **Definition**: Declares external symbol (typically from C library)
 - **Usage**: `extern fn malloc(size: usize) ?*anyopaque;`
 - **Chapter**: 11 (Interoperability)
 - **Version**: All versions
 
 **export**
+
 - **Definition**: Makes Zig function visible to external code (C ABI)
 - **Usage**: `export fn my_api() void { }`
 - **Chapter**: 11 (Interoperability)
@@ -197,18 +225,21 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### F
 
 **Field**
+
 - **Definition**: Member of a struct, union, or enum
 - **Access**: @field(), @hasField(), @fieldParentPtr()
 - **Chapter**: 2 (Language Idioms), 4 (Data Structures)
 - **Version**: All versions
 
 **FixedBufferAllocator**
+
 - **Definition**: Allocator that uses pre-allocated buffer (no heap allocation)
 - **Usage**: Embedded systems, stack-only allocation
 - **Chapter**: 3 (Memory & Allocators)
 - **Version**: All versions
 
 **fmt**
+
 - **Definition**: std.fmt module for formatting and printing
 - **Key Functions**: format(), bufPrint(), allocPrint(), parseInt(), parseFloat()
 - **Chapter**: 5 (I/O)
@@ -217,6 +248,7 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### G
 
 **GeneralPurposeAllocator (GPA)**
+
 - **Definition**: Production-quality allocator with safety checks and leak detection
 - **Usage**: Default choice for applications needing safe memory management
 - **Pattern**: `var gpa = std.heap.GeneralPurposeAllocator(.{}){};`
@@ -224,6 +256,7 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 - **Version**: All versions
 
 **Generic**
+
 - **Definition**: Type or function parameterized with anytype or explicit type parameter
 - **Pattern**: `fn max(comptime T: type, a: T, b: T) T`
 - **Chapter**: 2 (Language Idioms), 4 (Data Structures)
@@ -232,12 +265,14 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### H
 
 **HashMap**
+
 - **Definition**: Hash table data structure (std.HashMap, std.AutoHashMap)
 - **Variants**: HashMap (custom hash), AutoHashMap (auto hash), StringHashMap (string keys)
 - **Chapter**: 4 (Data Structures)
 - **Version**: 0.15+ defaults to unmanaged
 
 **HTTP Client/Server**
+
 - **Definition**: std.http module for HTTP operations
 - **Components**: Client, Server, Headers, Request, Response
 - **Chapter**: 5 (I/O)
@@ -246,18 +281,21 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### I
 
 **inline**
+
 - **Definition**: Hints or forces function inlining
 - **Forms**: `inline fn`, `inline for`, `inline while`
 - **Chapter**: 2 (Language Idioms)
 - **Version**: All versions
 
 **init**
+
 - **Definition**: Convention for initialization functions (returns initialized value)
 - **Pattern**: `pub fn init(allocator: Allocator) Self`
 - **Chapter**: 3 (Memory & Allocators), 4 (Data Structures)
 - **Version**: All versions
 
 **Interface**
+
 - **Definition**: Implicit structural typing via anytype or explicit vtable pattern
 - **Implementation**: Zig has no interface keyword; use comptime duck typing or manual vtables
 - **Chapter**: 2 (Language Idioms), 4 (Data Structures)
@@ -266,18 +304,21 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### L
 
 **Lazy Analysis**
+
 - **Definition**: Zig analyzes code only when referenced (allows unused code without errors)
 - **Impact**: Enables conditional compilation, platform-specific code
 - **Chapter**: 2 (Language Idioms), 11 (Interoperability)
 - **Version**: All versions
 
 **libxev**
+
 - **Definition**: Cross-platform event loop library (recommended for async I/O post-0.11)
 - **Usage**: Replaces removed async/await syntax
 - **Chapter**: 7 (Async & Concurrency)
 - **Version**: External dependency (all versions)
 
 **Linker**
+
 - **Definition**: Combines object files into final executable/library
 - **Configuration**: Via build.zig (link_libc(), linkSystemLibrary())
 - **Chapter**: 8 (Build System), 11 (Interoperability)
@@ -286,18 +327,21 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### M
 
 **Managed**
+
 - **Definition**: Container variant that stores its allocator (pre-0.15 default)
 - **Trade-off**: Convenience vs. extra pointer storage
 - **Chapter**: 4 (Data Structures)
 - **Version**: Explicit choice in 0.15+
 
 **Module**
+
 - **Definition**: Compilation unit; file or build-defined dependency
 - **System**: Replaced package paths in 0.11+
 - **Chapter**: 8 (Build System), 9 (Packages & Dependencies)
 - **Version**: 0.11+ (module system introduced)
 
 **Mutex**
+
 - **Definition**: Mutual exclusion lock (std.Thread.Mutex)
 - **Methods**: lock(), unlock(), tryLock()
 - **Chapter**: 7 (Async & Concurrency)
@@ -306,12 +350,14 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### N
 
 **noreturn**
+
 - **Definition**: Type indicating function never returns (exits, panics, or infinite loops)
 - **Usage**: `fn panic(msg: []const u8) noreturn`
 - **Chapter**: 6 (Error Handling)
 - **Version**: All versions
 
 **null**
+
 - **Definition**: Value representing absence (for optional types)
 - **Usage**: `var x: ?i32 = null;`
 - **Chapter**: 2 (Language Idioms), 6 (Error Handling)
@@ -320,12 +366,14 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### O
 
 **orelse**
+
 - **Definition**: Unwraps optional or provides default value
 - **Syntax**: `value = optional orelse default;`
 - **Chapter**: 2 (Language Idioms), 6 (Error Handling)
 - **Version**: All versions
 
 **Optional**
+
 - **Definition**: Type that can be value or null (prefix with ?)
 - **Syntax**: `?T` for optional T
 - **Chapter**: 2 (Language Idioms), 6 (Error Handling)
@@ -334,6 +382,7 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### P
 
 **Packed Struct**
+
 - **Definition**: Struct with guaranteed bit-level layout (no padding)
 - **Usage**: Bit flags, hardware registers, network protocols
 - **Syntax**: `packed struct { ... }`
@@ -341,18 +390,21 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 - **Version**: All versions
 
 **panic**
+
 - **Definition**: Unrecoverable error handler (stack trace + exit)
 - **Customization**: Override default with pub fn panic()
 - **Chapter**: 6 (Error Handling)
 - **Version**: All versions
 
 **Pointer**
+
 - **Definition**: Memory address with explicit size semantics
 - **Types**: Single (*T), Many ([*]T), Slice ([]T), C-pointer ([*c]T)
 - **Chapter**: 3 (Memory & Allocators)
 - **Version**: All versions
 
 **pub**
+
 - **Definition**: Makes declaration public (visible outside file)
 - **Default**: Private (file-scoped) without pub
 - **Chapter**: 2 (Language Idioms), 10 (Project Layout)
@@ -361,18 +413,21 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### R
 
 **Reader**
+
 - **Definition**: Generic input stream interface
 - **Methods**: read(), readAll(), readUntilDelimiter(), readInt()
 - **Chapter**: 5 (I/O)
 - **Version**: All versions
 
 **Result Type**
+
 - **Definition**: Pattern using error union (T!U) for error handling
 - **Usage**: Return value or error, explicit handling with try/catch
 - **Chapter**: 6 (Error Handling)
 - **Version**: All versions
 
 **RwLock**
+
 - **Definition**: Reader-writer lock allowing concurrent reads or exclusive writes
 - **Methods**: lockShared(), unlockShared(), lock(), unlock()
 - **Chapter**: 7 (Async & Concurrency)
@@ -381,24 +436,28 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### S
 
 **Sentinel**
+
 - **Definition**: Terminating value for arrays/slices (e.g., 0 for strings)
 - **Syntax**: `[:0]const u8` for null-terminated string
 - **Chapter**: 3 (Memory & Allocators), 11 (Interoperability)
 - **Version**: All versions
 
 **Slice**
+
 - **Definition**: Fat pointer containing pointer + length ([]T)
 - **Operations**: Indexing, iteration, subslicing
 - **Chapter**: 3 (Memory & Allocators), 5 (I/O)
 - **Version**: All versions
 
 **std**
+
 - **Definition**: Zig standard library (`@import("std")`)
 - **Key Modules**: mem, heap, fs, io, fmt, json, http, crypto, Thread
 - **Chapter**: All chapters
 - **Version**: All versions (APIs evolve)
 
 **Struct**
+
 - **Definition**: Composite data type grouping related fields
 - **Features**: Methods, defaults, comptime fields, generic parameters
 - **Chapter**: 2 (Language Idioms), 4 (Data Structures)
@@ -407,36 +466,42 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### T
 
 **Target**
+
 - **Definition**: Platform triple (CPU-OS-ABI) for compilation
 - **Format**: `x86_64-linux-gnu`, `aarch64-macos`, `wasm32-wasi`
 - **Chapter**: 8 (Build System), 10 (Project Layout), 11 (Interoperability)
 - **Version**: All versions
 
 **Test**
+
 - **Definition**: Unit test block or function
 - **Syntax**: `test "name" { ... }`
 - **Chapter**: 12 (Testing & Benchmarking)
 - **Version**: All versions
 
 **Test Allocator**
+
 - **Definition**: Special allocator detecting memory leaks in tests (std.testing.allocator)
 - **Usage**: Use in all tests allocating memory
 - **Chapter**: 12 (Testing & Benchmarking)
 - **Version**: All versions
 
 **Thread**
+
 - **Definition**: Operating system thread (std.Thread)
 - **Methods**: spawn(), join(), detach()
 - **Chapter**: 7 (Async & Concurrency)
 - **Version**: All versions
 
 **try**
+
 - **Definition**: Unwraps error union or returns error to caller
 - **Equivalent**: `val = try expr;` ≈ `val = expr catch |e| return e;`
 - **Chapter**: 6 (Error Handling)
 - **Version**: All versions
 
 **Type**
+
 - **Definition**: First-class value representing types
 - **Usage**: `comptime T: type` for generic functions
 - **Chapter**: 2 (Language Idioms)
@@ -445,24 +510,28 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### U
 
 **undefined**
+
 - **Definition**: Uninitialized value (implementation-defined bit pattern)
 - **Usage**: Local variables requiring initialization before use
 - **Chapter**: 3 (Memory & Allocators)
 - **Version**: All versions
 
 **Union**
+
 - **Definition**: Type holding one of several fields (overlapping memory)
 - **Forms**: Tagged (safe, like enum), untagged (unsafe, like C union)
 - **Chapter**: 4 (Data Structures)
 - **Version**: All versions
 
 **Unmanaged**
+
 - **Definition**: Container variant requiring explicit allocator parameter (0.15+ default)
 - **Trade-off**: No stored allocator (smaller) but less convenient
 - **Chapter**: 4 (Data Structures)
 - **Version**: 0.15+ default
 
 **unreachable**
+
 - **Definition**: Marks code path that should never execute (undefined behavior if reached)
 - **Usage**: Optimization hint or assertion
 - **Chapter**: 6 (Error Handling)
@@ -471,12 +540,14 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### V
 
 **var**
+
 - **Definition**: Declares mutable variable
 - **Contrast**: `const` declares immutable binding
 - **Chapter**: 2 (Language Idioms)
 - **Version**: All versions
 
 **volatile**
+
 - **Definition**: Prevents compiler from optimizing memory access (for MMIO)
 - **Usage**: Hardware registers, memory-mapped I/O
 - **Chapter**: 11 (Interoperability)
@@ -485,18 +556,21 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### W
 
 **WASM**
+
 - **Definition**: WebAssembly target for browser/runtime execution
 - **Target**: `wasm32-freestanding`, `wasm32-wasi`
 - **Chapter**: 11 (Interoperability)
 - **Version**: All versions
 
 **WASI**
+
 - **Definition**: WebAssembly System Interface for system calls
 - **Target**: `wasm32-wasi`
 - **Chapter**: 11 (Interoperability)
 - **Version**: All versions
 
 **Writer**
+
 - **Definition**: Generic output stream interface
 - **Methods**: write(), writeAll(), writeByte(), writeInt(), print()
 - **Chapter**: 5 (I/O)
@@ -505,24 +579,28 @@ This glossary defines 150+ terms used throughout Zig development, organized alph
 ### Z
 
 **Zig Object Notation (ZON)**
+
 - **Definition**: Zig's data serialization format (subset of Zig syntax)
 - **Usage**: build.zig.zon, configuration files
 - **Chapter**: 9 (Packages & Dependencies)
 - **Version**: 0.11+
 
 **zig build**
+
 - **Definition**: Build system command executing build.zig
 - **Usage**: `zig build [step] [-Doption=value]`
 - **Chapter**: 8 (Build System), 9 (Packages & Dependencies), 10 (Project Layout)
 - **Version**: All versions
 
 **zig test**
+
 - **Definition**: Test runner command
 - **Usage**: `zig test file.zig` runs all test blocks
 - **Chapter**: 12 (Testing & Benchmarking)
 - **Version**: All versions
 
 **zig fmt**
+
 - **Definition**: Code formatter (enforces canonical style)
 - **Usage**: `zig fmt file.zig` or `zig fmt --check .`
 - **Chapter**: 10 (Project Layout)
@@ -980,17 +1058,21 @@ This section consolidates 200+ references from all chapters, organized by catego
 ### Official Zig Documentation
 
 **Language Reference**
+
 - Zig Language Reference: https://ziglang.org/documentation/master/
 - Zig Standard Library: https://ziglang.org/documentation/master/std/
 
 **Build System**
+
 - Build System Documentation: https://ziglang.org/documentation/master/#Build-System
 - build.zig Guide: https://ziglang.org/learn/build-system/
 
 **Package Management**
+
 - Package Management Guide: https://codeberg.org/ziglang/zig/src/branch/master/doc/build.zig.zon.md
 
 **Release Notes**
+
 - Zig 0.11 Release Notes: https://ziglang.org/download/0.11.0/release-notes.html
 - Zig 0.12 Release Notes: https://ziglang.org/download/0.12.0/release-notes.html
 - Zig 0.13 Release Notes: https://ziglang.org/download/0.13.0/release-notes.html
@@ -999,29 +1081,35 @@ This section consolidates 200+ references from all chapters, organized by catego
 ### Production Codebases
 
 **TigerBeetle (Database)**
+
 - Repository: https://github.com/tigerbeetle/tigerbeetle
 - TIGER_STYLE Guide: https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md
 - Notable: Strictest style guide (2+ assertions per function, explicit naming conventions)
 
 **Ghostty (Terminal Emulator)**
+
 - Repository: https://github.com/ghostty-org/ghostty
 - Notable: High-performance terminal, graphics programming patterns
 
 **Bun (JavaScript Runtime)**
+
 - Repository: https://github.com/oven-sh/bun
 - Notable: JavaScript/C++ interop, performance optimization techniques
 - Note: Acquired by Anthropic (Dec 2025), remains open-source (MIT)
 
 **ZLS (Zig Language Server)**
+
 - Repository: https://github.com/zigtools/zls
 - Notable: Compiler integration, language analysis patterns, `inline else` dispatch
 
 **Lightpanda (Headless Browser)**
+
 - Repository: https://github.com/lightpanda-io/browser
 - Notable: Multi-language FFI (V8, libcurl, html5ever), thread-safe arena pool, dual allocator strategy
 - Zig 0.15.2, 26k stars
 
 **Zig Compiler (Self-Hosted)**
+
 - Repository: https://codeberg.org/ziglang/zig (migrated from GitHub, Nov 2025)
 - Standard Library Source: https://codeberg.org/ziglang/zig/src/branch/master/lib/std
 - Notable: Canonical Zig style, comprehensive stdlib examples
@@ -1029,22 +1117,26 @@ This section consolidates 200+ references from all chapters, organized by catego
 ### Community Resources
 
 **Learning**
+
 - Zig Learn: https://ziglearn.org/
 - Zig by Example: https://zig-by-example.com/
 - Zig Guide: https://zig.guide/
 
 **Community**
+
 - Zig Forum: https://ziggit.dev/
 - r/Zig Subreddit: https://www.reddit.com/r/Zig/
 - Zig Discord: https://discord.gg/zig
 
 **Package Registries**
+
 - Astrolabe (Package Search): https://astrolabe.pm/
 - Zig Package Index: https://zigpm.org/
 
 ### Async & Concurrency Libraries
 
 **Event Loops**
+
 - libxev: https://github.com/mitchellh/libxev (Recommended post-async removal)
 - tardy: https://github.com/mookums/tardy
 
@@ -1054,56 +1146,68 @@ This section consolidates 200+ references from all chapters, organized by catego
 ### I/O Libraries
 
 **HTTP**
+
 - zap: https://github.com/zigzap/zap (HTTP server framework)
 - httpz: https://github.com/karlseguin/http.zig
 
 **Networking**
+
 - zig-network: https://github.com/MasterQ32/zig-network
 
 **Serialization**
+
 - zig-json (stdlib): std.json
 - zig-xml: https://github.com/zig-community/xml
 
 ### Testing Frameworks
 
 **Built-in Testing**
+
 - std.testing: Standard library testing facilities
 - zig test: Test runner command
 
 **Additional Tools**
+
 - zig-bench: https://github.com/Hejsil/zig-bench (Benchmarking)
 
 ### Build Tools
 
 **Cross-Compilation**
+
 - zig cc: Zig as C/C++ compiler: https://andrewkelley.me/post/zig-cc-powerful-drop-in-replacement-gcc-clang.html
 
 **CI/CD**
+
 - setup-zig (GitHub Action): https://github.com/goto-bus-stop/setup-zig
 
 ### Memory Management
 
 **Allocators**
+
 - std.heap.GeneralPurposeAllocator: Production allocator with safety checks
 - std.heap.ArenaAllocator: Batch-free allocator
 - std.heap.FixedBufferAllocator: Stack/buffer allocator
 - std.heap.c_allocator: C malloc/free wrapper
 
 **Profiling**
+
 - tracy: https://github.com/wolfpld/tracy (Profiler with Zig support)
 
 ### Platform-Specific
 
 **WASM/WASI**
+
 - WASI Documentation: https://wasi.dev/
 - Zig WASM Guide: https://ziglang.org/documentation/master/#WebAssembly
 
 **Embedded**
+
 - microzig: https://github.com/ZigEmbeddedGroup/microzig
 
 ### Data Structures (Chapter 4)
 
 **Containers**
+
 - std.ArrayList: Dynamic array
 - std.HashMap/AutoHashMap/StringHashMap: Hash tables
 - std.PriorityQueue: Heap-based priority queue
@@ -2152,6 +2256,7 @@ test "leak detected" {
 This index maps concepts to their primary chapters for quick navigation.
 
 ### Memory Management
+
 - **Allocators**: Chapter 3, Chapter 5, Chapter 6
 - **Arena Pattern**: Chapter 3, Chapter 5
 - **Ownership**: Chapter 3, Chapter 4, Chapter 6
@@ -2159,6 +2264,7 @@ This index maps concepts to their primary chapters for quick navigation.
 - **Slices**: Chapter 3, Chapter 5
 
 ### Error Handling
+
 - **Error Sets**: Chapter 6
 - **Error Unions**: Chapter 6
 - **try/catch**: Chapter 6
@@ -2166,6 +2272,7 @@ This index maps concepts to their primary chapters for quick navigation.
 - **Result Types**: Chapter 6
 
 ### Data Structures
+
 - **ArrayList**: Chapter 3, Chapter 4
 - **HashMap**: Chapter 4
 - **Structs**: Chapter 2, Chapter 4
@@ -2173,6 +2280,7 @@ This index maps concepts to their primary chapters for quick navigation.
 - **Enums**: Chapter 2, Chapter 4
 
 ### I/O Operations
+
 - **File I/O**: Chapter 5
 - **Readers/Writers**: Chapter 5
 - **HTTP Client/Server**: Chapter 5
@@ -2180,6 +2288,7 @@ This index maps concepts to their primary chapters for quick navigation.
 - **Formatting**: Chapter 5
 
 ### Concurrency
+
 - **Threads**: Chapter 7
 - **Mutex**: Chapter 7
 - **RwLock**: Chapter 7
@@ -2187,30 +2296,35 @@ This index maps concepts to their primary chapters for quick navigation.
 - **Event Loops**: Chapter 7
 
 ### Build System
+
 - **build.zig**: Chapter 8, Chapter 9, Chapter 10
 - **build.zig.zon**: Chapter 9
 - **Dependencies**: Chapter 9
 - **Cross-Compilation**: Chapter 8, Chapter 10
 
 ### Project Organization
+
 - **Directory Layout**: Chapter 10
 - **Modules**: Chapter 8, Chapter 9, Chapter 10
 - **CI/CD**: Chapter 10
 - **Testing Structure**: Chapter 10, Chapter 12
 
 ### Interoperability
+
 - **C FFI**: Chapter 11
 - **C ABI**: Chapter 11
 - **WASM**: Chapter 11
 - **extern/export**: Chapter 11
 
 ### Testing
+
 - **Test Blocks**: Chapter 12
 - **Assertions**: Chapter 12
 - **Benchmarking**: Chapter 12
 - **Test Allocator**: Chapter 12
 
 ### Advanced Features
+
 - **Comptime**: Chapter 2, Chapter 4, Chapter 11
 - **Generics**: Chapter 2, Chapter 4
 - **Metaprogramming**: Chapter 2, Chapter 11

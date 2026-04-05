@@ -74,9 +74,24 @@ body {
   font-size: 0.85rem;
   line-height: 1.5;
 }
-.sidebar-header { margin-bottom: 1.5rem; }
-.sidebar-header a { color: var(--text); text-decoration: none; }
-.sidebar-header small { display: block; color: var(--sidenote); font-size: 0.8rem; }
+.sidebar-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+.sidebar-header a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+}
+.sidebar-header small {
+  display: block;
+  color: var(--sidenote);
+  font-size: 0.75rem;
+  font-style: italic;
+  margin-top: 0.2rem;
+}
 #sidebar ul { list-style: none; padding: 0; margin: 0; }
 #sidebar li { margin: 0.2rem 0; }
 #sidebar li.part { margin-top: 1rem; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--sidenote); }
