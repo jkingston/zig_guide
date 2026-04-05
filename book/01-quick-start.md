@@ -17,17 +17,22 @@ Get started with Zig in under 10 minutes. This chapter walks through installatio
 
 ## Installation
 
-Download Zig from the [official website](https://ziglang.org/download/):
+This guide targets **Zig 0.16.0-dev** (master). Grab the latest dev build from the [official downloads page](https://ziglang.org/download/) — scroll past the stable releases to the **master** section.
+
+Alternatively, use a version manager:
 
 ```bash
+# Using mise (https://mise.jdx.dev)
+mise use -g zig@master
+
 # Verify installation
 zig version
-# Should show: 0.16.0-dev (or your installed version)
+# Should show: 0.16.0-dev.XXXX+<hash>
 ```
 
 **Install ZLS (Zig Language Server)** for IDE support:
-- Download from [ZLS releases](https://github.com/zigtools/zls/releases)
-- ⚠️ Use matching tagged releases of Zig and ZLS (or both nightly). See [ZLS compatibility guide](https://github.com/zigtools/zls#compatibility)
+- Download the **nightly** build from [ZLS releases](https://github.com/zigtools/zls/releases) to match Zig master
+- See [ZLS compatibility guide](https://github.com/zigtools/zls#compatibility) for version matching
 - See **Appendix A: Development Setup** for detailed editor configuration
 
 ---
