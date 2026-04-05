@@ -1235,9 +1235,9 @@ Zig's logging system provides a pragmatic balance between developer observabilit
 
 ## References
 
-[^1]: [Zig Language Reference 0.15.2: std.log](https://ziglang.org/documentation/0.15.2/std/#std.log) - Official documentation for the standard library logging module.
+[^1]: [Zig Language Reference 0.16.0-dev: std.log](https://ziglang.org/documentation/master/std/#std.log) - Official documentation for the standard library logging module.
 
-[^2]: [Zig Language Reference 0.15.2: std.Options](https://ziglang.org/documentation/0.15.2/std/#std.Options) - Documentation for std.Options structure including log configuration.
+[^2]: [Zig Language Reference 0.16.0-dev: std.Options](https://ziglang.org/documentation/master/std/#std.Options) - Documentation for std.Options structure including log configuration.
 
 [^3]: [TigerBeetle Source: Scoped Logging](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/vsr.zig#L5) - Example scoped logger: `const log = std.log.scoped(.vsr);`
 
@@ -1245,7 +1245,7 @@ Zig's logging system provides a pragmatic balance between developer observabilit
 
 [^5]: [Ghostty Source: Platform-Aware Log Handler](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/main_ghostty.zig#L121-L168) - macOS Unified Logging integration.
 
-[^6]: [Zig std.debug Source](../../zig_versions/zig-0.15.2/lib/std/debug.zig) - Standard library debug utilities.
+[^6]: [Zig std.debug Source](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/debug.zig) - Standard library debug utilities.
 
 [^7]: [TigerBeetle Source: Trace System](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/trace.zig#L100) - Event tracing with StatsD integration.
 
@@ -1253,7 +1253,7 @@ Zig's logging system provides a pragmatic balance between developer observabilit
 
 [^9]: [ZLS Source: Log Configuration](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/main.zig#L35) - Language server logging setup.
 
-[^10]: [Zig std.log Source](../../zig_versions/zig-0.15.2/lib/std/log.zig) - Local Zig 0.15.2 stdlib logging implementation.
+[^10]: [Zig std.log Source](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/log.zig) - Zig 0.16.0-dev stdlib logging implementation.
 
 [^11]: [TigerBeetle: Superblock Logging](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/vsr/superblock.zig#L39) - Superblock operations with `.superblock` scope.
 

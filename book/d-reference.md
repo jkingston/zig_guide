@@ -988,7 +988,7 @@ This section consolidates 200+ references from all chapters, organized by catego
 - build.zig Guide: https://ziglang.org/learn/build-system/
 
 **Package Management**
-- Package Management Guide: https://codeberg.org/ziglang/zig/src/tag/0.15.2/doc/build.zig.zon.md
+- Package Management Guide: https://codeberg.org/ziglang/zig/src/branch/master/doc/build.zig.zon.md
 
 **Release Notes**
 - Zig 0.11 Release Notes: https://ziglang.org/download/0.11.0/release-notes.html

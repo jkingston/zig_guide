@@ -857,19 +857,19 @@ Understanding these patterns enables consuming third-party libraries, managing c
 
 ## References
 
-[^1]: build.zig.zon specification - https://codeberg.org/ziglang/zig/src/tag/0.15.2/doc/build.zig.zon.md
-[^2]: Zig Package Hash Implementation - https://codeberg.org/ziglang/zig/src/tag/0.15.2/src/Package.zig#L48-L100
-[^3]: Lazy Dependencies Documentation - https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Build.zig#L2006-L2042
-[^4]: zig fetch Command Documentation - https://codeberg.org/ziglang/zig/src/tag/0.15.2/src/main.zig#L6812-L6836
+[^1]: build.zig.zon specification - https://codeberg.org/ziglang/zig/src/branch/master/doc/build.zig.zon.md
+[^2]: Zig Package Hash Implementation - https://codeberg.org/ziglang/zig/src/branch/master/src/Package.zig#L48-L100
+[^3]: Lazy Dependencies Documentation - https://codeberg.org/ziglang/zig/src/branch/master/lib/std/Build.zig#L2006-L2042
+[^4]: zig fetch Command Documentation - https://codeberg.org/ziglang/zig/src/branch/master/src/main.zig#L6812-L6836
 [^5]: std.Build.dependency API - https://ziglang.org/documentation/master/std/#std.Build.dependency
-[^6]: Local Path Dependencies - Official init template: https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/init/build.zig.zon
-[^7]: Fingerprint Field Documentation - https://codeberg.org/ziglang/zig/src/tag/0.15.2/doc/build.zig.zon.md
+[^6]: Local Path Dependencies - Official init template: https://codeberg.org/ziglang/zig/src/branch/master/lib/init/build.zig.zon
+[^7]: Fingerprint Field Documentation - https://codeberg.org/ziglang/zig/src/branch/master/doc/build.zig.zon.md
 [^8]: Zig init template pattern - https://codeberg.org/ziglang/zig/src/branch/master/lib/init
 [^9]: Publishing patterns observed in ziglyph, known-folders - https://github.com/jecolon/ziglyph, https://github.com/ziglibs/known-folders
 [^10]: Ghostty lazy dependency pattern - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig.zon
 [^11]: Zig 0.15 fingerprint requirement - https://codeberg.org/ziglang/zig/releases/tag/0.15.0
-[^12]: lazy vs eager dependency behavior - https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Build.zig#L2006-L2042
-[^13]: Package publishing best practices - https://codeberg.org/ziglang/zig/src/tag/0.15.2/doc/build.zig.zon.md
+[^12]: lazy vs eager dependency behavior - https://codeberg.org/ziglang/zig/src/branch/master/lib/std/Build.zig#L2006-L2042
+[^13]: Package publishing best practices - https://codeberg.org/ziglang/zig/src/branch/master/doc/build.zig.zon.md
 [^14]: ZLS dependency structure - https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/build.zig.zon
 [^15]: Ghostty extensive lazy loading - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig.zon
 [^16]: TigerBeetle platform-specific binaries - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/docs_website/build.zig.zon

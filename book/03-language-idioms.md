@@ -11,7 +11,7 @@
 - **Jump to:** [Naming §1.2](#naming-conventions) | [defer §1.3](#defer-and-errdefer) | [comptime §1.5](#comptime-execution)
 :::
 
-This chapter establishes the idiomatic baseline for Zig development. These patterns form the foundation for all subsequent chapters, covering naming conventions, resource cleanup, error handling fundamentals, compile-time execution, and module organization. Most patterns work identically across Zig 0.14.0, 0.14.1, 0.15.1, and 0.15.2.
+This chapter establishes the idiomatic baseline for Zig development. These patterns form the foundation for all subsequent chapters, covering naming conventions, resource cleanup, error handling fundamentals, compile-time execution, and module organization. Most patterns work identically across Zig 0.14.x through 0.16.0-dev.
 
 ---
 
@@ -638,20 +638,20 @@ This chapter established the idiomatic baseline for Zig development:
 
 **Module organization** uses `@import` for code reuse and `pub` for visibility control. Structure projects flat (small), hierarchical (medium), or module-as-directory (large). Explicitly re-export public APIs rather than using `usingnamespace` (removed in 0.15).
 
-These patterns remain stable across Zig 0.14.0, 0.14.1, 0.15.1, and 0.15.2, with the notable exception of `usingnamespace` removal. Later chapters build on these foundations for memory management, I/O, concurrency, and build systems.
+These patterns remain stable across Zig 0.14.x through 0.16.0-dev, with the notable exception of `usingnamespace` removal. Later chapters build on these foundations for memory management, I/O, concurrency, and build systems.
 
 ---
 
 ## References
 
 [^1]: [Zig Programming Language](https://ziglang.org/)
-[^2]: [Zig Language Reference 0.15.2 - Style Guide](https://ziglang.org/documentation/0.15.2/#Style-Guide)
-[^3]: [Zig Language Reference 0.15.2 - Root Source File](https://ziglang.org/documentation/0.15.2/#Root-Source-File)
+[^2]: [Zig Language Reference 0.16.0-dev - Style Guide](https://ziglang.org/documentation/master/#Style-Guide)
+[^3]: [Zig Language Reference 0.16.0-dev - Root Source File](https://ziglang.org/documentation/master/#Root-Source-File)
 [^4]: [TigerBeetle TIGER_STYLE.md](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md)
-[^5]: [Zig Language Reference 0.15.2 - defer](https://ziglang.org/documentation/0.15.2/#defer)
-[^6]: [Zig Language Reference 0.15.2 - Error Union Type](https://ziglang.org/documentation/0.15.2/#Error-Union-Type)
-[^7]: [Zig Language Reference 0.15.2 - comptime](https://ziglang.org/documentation/0.15.2/#comptime)
-[^8]: [Zig Language Reference 0.15.2 - import](https://ziglang.org/documentation/0.15.2/#import)
+[^5]: [Zig Language Reference 0.16.0-dev - defer](https://ziglang.org/documentation/master/#defer)
+[^6]: [Zig Language Reference 0.16.0-dev - Error Union Type](https://ziglang.org/documentation/master/#Error-Union-Type)
+[^7]: [Zig Language Reference 0.16.0-dev - comptime](https://ziglang.org/documentation/master/#comptime)
+[^8]: [Zig Language Reference 0.16.0-dev - import](https://ziglang.org/documentation/master/#import)
 [^9]: [How to organize large projects in Zig](https://stackoverflow.com/questions/78766103/how-to-organize-large-projects-in-zig-language)
 [^10]: [Zig 0.15.1 Release Notes](https://ziglang.org/download/0.15.1/release-notes.html)
 [^11]: [TigerBeetle vsr.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/vsr.zig)

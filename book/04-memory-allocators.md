@@ -431,7 +431,7 @@ Understanding these patterns provides the foundation for containers, I/O, and co
 1. [Learning Zig - Heap Memory & Allocators](https://www.openmymind.net/learning_zig/heap_memory/)
 2. [Ghostty Config.zig - ArenaAllocator usage](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/config/Config.zig#L17)
 3. [ZLS main.zig - Arena for argument parsing](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/main.zig#L282-288)
-4. [Zig test runner - FixedBufferAllocator](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/compiler/test_runner.zig)
+4. [Zig test runner - FixedBufferAllocator](https://codeberg.org/ziglang/zig/src/branch/master/lib/compiler/test_runner.zig)
 5. [TigerBeetle TIGER_STYLE.md - Memory conventions](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md)
 6. [TigerBeetle manifest.zig - errdefer cleanup](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/lsm/manifest.zig#L213-216)
 7. [TigerBeetle state_machine.zig - Cascading cleanup](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/state_machine.zig#L846-852)

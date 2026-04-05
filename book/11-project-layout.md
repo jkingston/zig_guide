@@ -424,7 +424,7 @@ The `mlugg/setup-zig` action is standard:[^13]
 ```yaml
 - uses: mlugg/setup-zig@v2
   with:
-    version: 0.15.2
+    version: master
 ```
 
 Alternative: Custom download scripts (TigerBeetle pattern) for precise version control.[^14]
@@ -868,7 +868,7 @@ jobs:
       - name: Setup Zig
         uses: mlugg/setup-zig@v2
         with:
-          version: 0.15.2
+          version: master
 
       - name: Cache Zig artifacts
         uses: actions/cache@v4
@@ -896,7 +896,7 @@ jobs:
 **Key components:**
 
 - **Triggers** — Runs on push to main and all pull requests
-- **setup-zig action** — Installs Zig 0.15.2 deterministically
+- **setup-zig action** — Installs Zig 0.16.0-dev deterministically
 - **Cache configuration** — Speeds up subsequent builds by caching dependencies
 - **Formatting check** — Enforces consistent code style
 - **Build verification** — Ensures project builds successfully
@@ -971,7 +971,7 @@ jobs:
       - name: Setup Zig
         uses: mlugg/setup-zig@v2
         with:
-          version: 0.15.2
+          version: master
 
       - name: Cache Zig artifacts
         uses: actions/cache@v4
@@ -1003,7 +1003,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: mlugg/setup-zig@v2
         with:
-          version: 0.15.2
+          version: master
       - name: Check formatting
         run: zig fmt --check .
 ```
@@ -1078,7 +1078,7 @@ jobs:
       - name: Setup Zig
         uses: mlugg/setup-zig@v2
         with:
-          version: 0.15.2
+          version: master
 
       - name: Get version from tag
         id: version
@@ -1702,16 +1702,16 @@ matrix:
 matrix:
   include:
     - os: ubuntu-latest
-      zig: 0.15.2
+      zig: master
       optimize: Debug
     - os: ubuntu-latest
-      zig: 0.15.2
+      zig: master
       optimize: ReleaseSafe
     - os: macos-latest
-      zig: 0.15.2
+      zig: master
       optimize: ReleaseSafe
     - os: windows-latest
-      zig: 0.15.2
+      zig: master
       optimize: ReleaseSafe
 # 4 jobs
 ```
@@ -1908,7 +1908,7 @@ The [zig-bootstrap](https://github.com/ziglang/zig-bootstrap) repository demonst
 strategy:
   matrix:
     os: [ubuntu-latest, macos-latest, windows-latest]
-    zig-version: ['0.14.1', '0.15.2']
+    zig-version: ['0.15.2', 'master']
     optimize: [Debug, ReleaseSafe]
 jobs:
   build:
@@ -2089,17 +2089,17 @@ The next iteration of Zig's package ecosystem will introduce official package re
 
 ## References
 
-[^1]: Zig Language Reference - Cross-Compilation - https://ziglang.org/documentation/0.15.2/#Cross-compiling
-[^2]: Zig Init Template - https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/init
-[^3]: Zig Init Command Implementation - https://codeberg.org/ziglang/zig/src/tag/0.15.2/src/main.zig#L6520-L6650
-[^4]: Zig Compiler Source Organization - https://codeberg.org/ziglang/zig/src/tag/0.15.2/src
-[^5]: Zig Compiler Architecture - https://codeberg.org/ziglang/zig/src/tag/0.15.2/src/Air.zig
+[^1]: Zig Language Reference - Cross-Compilation - https://ziglang.org/documentation/master/#Cross-compiling
+[^2]: Zig Init Template - https://codeberg.org/ziglang/zig/src/branch/master/lib/init
+[^3]: Zig Init Command Implementation - https://codeberg.org/ziglang/zig/src/branch/master/src/main.zig#L6520-L6650
+[^4]: Zig Compiler Source Organization - https://codeberg.org/ziglang/zig/src/branch/master/src
+[^5]: Zig Compiler Architecture - https://codeberg.org/ziglang/zig/src/branch/master/src/Air.zig
 [^6]: ZLS Test Organization - https://github.com/zigtools/zls/tree/master/tests
 [^7]: Mach Workspace Structure - https://github.com/hexops/mach
-[^8]: Zig Target Specification - https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Target.zig
-[^9]: std.Target.Query API - https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Target.zig#L1-L100
+[^8]: Zig Target Specification - https://codeberg.org/ziglang/zig/src/branch/master/lib/std/Target.zig
+[^9]: std.Target.Query API - https://codeberg.org/ziglang/zig/src/branch/master/lib/std/Target.zig#L1-L100
 [^10]: TigerBeetle CPU Requirements - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/docs/TIGER_STYLE.md#cpu-requirements
-[^11]: Zig ABI Specification - https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Target.zig#L800-L850
+[^11]: Zig ABI Specification - https://codeberg.org/ziglang/zig/src/branch/master/lib/std/Target.zig#L800-L850
 [^12]: Ghostty Static Linking Strategy - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig#L1-L50
 [^13]: setup-zig GitHub Action - https://github.com/mlugg/setup-zig
 [^14]: TigerBeetle Custom Zig Download - https://github.com/tigerbeetle/tigerbeetle/tree/main/zig

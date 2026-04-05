@@ -608,7 +608,7 @@ The Zig Language Server demonstrates I/O patterns for protocol communication.
 
 ### Lightpanda: Slab-Allocated I/O Buffers
 
-Lightpanda, a headless browser (26k stars, Zig 0.15.2), uses a slab allocator for size-class segregated I/O buffer management.
+Lightpanda, a headless browser (26k stars, Zig 0.16.0-dev), uses a slab allocator for size-class segregated I/O buffer management.
 
 **Slab Allocator for I/O Buffers**
 - Size-class segregation using `ArrayHashMapUnmanaged` for fast lookup
@@ -769,9 +769,9 @@ The explicit nature of 0.15+ buffering may seem verbose initially, but it provid
 
 ## References
 
-1. Zig Standard Library – Io.zig ([0.15.2](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Io.zig))
-2. Zig Standard Library – fmt.zig ([0.15.2](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/fmt.zig))
-3. Zig Standard Library – fs/File.zig ([0.15.2](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/fs/File.zig))
+1. Zig Standard Library – Io.zig ([0.16.0-dev](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/Io.zig))
+2. Zig Standard Library – fmt.zig ([0.16.0-dev](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/fmt.zig))
+3. Zig Standard Library – fs/File.zig ([0.16.0-dev](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/fs/File.zig))
 4. TigerBeetle – Fixed buffer metrics formatting ([src/trace/statsd.zig:59-85](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/trace/statsd.zig#L332-365))
 5. TigerBeetle – Direct I/O implementation ([src/io/linux.zig:1433-1570](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/io/linux.zig#L1433-L1570))
 6. TigerBeetle – LSE error recovery ([src/storage.zig:279-384](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/storage.zig#L279-L384))

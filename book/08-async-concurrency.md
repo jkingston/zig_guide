@@ -174,7 +174,7 @@ const cpu_count = try std.Thread.getCpuCount();
 std.debug.print("CPU cores: {d}\n", .{cpu_count});
 ```
 
-Full implementation available at: [lib/std/Thread.zig](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Thread.zig)
+Full implementation available at: [lib/std/Thread.zig](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/Thread.zig)
 
 ### Synchronization Primitives
 
@@ -650,7 +650,7 @@ pool.waitAndWork(&wait_group);
 std.debug.print("Final count: {d}\n", .{counter.load(.monotonic)});
 ```
 
-Full implementation: [lib/std/Thread/Pool.zig](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Thread/Pool.zig)
+Full implementation: [lib/std/Thread/Pool.zig](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/Thread/Pool.zig)
 
 #### Production Thread Pool: Bun's Work-Stealing Design
 
@@ -2079,7 +2079,7 @@ pub fn tryLock(objs: *@This()) bool {
    - Track module dependencies with atomic refcounts
    - Safe concurrent access to shared AST nodes
 
-Source: [main.zig](https://codeberg.org/ziglang/zig/src/tag/0.15.2/src/main.zig)
+Source: [main.zig](https://codeberg.org/ziglang/zig/src/branch/master/src/main.zig)
 
 ### Production Patterns Summary
 
@@ -2091,7 +2091,7 @@ Source: [main.zig](https://codeberg.org/ziglang/zig/src/tag/0.15.2/src/main.zig)
 | Ghostty | Multi-loop libxev | Per-thread event loops | [ghostty repository](https://github.com/ghostty-org/ghostty) |
 | Lightpanda | Arena pool + mutex | Thread-safe arena reuse | [lightpanda-io/browser](https://github.com/lightpanda-io/browser) |
 | zap | Event loop + worker pool | Connection pooling + zero-copy parsing | [zap repository](https://github.com/zigzap/zap) |
-| Zig Compiler | Parallel compilation | WaitGroup coordination | [main.zig](https://codeberg.org/ziglang/zig/src/tag/0.15.2/src/main.zig) |
+| Zig Compiler | Parallel compilation | WaitGroup coordination | [main.zig](https://codeberg.org/ziglang/zig/src/branch/master/src/main.zig) |
 
 ---
 
@@ -2136,15 +2136,15 @@ Zig's concurrency model rewards careful design but provides the tools for buildi
 
 [^1]: [Zig 0.15.0 Release Notes](https://ziglang.org/download/0.15.0/release-notes.html)
 
-[^2]: [Zig Language Reference 0.15.2](https://ziglang.org/documentation/0.15.2/)
+[^2]: [Zig Language Reference 0.16.0-dev](https://ziglang.org/documentation/master/)
 
-[^3]: [std.Thread.Mutex Implementation](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Thread/Mutex.zig)
+[^3]: [std.Thread.Mutex Implementation](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/Thread/Mutex.zig)
 
 [^4]: [TigerBeetle context.zig (Locker implementation)](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/clients/c/tb_client/context.zig#L62-L126)
 
 [^5]: [ZLS DocumentStore.zig (RwLock usage)](https://github.com/zigtools/zls/blob/24f01e406dc211fbab71cfae25f17456962d4435/src/DocumentStore.zig#L20-L36)
 
-[^6]: [std.atomic.Value Implementation](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/atomic.zig)
+[^6]: [std.atomic.Value Implementation](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/atomic.zig)
 
 [^7]: [Bun ThreadPool.zig (Atomic CAS)](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/threading/ThreadPool.zig#L374-L379)
 
@@ -2173,8 +2173,8 @@ Zig's concurrency model rewards careful design but provides the tools for buildi
 
 **Official Documentation:**
 - [Zig Language Reference: Threads](https://ziglang.org/documentation/master/#Threads)
-- [Zig Standard Library: std.Thread](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/Thread.zig)
-- [Zig Standard Library: std.atomic](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/atomic.zig)
+- [Zig Standard Library: std.Thread](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/Thread.zig)
+- [Zig Standard Library: std.atomic](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/atomic.zig)
 
 **Libraries:**
 - [libxev: Event Loop for Zig](https://github.com/mitchellh/libxev)
@@ -2195,5 +2195,5 @@ Zig's concurrency model rewards careful design but provides the tools for buildi
 - [ThreadSanitizer (TSan)](https://github.com/google/sanitizers)
 
 **Benchmark Code:**
-- [std.crypto.benchmark](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/crypto/benchmark.zig)
-- [std.hash.benchmark](https://codeberg.org/ziglang/zig/src/tag/0.15.2/lib/std/hash/benchmark.zig)
+- [std.crypto.benchmark](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/crypto/benchmark.zig)
+- [std.hash.benchmark](https://codeberg.org/ziglang/zig/src/branch/master/lib/std/hash/benchmark.zig)

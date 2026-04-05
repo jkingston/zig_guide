@@ -22,7 +22,7 @@ Download Zig from the [official website](https://ziglang.org/download/):
 ```bash
 # Verify installation
 zig version
-# Should show: 0.15.2 (or your installed version)
+# Should show: 0.16.0-dev (or your installed version)
 ```
 
 **Install ZLS (Zig Language Server)** for IDE support:

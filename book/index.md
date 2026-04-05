@@ -1,15 +1,15 @@
 # Zig: Zero to Hero
 
-*From Fundamentals to Production* — A comprehensive guide to Zig development focused on idioms and best practices for **Zig 0.15.2**.
+*From Fundamentals to Production* — A comprehensive guide to Zig development focused on idioms and best practices for **Zig 0.16.0-dev**.
 
 ## About This Guide
 
-This guide teaches modern Zig idioms and best practices using **Zig 0.15.2** — the latest stable version at time of writing. All code examples and runnable programs target this version.
+This guide teaches modern Zig idioms and best practices using **Zig 0.16.0-dev** — the latest stable version at time of writing. All code examples and runnable programs target this version.
 
 **Working with Zig 0.14.1?**
 - See Appendix A for quick-reference patterns showing 0.14 equivalents
 - See Appendix B for the full migration guide (0.14 → 0.15)
-- **Recommended:** Upgrade to 0.15.2 first (typical migration: 2-4 hours)
+- **Recommended:** Upgrade to 0.16.0-dev first (typical migration: 2-4 hours)
 
 **Who This Guide Is For:**
 - Systems programmers learning Zig from C, C++, or Rust backgrounds
