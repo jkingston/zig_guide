@@ -265,9 +265,13 @@ def main():
     if path.is_file():
         md_files = [(path, path.stem)]
     elif path.is_dir():
-        md_files = [(f, f.stem) for f in sorted(path.glob('ch*.md'))]
-        # Also check appendix files
-        md_files += [(f, f.stem) for f in sorted(path.glob('appendix*.md'))]
+        # Match numbered chapters (01-*.md) and lettered appendices (a-*.md)
+        md_files = [(f, f.stem) for f in sorted(path.glob('[0-9]*.md'))]
+        md_files += [(f, f.stem) for f in sorted(path.glob('[a-d]-*.md'))]
+        # Legacy names (ch*.md, appendix*.md) for backwards compatibility
+        if not md_files:
+            md_files = [(f, f.stem) for f in sorted(path.glob('ch*.md'))]
+            md_files += [(f, f.stem) for f in sorted(path.glob('appendix*.md'))]
     else:
         print(f"Error: {path} not found")
         sys.exit(1)

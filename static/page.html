@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${page_title}</title>
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+  <button id="sidebar-toggle" aria-label="Menu">&#9776;</button>
+  <nav id="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html"><strong>Zig: Zero to Hero</strong></a>
+      <small>From Fundamentals to Production</small>
+    </div>
+    ${sidebar}
+  </nav>
+  <main>
+    <article>${content}</article>
+    <nav class="page-nav">
+      ${prev_link}
+      ${next_link}
+    </nav>
+    <footer>&copy; 2024 Zig: Zero to Hero Contributors</footer>
+  </main>
+  <button id="theme-toggle" aria-label="Toggle theme">&#9789;</button>
+  <script>
+    var root = document.documentElement;
+    root.dataset.theme = localStorage.getItem('theme') || 'light';
+
+    document.getElementById('theme-toggle').addEventListener('click', function() {
+      var t = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = t;
+      localStorage.setItem('theme', t);
+    });
+
+    document.querySelectorAll('.codehilite pre').forEach(function(pre) {
+      var btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.textContent = 'Copy';
+      btn.addEventListener('click', function() {
+        navigator.clipboard.writeText(pre.textContent);
+        btn.textContent = 'Copied!';
+        setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+      });
+      pre.parentElement.style.position = 'relative';
+      pre.parentElement.prepend(btn);
+    });
+
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.querySelector('main').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.remove('open');
+    });
+  </script>
+</body>
+</html>

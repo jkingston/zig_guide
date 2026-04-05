@@ -75,7 +75,7 @@ jobs:
 
       - name: Validate code blocks in chapters
         run: |
-          python3 scripts/validate_code_blocks.py .
+          python3 scripts/validate_code_blocks.py book
 
   analyze-code-blocks:
     name: Analyze Code Blocks
