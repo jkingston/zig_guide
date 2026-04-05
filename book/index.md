@@ -4,7 +4,7 @@
 
 ## About This Guide
 
-This guide teaches modern Zig idioms and best practices using **Zig 0.16.0-dev** — the latest stable version at time of writing. All code examples and runnable programs target this version.
+This guide teaches modern Zig idioms and best practices using **Zig 0.16.0-dev** (tracking `master`). All code examples and runnable programs target this version. APIs may shift before the 0.16.0 stable release.
 
 **Working with Zig 0.14.1?**
 - See Appendix A for quick-reference patterns showing 0.14 equivalents
