@@ -27,7 +27,7 @@ This guide teaches modern Zig idioms and best practices using **Zig 0.16.0-dev**
 
 ## What You'll Learn
 
-This guide covers 15 comprehensive chapters spanning:
+This guide covers 16 comprehensive chapters spanning:
 
 1. **Foundations**: Language idioms, memory management, and core patterns
 2. **Data & I/O**: Collections, containers, streams, and formatting
@@ -36,7 +36,7 @@ This guide covers 15 comprehensive chapters spanning:
 5. **Build System**: build.zig, packages, dependencies, and cross-compilation
 6. **Interoperability**: Working with C, C++, WASI, and WebAssembly
 7. **Quality**: Testing, benchmarking, profiling, and diagnostics
-8. **Migration**: Practical guide for upgrading from 0.14.x to 0.15.x
+8. **Recipes**: Common tasks, ecosystem libraries, and practical patterns
 
 ## Code Examples
 

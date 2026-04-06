@@ -26,7 +26,7 @@ PARTS = [
     ("Getting Started", range(1, 4)),
     ("Core Concepts", range(4, 9)),
     ("Build & Ecosystem", range(9, 13)),
-    ("Quality & Operations", range(13, 15)),
+    ("Quality & Operations", range(13, 16)),
 ]
 
 
