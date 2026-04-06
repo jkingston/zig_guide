@@ -278,8 +278,6 @@ pub fn defaultLog(
 
 Custom handlers **must** be thread-safe. Use `std.debug.lockStdErr()` / `unlockStdErr()` to serialize access:
 
-⚠️ **Version Note:** Custom log handlers require explicit buffer management in Zig 0.15+. The examples below show both the legacy 0.14.x API and the current 0.15+ buffered writer pattern. Buffering improves performance but requires appropriate buffer sizes for your logging needs. For real-time logging where immediate output is critical, use smaller buffers or call `.flush()` after writing.
-
 ```zig
 pub fn threadSafeLogFn(
     comptime level: std.log.Level,
@@ -290,10 +288,6 @@ pub fn threadSafeLogFn(
     std.debug.lockStdErr();
     defer std.debug.unlockStdErr();
 
-    // 🕐 **0.14.x:**
-    // const stderr = std.io.getStdErr().writer();
-
-    // ✅ **0.15+:**
     var stderr_buf: [1024]u8 = undefined;
     var stderr = std.fs.File.stderr().writer(&stderr_buf);
 
@@ -318,10 +312,6 @@ pub fn timestampedLogFn(
     std.debug.lockStdErr();
     defer std.debug.unlockStdErr();
 
-    // 🕐 **0.14.x:**
-    // const stderr = std.io.getStdErr().writer();
-
-    // ✅ **0.15+:**
     var stderr_buf: [1024]u8 = undefined;
     var stderr = std.fs.File.stderr().writer(&stderr_buf);
 
@@ -356,10 +346,6 @@ pub fn jsonLogFn(
     comptime format: []const u8,
     args: anytype,
 ) void {
-    // 🕐 **0.14.x:**
-    // const stderr = std.io.getStdErr().writer();
-
-    // ✅ **0.15+:**
     var stderr_buf: [2048]u8 = undefined;
     var stderr_writer = std.fs.File.stderr().writer(&stderr_buf);
     const stderr = &stderr_writer.interface;
@@ -914,7 +900,7 @@ pub fn unsafeLogFn(...) void {
 **Solution:** Always use locking:
 
 ```zig
-// ✅ Correct - thread-safe with current API (0.15+)
+// ✅ Correct - thread-safe with locking
 pub fn safeLogFn(
     comptime level: std.log.Level,
     comptime scope: @TypeOf(.enum_literal),
@@ -924,10 +910,6 @@ pub fn safeLogFn(
     std.debug.lockStdErr();
     defer std.debug.unlockStdErr();
 
-    // 🕐 **0.14.x:**
-    // const stderr = std.io.getStdErr().writer();
-
-    // ✅ **0.15+:**
     var stderr_buf: [1024]u8 = undefined;
     var stderr = std.fs.File.stderr().writer(&stderr_buf);
 

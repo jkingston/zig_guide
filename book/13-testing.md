@@ -730,7 +730,7 @@ Testing both success and error paths ensures functions behave correctly under al
 
 **Testing Concurrent Code:**
 
-Zig 0.15+ has simplified async handling. Concurrent tests require explicit synchronization:
+Concurrent tests require explicit synchronization:
 
 ```zig
 test "concurrent atomic counter" {

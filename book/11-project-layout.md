@@ -254,7 +254,7 @@ Zig compiles to any target from any host without cross-compilation toolchains. T
 - `x86_64-windows-gnu` — 64-bit Windows with MinGW
 - `wasm32-wasi-musl` — WebAssembly with WASI
 
-### Target Query API ✅ 0.15.1+
+### Target Query API
 
 The `std.Target.Query` API specifies compilation targets:
 
@@ -291,7 +291,7 @@ const query = Query{
 const target = b.resolveTargetQuery(query);
 ```
 
-This API replaced the pre-0.15 `std.zig.CrossTarget` interface.[^9]
+See the [Zig Language Reference](https://ziglang.org/documentation/master/) for the full target query specification.[^9]
 
 ### CPU Feature Specification
 
@@ -557,7 +557,7 @@ This example demonstrates the conventional structure created by `zig init`:
 .{
     .name = .myproject,
     .version = "1.0.0",
-    .minimum_zig_version = "0.15.0",
+    .minimum_zig_version = "0.16.0",
     .paths = .{
         "build.zig",
         "build.zig.zon",
@@ -1213,7 +1213,7 @@ workspace/
 .{
     .name = .workspace,
     .version = "1.0.0",
-    .minimum_zig_version = "0.15.0",
+    .minimum_zig_version = "0.16.0",
     .paths = .{
         "build.zig",
         "build.zig.zon",
@@ -1294,7 +1294,7 @@ pub fn build(b: *std.Build) void {
 .{
     .name = .core,
     .version = "1.0.0",
-    .minimum_zig_version = "0.15.0",
+    .minimum_zig_version = "0.16.0",
     .paths = .{
         "build.zig",
         "build.zig.zon",

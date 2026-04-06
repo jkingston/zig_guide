@@ -4,18 +4,18 @@
 ## TL;DR for build.zig
 
 - **Entry point:** `pub fn build(b: *std.Build) void` (runs at build time)
-- **0.15 breaking:** Must use `root_module` with `b.createModule()`, not `root_source_file`
+- **Modules:** Use `root_module` with `b.createModule()` for module configuration
 - **Common artifacts:** `b.addExecutable()`, `b.addStaticLibrary()`, `b.addTest()`
 - **Cross-compile:** `zig build -Dtarget=aarch64-linux` (any target from any host)
 - **Dependencies:** Managed via `build.zig.zon` (fetch from Git/HTTP)
-- **Jump to:** [Basic structure §7.2](#build-function-entry-point) | [Modules §7.3](#module-system-015) | [Dependencies §7.5](#dependencies-and-packages)
+- **Jump to:** [Basic structure §7.2](#build-function-entry-point) | [Modules §7.3](#module-system) | [Dependencies §7.5](#dependencies-and-packages)
 :::
 
 ## Overview
 
 The Zig build system provides deterministic, cross-platform project configuration through executable Zig code. Unlike declarative build tools (Make, CMake) or DSL-based systems (Gradle, Bazel), `build.zig` is a Zig program that runs at build time, compiling artifacts, running tests, and orchestrating multi-step build processes.
 
-This chapter explains idiomatic `build.zig` patterns, the module system introduced in Zig 0.15, custom build steps, and multi-target compilation. Understanding these patterns is essential for structuring libraries, CLI tools, and complex multi-artifact projects.
+This chapter explains idiomatic `build.zig` patterns, the module system, custom build steps, and multi-target compilation. Understanding these patterns is essential for structuring libraries, CLI tools, and complex multi-artifact projects.
 
 ## Core Concepts
 
@@ -84,9 +84,9 @@ $ zig build -Dtarget=x86_64-linux -Doptimize=ReleaseFast
 
 Your `build.zig` should always use `standardTargetOptions()` and `standardOptimizeOption()` to respect user choices.[^2]
 
-### Module System (0.15+)
+### Module System
 
-Zig 0.15 introduced an explicit module system replacing the older package paths. Every compilation unit (executable, library, test) has a root module that defines its source file, target, optimization level, and dependencies.
+Every compilation unit (executable, library, test) has a root module that defines its source file, target, optimization level, and dependencies.
 
 **Creating modules:**
 
@@ -624,39 +624,6 @@ This pattern is common in TigerBeetle (multiple test categories), ZLS (fast unit
 
 ## Common Pitfalls
 
-### Using Deprecated 0.14.x APIs
-
-The module system introduced in 0.15 replaced several setter methods:
-
-**AVOID (deprecated API):**
-
-```zig
-// DEPRECATED - Don't use
-const exe = b.addExecutable("myapp", "src/main.zig");
-exe.setTarget(target);
-exe.setBuildMode(mode);
-exe.addPackagePath("mylib", "lib/mylib.zig");
-```
-
-**USE (modern API):**
-
-```zig
-// ✅ Correct - Modern API
-const exe = b.addExecutable(.{
-    .name = "myapp",
-    .root_module = b.createModule(.{
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
-        .imports = &.{
-            .{ .name = "mylib", .module = mylib_mod },
-        },
-    }),
-});
-```
-
-The modern API provides better type safety, clearer ownership, and explicit dependency declarations.[^13]
-
 ### Forgetting Target and Optimize in Modules
 
 Modules require explicit target and optimize settings. Omitting them causes confusing errors:
@@ -1191,7 +1158,6 @@ The Zig build system provides deterministic, type-safe project configuration thr
 
 **Migration:**
 
-- Zig 0.15 introduced the module system, replacing setter methods with constructor structs
 - Always specify `.target` and `.optimize` in modules to avoid cryptic errors
 - Use `b.path()` instead of relative paths for portability
 
@@ -1224,7 +1190,6 @@ Understanding these patterns enables building libraries, CLI tools, and complex 
 [^10]: TigerBeetle code generation pattern - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/build.zig#L1945-L1955
 [^11]: Ghostty multi-platform builds - https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/build.zig
 [^12]: TigerBeetle test organization - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/build.zig#L853-L886
-[^13]: Zig 0.15 migration guide - https://codeberg.org/ziglang/zig/wiki/0.15.0-Release-Notes
 [^14]: std.Build.path documentation - https://ziglang.org/documentation/master/std/#std.Build.path
 [^15]: Lazy dependencies - Covered in Chapter 10: Packages & Dependencies
 [^16]: TigerBeetle CPU feature enforcement - https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/build.zig#L13-L42

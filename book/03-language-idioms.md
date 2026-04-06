@@ -11,7 +11,7 @@
 - **Jump to:** [Naming §1.2](#naming-conventions) | [defer §1.3](#defer-and-errdefer) | [comptime §1.5](#comptime-execution)
 :::
 
-This chapter establishes the idiomatic baseline for Zig development. These patterns form the foundation for all subsequent chapters, covering naming conventions, resource cleanup, error handling fundamentals, compile-time execution, and module organization. Most patterns work identically across Zig 0.14.x through 0.16.0-dev.
+This chapter establishes the idiomatic baseline for Zig development. These patterns form the foundation for all subsequent chapters, covering naming conventions, resource cleanup, error handling fundamentals, compile-time execution, and module organization.
 
 ---
 
@@ -524,21 +524,21 @@ fn createArray(comptime T: type, allocator: std.mem.Allocator, size: usize) ![]T
 }
 ```
 
-### Pitfall 4: Using Explicit Re-exports
+### Pitfall 4: Implicit Re-exports
 
-**❌ Incorrect — usingnamespace (removed):**
+**❌ Incorrect — re-exporting entire modules:**
 ```zig
 const utils = @import("utils.zig");
-pub usingnamespace utils;  // REMOVED: Implicitly re-exports everything
+// Don't re-export entire modules — it obscures your API surface
 ```
 
-**✅ Correct — Explicit re-exports:**
+**✅ Correct — explicit re-exports:**
 ```zig
 const utils = @import("utils.zig");
 pub const helper = utils.helper;  // Explicit control over API surface
 ```
 
-The `usingnamespace` keyword was removed to improve clarity around public API boundaries.[^10]
+Explicit re-exports make your module's public API visible at a glance. Readers can see exactly what a module provides without chasing imports.
 
 ---
 
@@ -637,9 +637,9 @@ This chapter established the idiomatic baseline for Zig development:
 
 **comptime** enables zero-cost abstractions through compile-time execution. Use it for generic functions, compile-time validation, and type introspection. All type parameters must be marked `comptime`.
 
-**Module organization** uses `@import` for code reuse and `pub` for visibility control. Structure projects flat (small), hierarchical (medium), or module-as-directory (large). Explicitly re-export public APIs rather than using `usingnamespace` (removed in 0.15).
+**Module organization** uses `@import` for code reuse and `pub` for visibility control. Structure projects flat (small), hierarchical (medium), or module-as-directory (large). Explicitly re-export public APIs for clear API boundaries.
 
-These patterns remain stable across Zig 0.14.x through 0.16.0-dev, with the notable exception of `usingnamespace` removal. Later chapters build on these foundations for memory management, I/O, concurrency, and build systems.
+Later chapters build on these foundations for memory management, I/O, concurrency, and build systems.
 
 ---
 
@@ -654,7 +654,6 @@ These patterns remain stable across Zig 0.14.x through 0.16.0-dev, with the nota
 [^7]: [Zig Language Reference 0.16.0-dev - comptime](https://ziglang.org/documentation/master/#comptime)
 [^8]: [Zig Language Reference 0.16.0-dev - import](https://ziglang.org/documentation/master/#import)
 [^9]: [How to organize large projects in Zig](https://stackoverflow.com/questions/78766103/how-to-organize-large-projects-in-zig-language)
-[^10]: [Zig 0.15.1 Release Notes](https://ziglang.org/download/0.15.1/release-notes.html)
 [^11]: [TigerBeetle vsr.zig](https://github.com/tigerbeetle/tigerbeetle/blob/dafb825b1cbb2dc7342ac485707f2c4e0c702523/src/vsr.zig)
 [^12]: [Ghostty main.zig](https://github.com/ghostty-org/ghostty/blob/05b580911577ae86e7a29146fac29fb368eab536/src/main.zig)
 [^13]: [Bun comptime_string_map.zig](https://github.com/oven-sh/bun/blob/e0aae8adc1ca0d84046f973e563387d0a0abeb4e/src/bun.js/bindings/comptime_string_map.zig)

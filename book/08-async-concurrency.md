@@ -3,13 +3,12 @@
 ::: {.callout-tip}
 ## TL;DR for experienced systems programmers
 
-- **Breaking change:** Language-level async/await removed in 0.15 → use library-based solutions
-- **0.16+: `std.Io`** — new stdlib async I/O system with `io.async()`, `io.concurrent()`, Future, Queue, Group
+- **Async I/O:** `std.Io` — stdlib async I/O with `io.async()`, `io.concurrent()`, Future, Queue, Group
 - **CPU parallelism:** `std.Thread` for OS threads, `std.Thread.Pool` for work distribution
-- **I/O concurrency:** 0.15: library event loops (libxev, zap); 0.16+: `std.Io` with Threaded/Evented/Blocking backends
+- **Backends:** `std.Io.Threaded` (production default), `std.Io.Evented` (io_uring/GCD), `std.Io.Blocking` (testing)
 - **Synchronization:** `std.Thread.Mutex`, `RwLock`, `Condition`, atomic operations
-- **Memory ordering:** `.seq_cst` (default), `.acquire`, `.release`, `.monotonic`
-- **Jump to:** [Threading §6.2](#stdthread-explicit-thread-management) | [Atomics §6.3](#atomic-operations) | [std.Io §6.7](#stdio-async-io-016) | [Thread pools §6.4](#thread-pools)
+- **Third-party:** libxev for custom event loops, zap for HTTP servers
+- **Jump to:** [std.Io §](#stdio-async-io) | [Threading §](#stdthread-explicit-thread-management) | [Atomics §](#atomic-operations) | [Thread pools §](#thread-pools)
 :::
 
 This chapter examines Zig's concurrency model, synchronization primitives, and performance measurement tools. Modern systems programming demands efficient handling of both CPU-bound parallelism and I/O-bound concurrency. Zig provides explicit, zero-cost abstractions for both through threading primitives and library-based event loops.
@@ -24,26 +23,141 @@ Zig's approach to concurrency emphasizes explicitness and control. Unlike langua
 
 Zig provides explicit, low-level control over parallelism (CPU-bound) and concurrency (I/O-bound):
 
-1. **std.Thread** — OS-level threading with explicit lifecycle management
-2. **Atomic operations** — Configurable memory ordering for lock-free algorithms
-3. **Synchronization primitives** — Mutex, RwLock, Condition (platform-optimal)
-4. **Thread pools** — CPU-bound work distribution
-5. **Library-based event loops** — libxev for I/O concurrency (io_uring, kqueue, IOCP)
+1. **std.Io** — Unified async I/O interface with multiple backends (threaded, evented, blocking)
+2. **std.Thread** — OS-level threading with explicit lifecycle management
+3. **Atomic operations** — Configurable memory ordering for lock-free algorithms
+4. **Synchronization primitives** — Mutex, RwLock, Condition (platform-optimal)
+5. **Thread pools** — CPU-bound work distribution
 
-### The Async Transition (0.14.x → 0.15.0)
+Zig uses library-based async I/O rather than language-level async/await keywords. This reduces compiler complexity and enables platform-specific optimizations (io_uring on Linux, GCD on macOS, IOCP on Windows).
 
-**Breaking change:** Language-level `async`/`await` keywords removed in 0.15, replaced with library-based solutions (libxev, zap).[^1]
-
-**Removed:** `async`, `await`, `suspend`, `resume` keywords, compiler-managed async frames
-**Added:** Enhanced thread pool support, library event loop integration
-
-**Rationale:** Reduced 15K lines of compiler complexity, enabled platform-specific optimizations (io_uring, kqueue, IOCP), aligned with "explicit over implicit" philosophy.[^2]
-
-This chapter focuses on Zig 0.15+ library-based patterns.
+This chapter focuses on practical concurrency patterns: `std.Io` for async I/O, threads and synchronization for CPU parallelism, and library-based event loops for advanced use cases.
 
 ---
 
 ## Core Concepts
+
+### std.Io: Async I/O
+
+Zig 0.16 introduces `std.Io` — a unified async I/O interface in the standard library. All I/O operations now accept an `Io` parameter (analogous to how allocations require an `Allocator`).
+
+#### Key Types
+
+| Type | Purpose |
+|------|---------|
+| `std.Io` | The I/O interface (obtained from a backend) |
+| `io.async(fn, args)` | Spawn async task → `Future` (may run on same thread) |
+| `io.concurrent(fn, args)` | Spawn with true parallelism → `!Future` (can fail) |
+| `Future.await(io)` | Block until result available |
+| `Future.cancel(io)` | Cancel the task |
+| `Io.Queue(T)` | Thread-safe many-producer, many-consumer queue |
+| `Io.Group` | Manage batches of async tasks |
+
+#### Backends
+
+| Backend | Description | Use Case |
+|---------|-------------|----------|
+| `std.Io.Threaded` | Thread-pool based | Production default, works everywhere |
+| `std.Io.Evented` | io_uring (Linux), GCD (macOS) | Maximum performance (experimental) |
+| `std.Io.Blocking` | Single-threaded, no concurrency | Testing, simple scripts |
+
+#### Basic Async Pattern
+
+With `process.Init` (see Appendix C), the `Io` instance is provided automatically:
+
+```zig
+const std = @import("std");
+
+pub fn main(init: std.process.Init) !void {
+    // Io is pre-initialized via process.Init
+    var future = init.io.async(doWork, .{init.io});
+    defer future.cancel(init.io) catch {};
+    try future.await(init.io);
+}
+
+fn doWork(io: std.Io) !void {
+    _ = io;
+    // ... actual work
+}
+```
+
+Without `process.Init`, set up the backend manually:
+
+```zig
+const std = @import("std");
+
+pub fn main() !void {
+    var debug_allocator: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
+    defer _ = debug_allocator.deinit();
+    const gpa = debug_allocator.allocator();
+
+    var threaded = std.Io.Threaded.init(gpa, .{});
+    defer threaded.deinit();
+    const io = threaded.io();
+
+    var future = io.async(doWork, .{io});
+    defer future.cancel(io) catch {};
+    try future.await(io);
+}
+
+fn doWork(io: std.Io) !void {
+    _ = io;
+}
+```
+
+#### async vs concurrent
+
+The critical distinction:
+
+- **`io.async()`** — "I don't care if this runs in parallel." May run on the same thread. Use for independent tasks that don't need to overlap.
+- **`io.concurrent()`** — "This MUST run in parallel or fail." Returns `!Future` (can error with `ConcurrencyUnavailable`). Use for producer/consumer patterns where same-thread execution would deadlock.
+
+```zig
+fn parallelWork(io: std.Io) !void {
+    // Two independent tasks — async is fine
+    var a = io.async(doWork, .{ io, "task-a" });
+    var b = io.async(doWork, .{ io, "task-b" });
+    defer a.cancel(io) catch {};
+    defer b.cancel(io) catch {};
+    try a.await(io);
+    try b.await(io);
+}
+```
+
+#### Producer/Consumer with Queue
+
+```zig
+const std = @import("std");
+const Io = std.Io;
+
+fn runPipeline(io: Io) !void {
+    var queue: Io.Queue([]const u8) = .init(&.{});
+
+    // concurrent() guarantees true parallelism
+    var producer = try io.concurrent(produce, .{ io, &queue });
+    defer producer.cancel(io) catch {};
+
+    var consumer = try io.concurrent(consume, .{ io, &queue });
+    defer consumer.cancel(io) catch {};
+
+    try producer.await(io);
+    try consumer.await(io);
+}
+
+fn produce(io: Io, queue: *Io.Queue([]const u8)) void {
+    _ = io;
+    queue.push("hello");
+    queue.push("world");
+    queue.close();
+}
+
+fn consume(io: Io, queue: *Io.Queue([]const u8)) void {
+    _ = io;
+    while (queue.pop()) |item| {
+        std.debug.print("{s}\n", .{item});
+    }
+}
+```
 
 ### std.Thread: Explicit Thread Management
 
@@ -824,9 +938,9 @@ Original design: [kprotty/zap thread_pool.zig](https://github.com/kprotty/zap/bl
 - Single task execution
 - Memory is severely constrained
 
-### Event Loops for I/O-Bound Concurrency
+### Event Loops for Advanced I/O
 
-Event loops enable handling thousands of concurrent I/O operations with a single thread by multiplexing over non-blocking operations.
+For use cases beyond what `std.Io` provides — custom event loop integration, fine-grained control over platform-specific backends, or integration with existing event-driven architectures — third-party libraries offer additional flexibility.
 
 #### Proactor vs Reactor Patterns
 
@@ -851,7 +965,7 @@ Modern event loops use either the **proactor** or **reactor** pattern:
 
 #### libxev: Library-Based Async I/O
 
-**libxev** is Mitchell Hashimoto's event loop library for Zig, designed as a modern replacement for removed async/await.[^13]
+**libxev** is Mitchell Hashimoto's event loop library for Zig, providing zero-allocation, platform-optimized async I/O.[^13]
 
 **Key Characteristics:**
 
@@ -991,189 +1105,11 @@ fn goodCallback(...) xev.CallbackAction {
 }
 ```
 
-### 🕐 Legacy async/await (0.14.x)
-
-**⚠️ DEPRECATED: This section documents removed features for historical reference only.**
-
-Zig 0.14.x included built-in `async`/`await` keywords for cooperative multitasking.
-
-**Why It Was Removed:**
-
-1. **Compiler Complexity**: Added ~15,000 lines of complex compiler code
-2. **Limited Platform Support**: Stack unwinding issues on some platforms
-3. **Function Coloring**: Forced distinction between sync and async functions
-4. **Better Alternatives**: Library-based solutions (libxev, zap) offer more flexibility
-5. **Maintenance Burden**: Conflicts with Zig's explicit philosophy
-
-Andrew Kelley (paraphrased from GitHub discussions):
-> "Async/await was an interesting experiment, but it added too much complexity to the compiler for a feature that can be better implemented in libraries. The future of async in Zig is library-based, not language-based."
-
-**Legacy Syntax (0.14.x only, do not use):**
-
-```zig
-// 0.14.x - DO NOT USE IN 0.15+
-fn asyncFunction() callconv(.async) !void {
-    const result = await otherAsyncFunction();
-    // ...
-}
-
-var frame = async asyncFunction();
-const result = await frame;
-```
-
-**Migration Path:**
-
-| 0.14.x Pattern | 0.15+ Alternative | Use Case |
-|----------------|-------------------|----------|
-| `async`/`await` file I/O | libxev event loop | I/O-bound server |
-| `async` parallel computation | Thread pool | CPU-bound work |
-| Blocking + `await` | Standard blocking I/O | Simple scripts |
-
-See: [Zig 0.15.0 Release Notes](https://ziglang.org/download/0.15.0/release-notes.html#async-functions)
-
----
-
-### std.Io: Async I/O (0.16+) {#stdio-async-io-016}
-
-> **Note:** This section covers Zig 0.16.0 APIs. If you are on 0.15.x, use library event loops (libxev, zap) as described above.
-
-Zig 0.16 introduces `std.Io` — a unified async I/O interface in the standard library. All I/O operations now accept an `Io` parameter (analogous to how allocations require an `Allocator`).
-
-#### Key Types
-
-| Type | Purpose |
-|------|---------|
-| `std.Io` | The I/O interface (obtained from a backend) |
-| `io.async(fn, args)` | Spawn async task → `Future` (may run on same thread) |
-| `io.concurrent(fn, args)` | Spawn with true parallelism → `!Future` (can fail) |
-| `Future.await(io)` | Block until result available |
-| `Future.cancel(io)` | Cancel the task |
-| `Io.Queue(T)` | Thread-safe many-producer, many-consumer queue |
-| `Io.Group` | Manage batches of async tasks |
-
-#### Backends
-
-| Backend | Description | Use Case |
-|---------|-------------|----------|
-| `std.Io.Threaded` | Thread-pool based | Production default, works everywhere |
-| `std.Io.Evented` | io_uring (Linux), GCD (macOS) | Maximum performance (experimental) |
-| `std.Io.Blocking` | Single-threaded, no concurrency | Testing, simple scripts |
-
-#### Basic Async Pattern
-
-With `process.Init` (see Appendix C), the `Io` instance is provided automatically:
-
-```zig
-const std = @import("std");
-
-pub fn main(init: std.process.Init) !void {
-    // Io is pre-initialized via process.Init
-    var future = init.io.async(doWork, .{init.io});
-    defer future.cancel(init.io) catch {};
-    try future.await(init.io);
-}
-
-fn doWork(io: std.Io) !void {
-    _ = io;
-    // ... actual work
-}
-```
-
-Without `process.Init`, set up the backend manually:
-
-```zig
-const std = @import("std");
-
-pub fn main() !void {
-    var debug_allocator: std.heap.DebugAllocator(.{}) = .{ .backing_allocator = std.heap.smp_allocator };
-    defer _ = debug_allocator.deinit();
-    const gpa = debug_allocator.allocator();
-
-    var threaded = std.Io.Threaded.init(gpa, .{});
-    defer threaded.deinit();
-    const io = threaded.io();
-
-    var future = io.async(doWork, .{io});
-    defer future.cancel(io) catch {};
-    try future.await(io);
-}
-
-fn doWork(io: std.Io) !void {
-    _ = io;
-}
-```
-
-#### async vs concurrent
-
-The critical distinction:
-
-- **`io.async()`** — "I don't care if this runs in parallel." May run on the same thread. Use for independent tasks that don't need to overlap.
-- **`io.concurrent()`** — "This MUST run in parallel or fail." Returns `!Future` (can error with `ConcurrencyUnavailable`). Use for producer/consumer patterns where same-thread execution would deadlock.
-
-```zig
-fn parallelWork(io: std.Io) !void {
-    // Two independent tasks — async is fine
-    var a = io.async(doWork, .{ io, "task-a" });
-    var b = io.async(doWork, .{ io, "task-b" });
-    defer a.cancel(io) catch {};
-    defer b.cancel(io) catch {};
-    try a.await(io);
-    try b.await(io);
-}
-```
-
-#### Producer/Consumer with Queue
-
-```zig
-const std = @import("std");
-const Io = std.Io;
-
-fn runPipeline(io: Io) !void {
-    var queue: Io.Queue([]const u8) = .init(&.{});
-
-    // concurrent() guarantees true parallelism
-    var producer = try io.concurrent(produce, .{ io, &queue });
-    defer producer.cancel(io) catch {};
-
-    var consumer = try io.concurrent(consume, .{ io, &queue });
-    defer consumer.cancel(io) catch {};
-
-    try producer.await(io);
-    try consumer.await(io);
-}
-
-fn produce(io: Io, queue: *Io.Queue([]const u8)) void {
-    _ = io;
-    queue.push("hello");
-    queue.push("world");
-    queue.close();
-}
-
-fn consume(io: Io, queue: *Io.Queue([]const u8)) void {
-    _ = io;
-    while (queue.pop()) |item| {
-        std.debug.print("{s}\n", .{item});
-    }
-}
-```
-
-#### Migration from 0.15 Event Loops
-
-| 0.15.x Pattern | 0.16+ Equivalent |
-|----------------|------------------|
-| `xev.Loop` event loop | `std.Io.Threaded` / `.Evented` backend |
-| `xev.File` async I/O | `std.Io.File` with `Io` parameter |
-| `std.Thread.Pool` for CPU work | `io.async()` / `io.concurrent()` |
-| Manual thread management | `std.Io` manages threads internally |
-| `std.net.Address` | `std.Io.net.HostName.lookup()` |
-
-> **See also:** Appendix C (Migration 0.15 → 0.16) for the complete migration guide.
-
 ---
 
 ## Code Examples
 
-This section references the tested examples included with this chapter. All examples compile with Zig 0.15.1+.
+This section references the tested examples included with this chapter. All examples target Zig 0.16.0-dev.
 
 ### example_basic_threads.zig
 
@@ -2134,7 +2070,7 @@ Zig provides explicit, zero-cost concurrency primitives for both CPU-bound paral
 **Threads for CPU, Event Loops for I/O:**
 
 - **Use std.Thread** when you need true parallelism across CPU cores
-- **Use event loops (libxev)** when you need to handle thousands of concurrent I/O operations
+- **Use std.Io** for async I/O concurrency, or libxev for custom event loop control
 - **Use both** for mixed workloads: event loop for I/O, thread pool for CPU
 
 ### Key Takeaways
@@ -2145,7 +2081,7 @@ Zig provides explicit, zero-cost concurrency primitives for both CPU-bound paral
 
 3. **Memory Ordering Matters**: Use `.acquire/.release` for publishing/consuming data, `.monotonic` for simple counters, and rarely `.seq_cst`. Wrong ordering causes subtle bugs.
 
-4. **Library-Based Async**: With async/await removed, use library event loops (libxev) for I/O concurrency. This provides more flexibility and platform-specific optimizations.
+4. **Library-Based Async**: Use `std.Io` for async I/O, or third-party event loops (libxev) for advanced use cases. Library-based I/O provides flexibility and platform-specific optimizations.
 
 5. **Benchmarking Best Practices**: Use `std.time.Timer`, prevent compiler optimizations with `doNotOptimizeAway`, include warm-up iterations, and report statistical measures (median, not just mean).
 

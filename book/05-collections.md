@@ -3,7 +3,7 @@
 ::: {.callout-tip}
 ## TL;DR for Zig collections
 
-- **0.15 default:** `ArrayList(T)` is unmanaged (pass allocator to methods)
+- **Default:** `ArrayList(T)` is unmanaged (pass allocator to methods)
 - **Managed variant:** `ArrayListManaged(T)` stores allocator (simpler API, +8 bytes overhead)
 - **Common types:** ArrayList, HashMap, AutoHashMap, StringHashMap
 - **Always:** Call `.deinit(allocator)` to free memory
@@ -17,7 +17,7 @@ Zig's standard library provides dynamic collection types that integrate with the
 
 Understanding container ownership is critical for correct memory management. Unlike languages with garbage collection or implicit resource management, Zig requires developers to explicitly handle container lifecycles. The choice between managed and unmanaged containers affects memory overhead, API clarity, and program correctness.
 
-As of Zig 0.15, the standard library has shifted toward unmanaged containers as the default pattern.[^1] This change reflects a broader philosophy: explicit allocator parameters make allocation sites visible, reduce per-container memory overhead, and enable better composition of container-heavy data structures.
+Zig's standard library uses unmanaged containers by default: methods take an explicit allocator parameter, making allocation sites visible.[^1] This design reduces per-container memory overhead and enables better composition of container-heavy data structures.
 
 ## Core Concepts
 
@@ -880,37 +880,6 @@ const ptr = &list.items[0];  // Safe until capacity exceeded
 try list.append(allocator, 1);
 ```
 
-### Pitfall 5: Version Migration API Confusion
-
-Code written for Zig 0.14.x fails to compile under Zig 0.15+ due to the unmanaged default change.
-
-**Problem (0.14.x → 0.15+):**
-```zig
-// This worked in 0.14.x (managed)
-var list = std.ArrayList(u32).init(allocator);
-defer list.deinit();  // 0.15+: missing allocator parameter
-try list.append(42);  // 0.15+: missing allocator parameter
-```
-
-**Migration Strategy:**
-Search the codebase for container method calls and add allocator parameters:
-
-1. Search for `\.deinit\(\)` without allocator
-2. Search for `\.append\(` without allocator as first parameter
-3. Search for `\.put\(` in HashMap code without allocator
-
-**Solution:**
-Add allocator parameters to all methods:
-
-```zig
-// Correct (unmanaged)
-var list = std.ArrayList(u32).init(allocator);
-defer list.deinit(allocator);  // Pass allocator
-try list.append(allocator, 42);  // Pass allocator
-```
-
-Test with `std.testing.allocator` to catch remaining leaks from missed cleanup calls.
-
 ## In Practice
 
 Production codebases demonstrate these container patterns at scale.
@@ -1169,11 +1138,11 @@ const EventQueue = std.fifo.LinearFifo(Event, .Dynamic);
 
 ## Summary
 
-Zig containers integrate with the explicit allocator model, requiring developers to manage ownership and cleanup. The shift from managed to unmanaged containers as of Zig 0.15 reflects a broader philosophy: explicit allocation sites improve code clarity and reduce memory overhead.
+Zig containers integrate with the explicit allocator model, requiring developers to manage ownership and cleanup. Explicit allocation sites improve code clarity and reduce memory overhead.
 
 **Key takeaways:**
 
-1. **Unmanaged is default (0.15+):** ArrayList, HashMap, and related containers no longer store allocators. Methods require explicit allocator parameters.
+1. **Unmanaged is default:** ArrayList, HashMap, and related containers do not store allocators. Methods require explicit allocator parameters.
 
 2. **Ownership determines cleanup:** Direct value storage requires cleaning allocated fields. Pointer storage requires both object and pointer cleanup. The container's `deinit()` only frees its internal structure.
 
@@ -1187,7 +1156,7 @@ Zig containers integrate with the explicit allocator model, requiring developers
 
 Production codebases demonstrate these patterns at scale. TigerBeetle uses static pre-allocation with unmanaged containers. Ghostty optimizes capacity for common cases. Bun employs arenas for request-scoped processing. ZLS uses specialized containers for compiler data structures. Mach aggregates many unmanaged containers to reduce memory overhead.
 
-The transition from managed to unmanaged containers represents a maturation of Zig's approach to explicit resource management. By making allocation sites visible and eliminating per-container overhead, unmanaged containers provide better composability and clearer code.
+By making allocation sites visible and eliminating per-container overhead, unmanaged containers provide better composability and clearer code.
 
 ## References
 

@@ -27,7 +27,7 @@ Every Zig package declares its metadata in `build.zig.zon`, a Zig data file usin
 .{
     .name = .mypackage,
     .version = "1.0.0",
-    .minimum_zig_version = "0.14.0",
+    .minimum_zig_version = "0.16.0",
     .paths = .{
         "build.zig",
         "build.zig.zon",
@@ -72,7 +72,7 @@ Dependencies are identified by cryptographic hash, not version numbers or URLs. 
 }
 ```
 
-**Hash format (Zig 0.15+):**
+**Hash format:**
 ```
 name-version-base64hash
 ```
@@ -347,7 +347,7 @@ This pattern is common during library development before publishing to a remote 
 .{
     .name = .mathlib,
     .version = "2.0.0",
-    .minimum_zig_version = "0.14.0",
+    .minimum_zig_version = "0.16.0",
     .paths = .{
         "build.zig",
         "build.zig.zon",
@@ -568,7 +568,7 @@ Projects like Ghostty use this pattern extensively—graphics libraries, font re
 
 ### Missing Fingerprint
 
-Zig 0.15+ requires `.fingerprint` in all build.zig.zon files:
+Zig requires `.fingerprint` in all build.zig.zon files:
 
 **AVOID:**
 
@@ -854,8 +854,8 @@ Zig's package system provides deterministic, content-addressed dependency manage
 
 **Migration notes:**
 
-- Zig 0.15+ requires `.fingerprint` field
-- Hash format evolved from multihash (`1220...`) to named (`name-version-base64`)
+- `.fingerprint` is required in all `build.zig.zon` files
+- Hash format uses named hashes: `name-version-base64`
 - Lazy dependencies introduced in 0.12, essential for modern workflows
 
 Understanding these patterns enables consuming third-party libraries, managing complex dependency graphs, and publishing reusable packages. The next chapter covers project organization, cross-compilation, and CI integration—completing the picture of shipping production Zig software.

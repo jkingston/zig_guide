@@ -3,7 +3,7 @@
 ::: {.callout-tip}
 ## TL;DR for I/O in Zig
 
-- **0.15 breaking:** Use `std.fs.File.stdout()` instead of `std.io.getStdOut()`, explicit buffering now required
+- **stdout/stderr:** Use `std.Io.File.stdout()`, explicit buffering required
 - **Writers/Readers:** Generic interfaces via vtables (uniform API across files, sockets, buffers)
 - **Formatting:** `writer.interface.print("Hello {s}\n", .{name})` - compile-time format checking
 - **Files:** `std.fs.cwd().openFile()`, always `defer file.close()`
@@ -15,11 +15,7 @@
 
 Zig provides a consistent I/O abstraction through its `Writer` and `Reader` interfaces. These generic interfaces enable uniform I/O operations across different backends—files, network sockets, memory buffers—without sacrificing performance or control. The standard library uses a vtable-based approach, allowing you to write code that works with any I/O source or destination.
 
-**Version Note:** Significant API changes occurred between Zig 0.14.x and 0.15.x for stdout/stderr access and writer buffering. This chapter marks version-specific patterns with 🕐 **0.14.x** for legacy code and ✅ **0.15+** for current patterns. Most file I/O operations remain compatible across versions.
-
-> **0.16+ note:** In Zig 0.16, all I/O operations require an `Io` instance, analogous to how allocations require an `Allocator`. Additionally, `std.net` has been removed and moved to `std.Io.net`. See Appendix C and Chapter 8 (std.Io section) for details.
-
-This chapter covers obtaining writers and readers, formatting output, managing stream lifetimes, and practical patterns from production Zig codebases. Understanding these patterns is essential for CLI tools, servers, build systems, and any program that reads or writes data.
+All I/O operations require an `Io` instance, analogous to how allocations require an `Allocator`. This chapter covers obtaining writers and readers, formatting output, managing stream lifetimes, and practical patterns from production Zig codebases. Understanding these patterns is essential for CLI tools, servers, build systems, and any program that reads or writes data.
 
 ## Core Concepts
 
@@ -29,35 +25,26 @@ Zig's I/O abstraction centers on two generic interfaces: `Writer` for output and
 
 **Obtaining stdout and stderr writers:**
 
-🕐 **0.14.x:**
 ```zig
 const std = @import("std");
 
-const stdout = std.io.getStdOut();
-const stderr = std.io.getStdErr();
-const writer = stdout.writer();
-try writer.print("Hello!\n", .{});
+pub fn main(init: std.process.Init) !void {
+    const stdout = std.Io.File.stdout();
+    const stderr = std.Io.File.stderr();
+
+    // Buffered writer (recommended — pass a buffer slice)
+    var buf: [4096]u8 = undefined;
+    var writer = stdout.writer(init.io, &buf);
+    try writer.interface.print("Hello!\n", .{});
+    try writer.interface.flush();
+
+    // Unbuffered writer (for interactive/error output)
+    var unbuffered = stderr.writer(init.io, &.{});
+    try unbuffered.interface.writeAll("Error output\n");
+}
 ```
 
-✅ **0.15+:**
-```zig
-const std = @import("std");
-
-const stdout = std.fs.File.stdout();
-const stderr = std.fs.File.stderr();
-
-// Buffered writer (requires explicit buffer)
-var buf: [4096]u8 = undefined;
-var file_writer = stdout.writer(&buf);
-try file_writer.interface.print("Hello!\n", .{});
-try file_writer.interface.flush();
-
-// Unbuffered writer
-var unbuffered = stdout.writer(&.{});  // Empty slice = unbuffered
-try unbuffered.interface.writeAll("Direct output\n");
-```
-
-The key difference in 0.15+ is explicit buffering: you pass a buffer slice to `file.writer()`, and the returned `File.Writer` contains an `interface: Io.Writer` field that provides formatting methods. Passing an empty slice creates an unbuffered writer.
+Writers require an explicit buffer for buffering. Pass a `[]u8` slice to control buffer size, or `&.{}` (empty slice) for unbuffered output. The returned writer's `.interface` field provides formatting methods.
 
 **Basic formatting example:**
 
@@ -154,11 +141,11 @@ Zig's `std.fmt` module provides format specifiers for the `print` function:
 | `{s:>10}` | Right align | `print("'{s:>10}'", .{"hi"})` | `'        hi'` |
 | `{s:^10}` | Center | `print("'{s:^10}'", .{"hi"})` | `'    hi    '` |
 
-**0.16+ format specifiers:**
+**Additional format specifiers:**
 
 | Specifier | Type | Example | Notes |
 |-----------|------|---------|-------|
-| `{f}` | Custom format | `print("{f}", .{my_val})` | Calls type's `format` method (required since 0.15) |
+| `{f}` | Custom format | `print("{f}", .{my_val})` | Calls type's `format` method |
 | `{t}` | Tag/error name | `print("{t}", .{enum_val})` | Shorthand for `@tagName()` / `@errorName()` |
 | `{b64}` | Base64 | `print("{b64}", .{bytes})` | Standard base64 encoding |
 | `{B}` | Size (decimal) | `print("{B}", .{1536})` → `1.5kB` | Replaces `fmtIntSizeDec` |
@@ -168,7 +155,7 @@ Zig's `std.fmt` module provides format specifiers for the `print` function:
 
 **Custom formatting for user types:**
 
-Implement the `format` function to make your types printable. In 0.15+, the format method takes just two parameters — `self` and a concrete `*std.Io.Writer` — and you must use `{f}` (not `{}`) to invoke it:
+Implement the `format` function to make your types printable. The format method takes two parameters — `self` and a concrete `*std.Io.Writer` — and is invoked with `{f}`:
 
 ```zig
 const std = @import("std");
@@ -767,12 +754,6 @@ Zig's I/O abstraction provides explicit control over buffering, resource lifetim
 - Use unbuffered I/O for interactive terminal output and critical errors
 - Use fixed buffer streams when heap allocation is undesirable
 
-**Version Migration:**
-
-- 0.14.x to 0.15+: Replace `std.io.getStdOut()` with `std.fs.File.stdout()`
-- Pass explicit buffers to `file.writer(&buf)` or `&.{}` for unbuffered
-- Access formatting through `writer.interface.print()` instead of `writer.print()`
-
 **Resource Management:**
 
 - Always use `defer` for cleanup on all paths (success and error)
@@ -785,7 +766,7 @@ Zig's I/O abstraction provides explicit control over buffering, resource lifetim
 - Pre-allocate buffers on the stack when size is known
 - Use `writeAll` for static strings; reserve `print` for actual formatting
 
-The explicit nature of 0.15+ buffering may seem verbose initially, but it provides clarity about when and how much buffering occurs—essential for systems programming where I/O behavior must be predictable.
+Explicit buffering provides clarity about when and how much buffering occurs — essential for systems programming where I/O behavior must be predictable.
 
 ## References
 
