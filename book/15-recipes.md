@@ -1,7 +1,7 @@
 # Recipes
 
 ::: {.callout-tip}
-## TL;DR
+## TL;DR for common tasks
 
 - **CLI tools** → arg parsing, env vars, signals, subprocesses
 - **Data processing** → JSON, crypto, embedded files

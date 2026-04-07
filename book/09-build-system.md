@@ -8,7 +8,7 @@
 - **Common artifacts:** `b.addExecutable()`, `b.addStaticLibrary()`, `b.addTest()`
 - **Cross-compile:** `zig build -Dtarget=aarch64-linux` (any target from any host)
 - **Dependencies:** Managed via `build.zig.zon` (fetch from Git/HTTP)
-- **Jump to:** [Basic structure §7.2](#build-function-entry-point) | [Modules §7.3](#module-system) | [Dependencies §7.5](#dependencies-and-packages)
+- **Jump to:** [Basic structure §9.2](#build-function-entry-point) | [Modules §9.3](#module-system) | [Dependencies §9.5](#dependencies-and-packages)
 :::
 
 ## Overview

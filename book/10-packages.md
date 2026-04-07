@@ -8,7 +8,7 @@
 - **Use:** `b.dependency("pkg_name", .{})` in build.zig, then `@import("pkg_name")` in code
 - **Security:** Content-addressed with SHA-256 verification (prevents supply-chain attacks)
 - **Cache:** Global at `~/.cache/zig` (shared across all projects)
-- **Jump to:** [build.zig.zon §8.2](#buildzigzon-structure) | [Fetch workflow §8.3](#zig-fetch-workflow) | [Publishing §8.6](#publishing-packages)
+- **Jump to:** [build.zig.zon §10.2](#buildzigzon-structure) | [Fetch workflow §10.3](#zig-fetch-workflow) | [Publishing §10.6](#publishing-packages)
 :::
 
 ## Overview

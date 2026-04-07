@@ -594,3 +594,10 @@ fn fallible() !T { }
 ---
 
 **Next:** Chapter 3 covers idiomatic patterns: `defer`, error handling, `comptime` generics, and naming conventions.
+
+---
+
+## References
+
+[^1]: [Zig Language Reference](https://ziglang.org/documentation/master/) — Official language specification
+[^2]: [Zig.guide - Language Basics](https://zig.guide/language-basics/) — Interactive tutorial covering core syntax

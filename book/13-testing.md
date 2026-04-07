@@ -8,7 +8,7 @@
 - **Memory leak detection:** `testing.allocator` fails tests if allocations aren't freed
 - **Benchmarking:** Manual timing with `std.time.Timer`, prevent DCE with `doNotOptimizeAway`
 - **Profiling:** Use perf (Linux), Instruments (macOS), or Valgrind for detailed analysis
-- **Jump to:** [Basic tests §11.2](#zig-test-and-test-discovery) | [Benchmarking §11.5](#benchmarking-patterns) | [Profiling §11.6](#profiling-techniques)
+- **Jump to:** [Basic tests §13.2](#zig-test-and-test-discovery) | [Benchmarking §13.5](#benchmarking-patterns) | [Profiling §13.6](#profiling-techniques)
 :::
 
 ## Overview

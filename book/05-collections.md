@@ -8,12 +8,12 @@
 - **Common types:** ArrayList, HashMap, AutoHashMap, StringHashMap
 - **Always:** Call `.deinit(allocator)` to free memory
 - **See [comparison table](#managed-vs-unmanaged-containers) below**
-- **Jump to:** [ArrayList §3.3](#arraylist) | [HashMap §3.4](#hashmap-and-variants) | [Iteration §3.5](#iteration-patterns)
+- **Jump to:** [ArrayList §5.3](#arraylist) | [HashMap §5.4](#hashmap-and-variants) | [Iteration §5.5](#iteration-patterns)
 :::
 
 ## Overview
 
-Zig's standard library provides dynamic collection types that integrate with the explicit allocator model (see Ch2). This chapter examines container types including ArrayList, HashMap, and their variants, focusing on the distinction between managed and unmanaged containers, ownership semantics, and cleanup responsibilities.
+Zig's standard library provides dynamic collection types that integrate with the explicit allocator model (see Chapter 4). This chapter examines container types including ArrayList, HashMap, and their variants, focusing on the distinction between managed and unmanaged containers, ownership semantics, and cleanup responsibilities.
 
 Understanding container ownership is critical for correct memory management. Unlike languages with garbage collection or implicit resource management, Zig requires developers to explicitly handle container lifecycles. The choice between managed and unmanaged containers affects memory overhead, API clarity, and program correctness.
 
@@ -65,7 +65,7 @@ pub fn Aligned(comptime T: type, comptime alignment: ?u29) type {
 The absence of an allocator field characterizes the unmanaged pattern.[^3] Methods that allocate memory accept an allocator parameter:
 
 ```zig
-var list = std.ArrayList(u32).init(allocator);
+var list: std.ArrayList(u32) = .empty;
 try list.append(allocator, 42);  // Allocator explicit
 defer list.deinit(allocator);    // Allocator required for cleanup
 ```

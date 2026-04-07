@@ -27,7 +27,7 @@ This guide teaches modern Zig idioms and best practices using **Zig 0.16.0-dev**
 
 ## What You'll Learn
 
-This guide covers 16 comprehensive chapters spanning:
+This guide covers 15 chapters organized around:
 
 1. **Foundations**: Language idioms, memory management, and core patterns
 2. **Data & I/O**: Collections, containers, streams, and formatting

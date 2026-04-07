@@ -8,7 +8,7 @@
 - **Formatting:** `writer.interface.print("Hello {s}\n", .{name})` - compile-time format checking
 - **Files:** `std.fs.cwd().openFile()`, always `defer file.close()`
 - **Buffering:** Pass a `[]u8` buffer to `file.writer(&buf)` for buffered output
-- **Jump to:** [Writers/Readers §4.2](#writers-and-readers) | [Formatting §4.3](#string-formatting) | [File I/O §4.4](#file-io-patterns)
+- **Jump to:** [Writers/Readers §6.2](#writers-and-readers) | [Formatting §6.3](#string-formatting) | [File I/O §6.4](#file-io-patterns)
 :::
 
 ## Overview
@@ -45,6 +45,10 @@ pub fn main(init: std.process.Init) !void {
 ```
 
 Writers require an explicit buffer for buffering. Pass a `[]u8` slice to control buffer size, or `&.{}` (empty slice) for unbuffered output. The returned writer's `.interface` field provides formatting methods.
+
+> **`std.Io.File` vs `std.fs.File`:** Standard streams (stdin/stdout/stderr) are obtained via `std.Io.File` and require an `init.io` parameter for async-capable I/O. Regular files opened via `std.fs` use `file.writer(&buf)` without `init.io`. This distinction matters: standard streams may be connected to terminals or pipes that benefit from the async I/O backend, while file operations use direct syscalls.
+>
+> **`std.debug.print` vs writers:** For quick debugging output, `std.debug.print("value: {}\n", .{x})` writes directly to stderr without buffering — convenient but not suitable for production output. Use `std.Io.File.stdout()` with a buffered writer for structured program output.
 
 **Basic formatting example:**
 

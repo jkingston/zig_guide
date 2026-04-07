@@ -8,7 +8,7 @@
 - **Usage:** `std.log.info("msg {d}", .{val})` or scoped: `const log = std.log.scoped(.network);`
 - **Custom loggers:** Implement `pub fn log(...)` for custom formatting/output (JSON, metrics)
 - **Production:** std.log to stderr by default, override for structured logging
-- **Jump to:** [Basic logging §12.2](#stdlog-usage) | [Scopes §12.3](#log-scopes) | [Custom loggers §12.4](#custom-log-implementations)
+- **Jump to:** [Basic logging §14.2](#stdlog-usage) | [Scopes §14.3](#log-scopes) | [Custom loggers §14.4](#custom-log-implementations)
 :::
 
 ## Overview
