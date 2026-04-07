@@ -170,7 +170,6 @@ The `comptime` annotation forces evaluation during compilation. The result is a 
 - **New to Zig idioms?** → Chapter 3 (Language Idioms & Core Patterns)
 - **Coming from C/Rust?** → Chapter 3, then Chapter 4 (Memory & Allocators)
 - **Common tasks & libraries?** → Chapter 15 (Recipes)
-- **Quick reference?** → Appendix C (Reference Material)
 
 **Key chapters for common tasks:**
 
