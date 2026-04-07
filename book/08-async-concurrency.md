@@ -63,7 +63,7 @@ Zig 0.16 introduces `std.Io` — a unified async I/O interface in the standard l
 
 #### Basic Async Pattern
 
-With `process.Init` (see Appendix C), the `Io` instance is provided automatically:
+With `process.Init` (see Appendix B), the `Io` instance is provided automatically:
 
 ```zig
 const std = @import("std");

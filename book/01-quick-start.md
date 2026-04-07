@@ -34,7 +34,7 @@ zig version
 
 - Download the **nightly** build from [ZLS releases](https://github.com/zigtools/zls/releases) to match Zig master
 - See [ZLS compatibility guide](https://github.com/zigtools/zls#compatibility) for version matching
-- See **Appendix A: Development Setup** for detailed editor configuration
+- See [ZLS editor setup guide](https://github.com/zigtools/zls#editors) for detailed editor configuration
 
 ---
 
@@ -75,13 +75,13 @@ pub fn main(init: std.process.Init) !void {
 
 **What this demonstrates:**
 
-- **process.Init** (Appendix C) - `init.gpa` provides a pre-initialized allocator with leak detection
+- **process.Init** (Appendix B) - `init.gpa` provides a pre-initialized allocator with leak detection
 - **Error handling** (Chapter 7) - `!void` return type, `try` keyword
 - **Resource cleanup** (Chapter 7) - `defer` ensures cleanup on all exit paths
 - **I/O operations** (Chapter 6) - Reading from stdin with proper error handling
 - **String processing** (Chapter 5) - Splitting and iteration
 
-> **0.16+ note:** Zig 0.16 introduces `process.Init` ("juicy main"), which provides a pre-initialized allocator, arena, and I/O interface. The classic `pub fn main() !void` still works, but `process.Init` eliminates boilerplate. `init.gpa` is a `GeneralPurposeAllocator`-backed allocator; `init.arena` provides scratch space; `init.io` provides async I/O. See Appendix C for full details.
+> **0.16+ note:** Zig 0.16 introduces `process.Init` ("juicy main"), which provides a pre-initialized allocator, arena, and I/O interface. The classic `pub fn main() !void` still works, but `process.Init` eliminates boilerplate. `init.gpa` is a `GeneralPurposeAllocator`-backed allocator; `init.arena` provides scratch space; `init.io` provides async I/O. See Appendix B for full details.
 
 **Build and run:**
 
@@ -169,8 +169,8 @@ The `comptime` annotation forces evaluation during compilation. The result is a 
 
 - **New to Zig idioms?** → Chapter 3 (Language Idioms & Core Patterns)
 - **Coming from C/Rust?** → Chapter 3, then Chapter 4 (Memory & Allocators)
-- **Want complete project tutorial?** → Appendix B (zighttp architectural analysis)
-- **Need troubleshooting?** → Appendix D (Troubleshooting Guide)
+- **Common tasks & libraries?** → Chapter 15 (Recipes)
+- **Quick reference?** → Appendix C (Reference Material)
 
 **Key chapters for common tasks:**
 

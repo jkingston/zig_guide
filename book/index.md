@@ -6,11 +6,11 @@
 
 This guide teaches modern Zig idioms and best practices using **Zig 0.16.0-dev** (tracking `master`). All code examples and runnable programs target this version. APIs may shift before the 0.16.0 stable release.
 
-**Working with Zig 0.14.1?**
+**Not on 0.16.0-dev yet?**
 
-- See Appendix A for quick-reference patterns showing 0.14 equivalents
-- See Appendix B for the full migration guide (0.14 → 0.15)
-- **Recommended:** Upgrade to 0.16.0-dev first (typical migration: 2-4 hours)
+- See Appendix A if you're on Zig 0.14.x
+- See Appendix B if you're on Zig 0.15.x
+- **Recommended:** Upgrade to 0.16.0-dev directly
 
 **Who This Guide Is For:**
 

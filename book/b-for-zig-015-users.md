@@ -1,6 +1,6 @@
-# Appendix C: Migrating from Zig 0.15 to 0.16
+# Appendix B: For Zig 0.15 Users
 
-> **Quick reference for upgrading codebases from Zig 0.15.x to 0.16.0**
+> **If you're on Zig 0.15.x, this appendix shows the key differences from the book's examples and how to upgrade to 0.16.0-dev.**
 
 ---
 
@@ -259,4 +259,4 @@ pub fn format(self: @This(), writer: *std.Io.Writer) std.Io.Writer.Error!void
 
 ---
 
-> **See also:** Appendix A (Working with 0.14) and Appendix B (Migrating 0.14 → 0.15) for earlier migration guides.
+> **See also:** Appendix A (For Zig 0.14 Users) if you're upgrading from an older version.
